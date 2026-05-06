@@ -1,8 +1,11 @@
 module.exports = {
-  content: [
+content: {
+  relative: true,
+  files: [
     "./apps/web/**/*.{js,jsx,ts,tsx}",
     "./packages/ui/**/*.{js,jsx,ts,tsx}"
   ],
+},
   theme: {
     extend: {
       colors: {
