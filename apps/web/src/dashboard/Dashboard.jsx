@@ -1,3 +1,4 @@
+import { useState } from "react";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsCard from "../components/ProjectsCard.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -10,6 +11,9 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 
 export default function Dashboard() {
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [inventoryFilter, setInventoryFilter] = useState("All");
+
   return (
     <main className="min-h-screen overflow-hidden bg-gradient-to-br from-ast_bg_dark via-ast_deep to-ast_bg_blue text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(46,196,182,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(255,77,166,0.16),transparent_30%),radial-gradient(circle_at_center,rgba(90,58,142,0.22),transparent_42%)]" />
@@ -30,7 +34,7 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-4">
-              <ProjectsCard />
+              <ProjectsCard selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
               <SuppliesCard />
               <InspirationCard />
 
@@ -66,7 +70,7 @@ export default function Dashboard() {
               <MetricsStrip />
               <ProjectSummary />
               <QuickActions />
-              <InventoryTable />
+              <InventoryTable inventoryFilter={inventoryFilter} onFilterChange={setInventoryFilter} />
             </div>
           </main>
 

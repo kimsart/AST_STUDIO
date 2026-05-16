@@ -6,11 +6,27 @@ export default function QuickActions() {
     purple: { border: 'border-ast_purple/30 hover:border-ast_purple/60', text: 'text-ast_purple' },
   }
 
+  const handleNewProject = () => {
+    alert('Add Project feature coming soon! Forms will be available in Phase 2B.');
+  };
+
+  const handleAddSupply = () => {
+    alert('Add Supply feature coming soon! Forms will be available in Phase 2B.');
+  };
+
+  const handleLogSession = () => {
+    alert('Coming soon');
+  };
+
+  const handleTakePhoto = () => {
+    alert('Coming soon');
+  };
+
   const actions = [
-    { label: 'New Project', icon: '➕', color: 'turquoise' },
-    { label: 'Add Supply', icon: '🎁', color: 'pink' },
-    { label: 'Log Session', icon: '⏱️', color: 'yellow' },
-    { label: 'Take Photo', icon: '📸', color: 'purple' },
+    { label: 'New Project', icon: '➕', color: 'turquoise', handler: handleNewProject },
+    { label: 'Add Supply', icon: '🎁', color: 'pink', handler: handleAddSupply },
+    { label: 'Log Session', icon: '⏱️', color: 'yellow', handler: handleLogSession },
+    { label: 'Take Photo', icon: '📸', color: 'purple', handler: handleTakePhoto },
   ]
 
   return (
@@ -18,6 +34,7 @@ export default function QuickActions() {
       {actions.map((action) => (
         <button
           key={action.label}
+          onClick={action.handler}
           className={`bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border rounded-xl p-4 transition group ${colorMap[action.color].border}`}
         >
           <div className={`text-3xl mb-2 group-hover:scale-110 transition ${colorMap[action.color].text}`}>
