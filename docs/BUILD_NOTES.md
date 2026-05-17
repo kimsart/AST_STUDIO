@@ -64,3 +64,158 @@ Focus next on beta readiness, navigation, functionality, and obvious broken piec
 - Confirm right-side studio/chat/help panel is acceptable for beta
 - Identify missing beta-critical features
 - Avoid cosmetic rabbit holes unless they block usability
+## 2026-05-16
+
+Worked on: Phase 2A functional wiring.
+
+Changed:
+- Connected dashboard cards to centralized mock data.
+- Added project selection behavior.
+- Added inventory filter state.
+- Added QuickActions feedback for placeholder actions.
+
+Confirmed working:
+- App runs locally with `npm run dev`.
+- Dashboard remains visually intact.
+- Quick action buttons now respond.
+- Project cards and inventory filters are no longer static-only.
+
+Problems:
+- None known.
+
+Next:
+- Phase 2B: mock Add Project and Add Supply forms.
+Deferred:
+- Palette cleanup from Phase 2B.
+- Some new states/buttons lean too green/teal.
+- Fix after MVP functionality pass, before public beta screenshots or pitch/demo assets.
+## 2026-05-16
+
+Worked on: Phase 2C browser persistence.
+
+Changed:
+- Added localStorage persistence for projects and supplies.
+- Wired Dashboard state to load saved projects and supplies.
+- Saved updated project and supply state after changes.
+- Kept mockData.js as fallback seed data.
+
+Confirmed working:
+- Added project persists after refresh.
+- Added supply persists after refresh.
+- Existing dashboard behavior remains intact.
+- No UI, routing, palette, or layout changes.
+
+Problems:
+- None known.
+
+Next:
+- Continue MVP functionality pass.
+- Decide whether routing or project/supply detail behavior comes next.
+- Palette cleanup remains deferred until after MVP behavior is stable.
+## 2026-05-16
+
+Worked on: Phase 2C browser persistence.
+
+Changed:
+- Added local browser persistence for projects and supplies.
+- Wired dashboard project and supply state to localStorage helpers.
+- Projects and supplies now survive browser refresh.
+
+Confirmed working:
+- Added project persisted after refresh.
+- Added supply persisted after refresh.
+- App still runs locally.
+- Dashboard layout remains intact.
+
+Problems:
+- Persistence is browser-local only.
+- Data is still tied to the current browser/device.
+- Cloud persistence will be needed before serious/public beta testing.
+
+Next:
+- Decide whether Phase 2D should be routing, detail views, export safety, or cloud persistence planning.
+## 2026-05-16
+
+Worked on: Phase 2D export safety.
+
+Changed:
+- Added JSON export for local AST Studio data.
+- Export includes app label, export timestamp, version, projects, and supplies.
+- Fixed project duplication caused by mock projects being injected after sessionProjects became the single source of truth.
+
+Confirmed working:
+- Export Data downloads a JSON file.
+- Export includes current projects and supplies.
+- Newly added projects and supplies are included in export.
+- Projects no longer duplicate.
+- Clicking a project highlights the correct item.
+- Dashboard layout remains intact.
+
+Problems:
+- Export is backup-only. Import is not built yet.
+- Browser-local persistence still depends on the current browser/device.
+
+Next:
+- Phase 2E: add JSON import/restore, or defer import and build detail views.
+git status
+git add apps/web/src/dashboard/Dashboard.jsx apps/web/src/utils/localStorage.js
+git commit -m "Add JSON import restore for local studio data"
+git push
+git status
+Future import decision:
+- JSON import/export is the first backup system for MVP safety.
+- Before broader beta, add artist-friendly import options.
+- Priority import formats:
+  1. CSV for spreadsheets
+  2. Excel .xlsx if simple and safe
+  3. Copy/paste table import
+  4. Photo/receipt/barcode import later
+- User-facing copy should avoid technical language like JSON where possible.
+- Rename JSON export in the UI later to something like “Backup Studio Data” and “Restore Backup.”
+## 2026-05-16
+
+Worked on: Phase 3A-1 project-supply linking data model.
+
+Changed:
+- Added `supplyIds` arrays to project objects.
+- Added `usedInProjectIds` arrays to supply objects.
+- Added normalization for older localStorage data.
+- Updated add project and add supply flows to include linking fields.
+- Updated import flow to normalize older backup files.
+
+Confirmed working:
+- App loads with existing projects and supplies.
+- New projects include `supplyIds: []`.
+- New supplies include `usedInProjectIds: []`.
+- Exported JSON includes the new linking fields.
+- Older data can be normalized without crashing the app.
+
+Problems:
+- No assignment UI yet.
+- The linking fields exist, but users cannot connect projects and supplies yet.
+
+Next:
+- Phase 3A-2: add a minimal assign supplies to project interaction.
+## 2026-05-16
+
+Worked on: Phase 3A-2 supply assignment.
+
+Changed:
+- Added the ability to assign existing supplies to a selected project.
+- Added a compact supply assignment UI inside the selected project detail block.
+- Updated project `supplyIds` and supply `usedInProjectIds` together.
+- Prevented duplicate supply assignments.
+
+Confirmed working:
+- Selecting a project shows the supply assignment area.
+- Assigning a supply adds it to the project.
+- Assigned supplies disappear from the assignment dropdown.
+- Assignments persist after refresh.
+- Exported JSON includes linked project and supply IDs.
+
+Problems:
+- No unlink/remove behavior yet.
+- UI is functional but still MVP-simple.
+
+Next:
+- Phase 3A-3: show linked supply counts/details more clearly, or add unassign behavior.
