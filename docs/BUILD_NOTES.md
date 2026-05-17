@@ -219,3 +219,29 @@ Problems:
 
 Next:
 - Phase 3A-3: show linked supply counts/details more clearly, or add unassign behavior.
+## 2026-05-16
+
+Worked on: Phase 3A-3 supply unassignment.
+
+Changed:
+- Added ability to remove an assigned supply from a selected project.
+- Updated both project `supplyIds` and supply `usedInProjectIds` when unassigning.
+- Assigned supplies now have a compact remove control.
+- Removed supplies return to the available assignment dropdown.
+
+Confirmed working:
+- Supplies can be assigned to projects.
+- Supplies can be removed from projects.
+- Project and supply relationship data updates on both sides.
+- Changes persist after refresh through localStorage.
+- Exported JSON reflects the updated links.
+
+Problems:
+- UI is still MVP-simple.
+- No full project or supply detail view yet.
+- No photo support yet.
+- No cloud sync yet.
+
+Next:
+- Phase 3A-4: show supply usage and project links more clearly.
+- After Phase 3A is stable, move to photos or cloud persistence planning.
