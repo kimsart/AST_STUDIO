@@ -11,8 +11,6 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
-import EditProjectFormInline from "../components/forms/EditProjectFormInline.jsx";
-import EditSupplyFormInline from "../components/forms/EditSupplyFormInline.jsx";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
 
 export default function Dashboard() {
@@ -23,8 +21,6 @@ export default function Dashboard() {
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
   const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
-  const [editingProjectId, setEditingProjectId] = useState(null);
-  const [editingSupplyId, setEditingSupplyId] = useState(null);
   const [workspaceView, setWorkspaceView] = useState('home');
 
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
@@ -54,7 +50,6 @@ export default function Dashboard() {
         ? { ...p, ...updatedData, id: p.id, supplyIds: p.supplyIds }
         : p
     ));
-    setEditingProjectId(null);
   };
 
   const handleDeleteProject = (projectId) => {
@@ -99,7 +94,6 @@ export default function Dashboard() {
         ? { ...s, ...updatedData, id: s.id, usedInProjectIds: s.usedInProjectIds }
         : s
     ));
-    setEditingSupplyId(null);
   };
 
   const handleDeleteSupply = (supplyId) => {
@@ -300,7 +294,7 @@ export default function Dashboard() {
                   sessionSupplies={sessionSupplies}
                   onAssignSupply={handleAssignSupply}
                   onUnassignSupply={handleUnassignSupply}
-                  onEditProject={setEditingProjectId}
+                  onEditProject={handleEditProject}
                   onDeleteProject={handleDeleteProject}
                 />
               </>
@@ -329,7 +323,7 @@ export default function Dashboard() {
                     onFilterChange={setInventoryFilter}
                     sessionSupplies={sessionSupplies}
                     sessionProjects={sessionProjects}
-                    onEditSupply={setEditingSupplyId}
+                    onEditSupply={handleEditSupply}
                     onDeleteSupply={handleDeleteSupply}
                   />
                 </div>
@@ -396,31 +390,6 @@ export default function Dashboard() {
         />
       )}
 
-      {(() => {
-        const editProject = editingProjectId !== null
-          ? sessionProjects.find(p => p.id === editingProjectId) ?? null
-          : null;
-        return editProject ? (
-          <EditProjectFormInline
-            project={editProject}
-            onSubmit={(data) => handleEditProject(editingProjectId, data)}
-            onCancel={() => setEditingProjectId(null)}
-          />
-        ) : null;
-      })()}
-
-      {(() => {
-        const editSupply = editingSupplyId !== null
-          ? sessionSupplies.find(s => s.id === editingSupplyId) ?? null
-          : null;
-        return editSupply ? (
-          <EditSupplyFormInline
-            supply={editSupply}
-            onSubmit={(data) => handleEditSupply(editingSupplyId, data)}
-            onCancel={() => setEditingSupplyId(null)}
-          />
-        ) : null;
-      })()}
     </main>
   );
 }
