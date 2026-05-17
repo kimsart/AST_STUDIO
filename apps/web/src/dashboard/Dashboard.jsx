@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsCard from "../components/ProjectsCard.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -11,14 +11,18 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
+import { loadProjects, saveProjects, loadSupplies, saveSupplies } from "../utils/localStorage.js";
 
 export default function Dashboard() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [inventoryFilter, setInventoryFilter] = useState("All");
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
-  const [sessionProjects, setSessionProjects] = useState([]);
-  const [sessionSupplies, setSessionSupplies] = useState([]);
+  const [sessionProjects, setSessionProjects] = useState(loadProjects);
+  const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
+
+  useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
+  useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
 
   const handleAddProject = (projectData) => {
     const newId = Math.max(...sessionProjects.map(p => p.id), 3) + 1;
