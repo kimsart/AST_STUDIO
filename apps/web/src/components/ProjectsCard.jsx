@@ -1,6 +1,22 @@
-export default function ProjectsCard({ selectedProjectId, onSelectProject, sessionProjects = [] }) {
+import { useState } from "react";
+
+export default function ProjectsCard({ selectedProjectId, onSelectProject, sessionProjects = [], sessionSupplies = [], onAssignSupply }) {
+  const [pendingSupplyId, setPendingSupplyId] = useState("");
   const allProjects = sessionProjects;
   const selectedProject = allProjects.find((p) => p.id === selectedProjectId);
+
+  const assignedSupplies = selectedProject
+    ? sessionSupplies.filter(s => selectedProject.supplyIds.includes(s.id))
+    : [];
+  const unassignedSupplies = selectedProject
+    ? sessionSupplies.filter(s => !selectedProject.supplyIds.includes(s.id))
+    : [];
+
+  const handleAssign = () => {
+    if (!pendingSupplyId || !selectedProject) return;
+    onAssignSupply(selectedProject.id, Number(pendingSupplyId));
+    setPendingSupplyId("");
+  };
 
   return (
     <section className="rounded-xl border border-ast_turquoise/40 bg-ast_bg_dark/70 p-4 text-ast_yellow shadow-astTurquoise">
@@ -44,6 +60,40 @@ export default function ProjectsCard({ selectedProjectId, onSelectProject, sessi
             )}
           </p>
           <p className="mt-2 text-xs text-white/60">{selectedProject.notes}</p>
+
+          <div className="mt-3 border-t border-ast_turquoise/20 pt-3">
+            <p className="text-xs uppercase tracking-wider text-ast_turquoise mb-1">Supplies</p>
+            {assignedSupplies.length > 0 && (
+              <ul className="mb-2 space-y-0.5">
+                {assignedSupplies.map(s => (
+                  <li key={s.id} className="text-xs text-white/70">· {s.name}</li>
+                ))}
+              </ul>
+            )}
+            {unassignedSupplies.length === 0 ? (
+              <p className="text-xs text-white/40">All supplies assigned</p>
+            ) : (
+              <div className="flex gap-1 mt-1">
+                <select
+                  value={pendingSupplyId}
+                  onChange={e => setPendingSupplyId(e.target.value)}
+                  className="flex-1 min-w-0 rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-1.5 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise"
+                >
+                  <option value="">Pick supply…</option>
+                  {unassignedSupplies.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleAssign}
+                  disabled={!pendingSupplyId}
+                  className="shrink-0 rounded bg-ast_turquoise/20 px-2 py-1 text-xs text-ast_turquoise hover:bg-ast_turquoise/40 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                >
+                  Assign
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </section>

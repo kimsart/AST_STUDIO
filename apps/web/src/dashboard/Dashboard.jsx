@@ -43,6 +43,19 @@ export default function Dashboard() {
     setShowAddSupplyForm(false);
   };
 
+  const handleAssignSupply = (projectId, supplyId) => {
+    setSessionProjects(prev => prev.map(p =>
+      p.id === projectId && !p.supplyIds.includes(supplyId)
+        ? { ...p, supplyIds: [...p.supplyIds, supplyId] }
+        : p
+    ));
+    setSessionSupplies(prev => prev.map(s =>
+      s.id === supplyId && !s.usedInProjectIds.includes(projectId)
+        ? { ...s, usedInProjectIds: [...s.usedInProjectIds, projectId] }
+        : s
+    ));
+  };
+
   const handleImportData = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -105,10 +118,12 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-4">
-              <ProjectsCard 
-                selectedProjectId={selectedProjectId} 
+              <ProjectsCard
+                selectedProjectId={selectedProjectId}
                 onSelectProject={setSelectedProjectId}
                 sessionProjects={sessionProjects}
+                sessionSupplies={sessionSupplies}
+                onAssignSupply={handleAssignSupply}
               />
               <SuppliesCard sessionSupplies={sessionSupplies} />
               <InspirationCard />
