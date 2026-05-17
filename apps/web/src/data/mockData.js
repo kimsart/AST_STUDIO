@@ -5,6 +5,7 @@ export const mockProjects = [
     status: "in-progress",
     notes: "A series of watercolor paintings featuring botanical subjects. Currently working on the hydrangea study.",
     budget: 150,
+    supplyIds: [],
   },
   {
     id: 2,
@@ -12,6 +13,7 @@ export const mockProjects = [
     status: "planned",
     notes: "Black and white portrait studies using charcoal on paper. Prep phase - gathering reference materials.",
     budget: 200,
+    supplyIds: [],
   },
   {
     id: 3,
@@ -19,6 +21,7 @@ export const mockProjects = [
     status: "on-hold",
     notes: "Experimental collage combining paper, paint, and found materials. On hold pending resource availability.",
     budget: 100,
+    supplyIds: [],
   },
 ];
 
@@ -32,6 +35,7 @@ export const mockSupplies = [
     color: "bg-ast_purple",
     location: "Shelf A",
     condition: "Good",
+    usedInProjectIds: [],
   },
   {
     id: 2,
@@ -42,6 +46,7 @@ export const mockSupplies = [
     color: "bg-ast_turquoise",
     location: "Brush Cup",
     condition: "Good",
+    usedInProjectIds: [],
   },
   {
     id: 3,
@@ -52,6 +57,7 @@ export const mockSupplies = [
     color: "bg-ast_pink",
     location: "Cabinet",
     condition: "Good",
+    usedInProjectIds: [],
   },
   {
     id: 4,
@@ -62,6 +68,7 @@ export const mockSupplies = [
     color: "bg-ast_pink",
     location: "Storage Rack",
     condition: "Good",
+    usedInProjectIds: [],
   },
   {
     id: 5,
@@ -72,6 +79,7 @@ export const mockSupplies = [
     color: "bg-ast_turquoise",
     location: "Shelf B",
     condition: "Good",
+    usedInProjectIds: [],
   },
 ];
 

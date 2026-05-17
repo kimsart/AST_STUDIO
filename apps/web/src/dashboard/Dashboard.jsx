@@ -11,7 +11,7 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
-import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData } from "../utils/localStorage.js";
+import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply } from "../utils/localStorage.js";
 
 export default function Dashboard() {
   const fileInputRef = useRef(null);
@@ -29,7 +29,7 @@ export default function Dashboard() {
     const newId = Math.max(...sessionProjects.map(p => p.id), 3) + 1;
     setSessionProjects((prev) => [
       ...prev,
-      { id: newId, ...projectData, isNew: true },
+      { id: newId, supplyIds: [], ...projectData, isNew: true },
     ]);
     setShowAddProjectForm(false);
   };
@@ -38,7 +38,7 @@ export default function Dashboard() {
     const newId = Math.max(...sessionSupplies.map(s => s.id), 100) + 1;
     setSessionSupplies((prev) => [
       ...prev,
-      { id: newId, ...supplyData, isNew: true },
+      { id: newId, usedInProjectIds: [], ...supplyData, isNew: true },
     ]);
     setShowAddSupplyForm(false);
   };
@@ -61,8 +61,8 @@ export default function Dashboard() {
         alert("File is missing required projects or supplies arrays. Import cancelled.");
         return;
       }
-      setSessionProjects(parsed.projects);
-      setSessionSupplies(parsed.supplies);
+      setSessionProjects(parsed.projects.map(normalizeProject));
+      setSessionSupplies(parsed.supplies.map(normalizeSupply));
       alert("Import successful.");
     };
     reader.readAsText(file);

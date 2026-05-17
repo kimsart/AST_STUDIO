@@ -1,5 +1,13 @@
 import { mockProjects, mockSupplies } from '../data/mockData.js';
 
+export function normalizeProject(p) {
+  return { ...p, supplyIds: Array.isArray(p.supplyIds) ? p.supplyIds : [] };
+}
+
+export function normalizeSupply(s) {
+  return { ...s, usedInProjectIds: Array.isArray(s.usedInProjectIds) ? s.usedInProjectIds : [] };
+}
+
 export function validateImportedData(data) {
   return (
     data !== null &&
@@ -17,11 +25,11 @@ const KEYS = {
 export function loadProjects() {
   try {
     const raw = localStorage.getItem(KEYS.projects);
-    if (raw === null) return mockProjects;
-    return JSON.parse(raw);
+    if (raw === null) return mockProjects.map(normalizeProject);
+    return JSON.parse(raw).map(normalizeProject);
   } catch (e) {
     console.warn('[localStorage] Failed to parse ast_projects:', e);
-    return mockProjects;
+    return mockProjects.map(normalizeProject);
   }
 }
 
@@ -37,11 +45,11 @@ export function saveProjects(projects) {
 export function loadSupplies() {
   try {
     const raw = localStorage.getItem(KEYS.supplies);
-    if (raw === null) return mockSupplies;
-    return JSON.parse(raw);
+    if (raw === null) return mockSupplies.map(normalizeSupply);
+    return JSON.parse(raw).map(normalizeSupply);
   } catch (e) {
     console.warn('[localStorage] Failed to parse ast_supplies:', e);
-    return mockSupplies;
+    return mockSupplies.map(normalizeSupply);
   }
 }
 
