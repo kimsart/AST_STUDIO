@@ -1,18 +1,10 @@
-export default function QuickActions() {
+export default function QuickActions({ onNewProject, onAddSupply }) {
   const colorMap = {
     turquoise: { border: 'border-ast_turquoise/30 hover:border-ast_turquoise/60', text: 'text-ast_turquoise' },
     pink: { border: 'border-ast_pink/30 hover:border-ast_pink/60', text: 'text-ast_pink' },
     yellow: { border: 'border-ast_yellow/30 hover:border-ast_yellow/60', text: 'text-ast_yellow' },
     purple: { border: 'border-ast_purple/30 hover:border-ast_purple/60', text: 'text-ast_purple' },
   }
-
-  const handleNewProject = () => {
-    alert('Add Project feature coming soon! Forms will be available in Phase 2B.');
-  };
-
-  const handleAddSupply = () => {
-    alert('Add Supply feature coming soon! Forms will be available in Phase 2B.');
-  };
 
   const handleLogSession = () => {
     alert('Coming soon');
@@ -23,8 +15,8 @@ export default function QuickActions() {
   };
 
   const actions = [
-    { label: 'New Project', icon: '➕', color: 'turquoise', handler: handleNewProject },
-    { label: 'Add Supply', icon: '🎁', color: 'pink', handler: handleAddSupply },
+    { label: 'New Project', icon: '➕', color: 'turquoise', handler: onNewProject },
+    { label: 'Add Supply', icon: '🎁', color: 'pink', handler: onAddSupply },
     { label: 'Log Session', icon: '⏱️', color: 'yellow', handler: handleLogSession },
     { label: 'Take Photo', icon: '📸', color: 'purple', handler: handleTakePhoto },
   ]

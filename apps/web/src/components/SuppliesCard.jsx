@@ -1,6 +1,8 @@
 import { mockSupplies } from "../data/mockData.js";
 
-export default function SuppliesCard() {
+export default function SuppliesCard({ sessionSupplies = [] }) {
+  const allSupplies = [...mockSupplies, ...sessionSupplies];
+
   return (
     <div className="bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
@@ -9,10 +11,17 @@ export default function SuppliesCard() {
       </div>
 
       <div className="space-y-4">
-        {mockSupplies.map((supply) => (
+        {allSupplies.map((supply) => (
           <div key={supply.id} className="space-y-1">
             <div className="flex items-center justify-between">
-              <p className="text-xs text-slate-300">{supply.name}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-slate-300">{supply.name}</p>
+                {supply.isNew && (
+                  <span className="text-xs bg-ast_pink/40 text-ast_pink px-1.5 py-0.25 rounded-full font-semibold">
+                    NEW
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-400">{supply.qty} items</p>
             </div>
             <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">

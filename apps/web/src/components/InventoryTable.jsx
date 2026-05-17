@@ -1,15 +1,17 @@
 import { mockSupplies } from "../data/mockData.js";
 
-export default function InventoryTable({ inventoryFilter, onFilterChange }) {
+export default function InventoryTable({ inventoryFilter, onFilterChange, sessionSupplies = [] }) {
+  const allSupplies = [...mockSupplies, ...sessionSupplies];
+
   const getFilteredItems = () => {
     switch (inventoryFilter) {
       case "Low Stock":
-        return mockSupplies.filter((s) => s.status === "low" || s.status === "critical");
+        return allSupplies.filter((s) => s.status === "low" || s.status === "critical");
       case "Out of Stock":
-        return mockSupplies.filter((s) => s.status === "critical");
+        return allSupplies.filter((s) => s.status === "critical");
       case "All":
       default:
-        return mockSupplies;
+        return allSupplies;
     }
   };
 
@@ -48,7 +50,16 @@ export default function InventoryTable({ inventoryFilter, onFilterChange }) {
         <tbody className="space-y-2">
           {filteredItems.map((item) => (
             <tr key={item.id} className="border-b border-slate-800/50 hover:bg-ast_bg_blue/50 transition">
-              <td className="py-3 text-slate-200">{item.name}</td>
+              <td className="py-3 text-slate-200">
+                <div className="flex items-center gap-2">
+                  <span>{item.name}</span>
+                  {item.isNew && (
+                    <span className="text-xs bg-ast_turquoise/40 text-ast_turquoise px-1.5 py-0.25 rounded-full font-semibold">
+                      NEW
+                    </span>
+                  )}
+                </div>
+              </td>
               <td className="py-3 text-slate-400">{item.category}</td>
               <td className="py-3 text-slate-300">{item.qty}</td>
               <td className="py-3">

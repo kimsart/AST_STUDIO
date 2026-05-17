@@ -9,10 +9,34 @@ import QuickActions from "../components/QuickActions.jsx";
 import InventoryTable from "../components/InventoryTable.jsx";
 import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
+import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
+import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 
 export default function Dashboard() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [inventoryFilter, setInventoryFilter] = useState("All");
+  const [showAddProjectForm, setShowAddProjectForm] = useState(false);
+  const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
+  const [sessionProjects, setSessionProjects] = useState([]);
+  const [sessionSupplies, setSessionSupplies] = useState([]);
+
+  const handleAddProject = (projectData) => {
+    const newId = Math.max(...sessionProjects.map(p => p.id), 3) + 1;
+    setSessionProjects((prev) => [
+      ...prev,
+      { id: newId, ...projectData, isNew: true },
+    ]);
+    setShowAddProjectForm(false);
+  };
+
+  const handleAddSupply = (supplyData) => {
+    const newId = Math.max(...sessionSupplies.map(s => s.id), 100) + 1;
+    setSessionSupplies((prev) => [
+      ...prev,
+      { id: newId, ...supplyData, isNew: true },
+    ]);
+    setShowAddSupplyForm(false);
+  };
 
   return (
     <main className="min-h-screen overflow-hidden bg-gradient-to-br from-ast_bg_dark via-ast_deep to-ast_bg_blue text-white">
@@ -34,8 +58,12 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-4">
-              <ProjectsCard selectedProjectId={selectedProjectId} onSelectProject={setSelectedProjectId} />
-              <SuppliesCard />
+              <ProjectsCard 
+                selectedProjectId={selectedProjectId} 
+                onSelectProject={setSelectedProjectId}
+                sessionProjects={sessionProjects}
+              />
+              <SuppliesCard sessionSupplies={sessionSupplies} />
               <InspirationCard />
 
               <div className="rounded-2xl border border-ast_blue/30 bg-white/5 p-4 shadow-[0_0_16px_rgba(74,105,214,0.18)] backdrop-blur-xl">
@@ -69,8 +97,15 @@ export default function Dashboard() {
             <div className="space-y-6">
               <MetricsStrip />
               <ProjectSummary />
-              <QuickActions />
-              <InventoryTable inventoryFilter={inventoryFilter} onFilterChange={setInventoryFilter} />
+              <QuickActions 
+                onNewProject={() => setShowAddProjectForm(true)}
+                onAddSupply={() => setShowAddSupplyForm(true)}
+              />
+              <InventoryTable 
+                inventoryFilter={inventoryFilter} 
+                onFilterChange={setInventoryFilter}
+                sessionSupplies={sessionSupplies}
+              />
             </div>
           </main>
 
@@ -112,6 +147,21 @@ export default function Dashboard() {
           </aside>
         </section>
       </div>
+
+      {/* Form Modals */}
+      {showAddProjectForm && (
+        <AddProjectFormInline
+          onSubmit={handleAddProject}
+          onCancel={() => setShowAddProjectForm(false)}
+        />
+      )}
+
+      {showAddSupplyForm && (
+        <AddSupplyFormInline
+          onSubmit={handleAddSupply}
+          onCancel={() => setShowAddSupplyForm(false)}
+        />
+      )}
     </main>
   );
 }
