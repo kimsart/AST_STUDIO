@@ -1,7 +1,5 @@
-import { mockSupplies } from "../data/mockData.js";
-
 export default function SuppliesCard({ sessionSupplies = [] }) {
-  const allSupplies = [...mockSupplies, ...sessionSupplies];
+  const allSupplies = sessionSupplies;
 
   return (
     <div className="bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6">

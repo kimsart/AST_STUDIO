@@ -1,7 +1,5 @@
-import { mockSupplies } from "../data/mockData.js";
-
 export default function InventoryTable({ inventoryFilter, onFilterChange, sessionSupplies = [] }) {
-  const allSupplies = [...mockSupplies, ...sessionSupplies];
+  const allSupplies = sessionSupplies;
 
   const getFilteredItems = () => {
     switch (inventoryFilter) {
