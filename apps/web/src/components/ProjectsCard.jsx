@@ -1,7 +1,5 @@
-import { mockProjects } from "../data/mockData.js";
-
 export default function ProjectsCard({ selectedProjectId, onSelectProject, sessionProjects = [] }) {
-  const allProjects = [...mockProjects, ...sessionProjects];
+  const allProjects = sessionProjects;
   const selectedProject = allProjects.find((p) => p.id === selectedProjectId);
 
   return (

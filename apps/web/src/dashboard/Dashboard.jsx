@@ -42,6 +42,23 @@ export default function Dashboard() {
     setShowAddSupplyForm(false);
   };
 
+  const handleExportData = () => {
+    const payload = {
+      app: "AST Studio",
+      exportedAt: new Date().toISOString(),
+      version: 1,
+      projects: sessionProjects,
+      supplies: sessionSupplies,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ast-studio-export-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <main className="min-h-screen overflow-hidden bg-gradient-to-br from-ast_bg_dark via-ast_deep to-ast_bg_blue text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(46,196,182,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(255,77,166,0.16),transparent_30%),radial-gradient(circle_at_center,rgba(90,58,142,0.22),transparent_42%)]" />
@@ -101,10 +118,18 @@ export default function Dashboard() {
             <div className="space-y-6">
               <MetricsStrip />
               <ProjectSummary />
-              <QuickActions 
+              <QuickActions
                 onNewProject={() => setShowAddProjectForm(true)}
                 onAddSupply={() => setShowAddSupplyForm(true)}
               />
+              <div className="flex justify-end">
+                <button
+                  onClick={handleExportData}
+                  className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
+                >
+                  Export Data
+                </button>
+              </div>
               <InventoryTable 
                 inventoryFilter={inventoryFilter} 
                 onFilterChange={setInventoryFilter}
