@@ -56,6 +56,19 @@ export default function Dashboard() {
     ));
   };
 
+  const handleUnassignSupply = (projectId, supplyId) => {
+    setSessionProjects(prev => prev.map(p =>
+      p.id === projectId
+        ? { ...p, supplyIds: p.supplyIds.filter(id => id !== supplyId) }
+        : p
+    ));
+    setSessionSupplies(prev => prev.map(s =>
+      s.id === supplyId
+        ? { ...s, usedInProjectIds: s.usedInProjectIds.filter(id => id !== projectId) }
+        : s
+    ));
+  };
+
   const handleImportData = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -124,6 +137,7 @@ export default function Dashboard() {
                 sessionProjects={sessionProjects}
                 sessionSupplies={sessionSupplies}
                 onAssignSupply={handleAssignSupply}
+                onUnassignSupply={handleUnassignSupply}
               />
               <SuppliesCard sessionSupplies={sessionSupplies} />
               <InspirationCard />

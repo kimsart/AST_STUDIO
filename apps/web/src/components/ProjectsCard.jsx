@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ProjectsCard({ selectedProjectId, onSelectProject, sessionProjects = [], sessionSupplies = [], onAssignSupply }) {
+export default function ProjectsCard({ selectedProjectId, onSelectProject, sessionProjects = [], sessionSupplies = [], onAssignSupply, onUnassignSupply }) {
   const [pendingSupplyId, setPendingSupplyId] = useState("");
   const allProjects = sessionProjects;
   const selectedProject = allProjects.find((p) => p.id === selectedProjectId);
@@ -66,7 +66,14 @@ export default function ProjectsCard({ selectedProjectId, onSelectProject, sessi
             {assignedSupplies.length > 0 && (
               <ul className="mb-2 space-y-0.5">
                 {assignedSupplies.map(s => (
-                  <li key={s.id} className="text-xs text-white/70">· {s.name}</li>
+                  <li key={s.id} className="flex items-center justify-between text-xs text-white/70">
+                    <span>· {s.name}</span>
+                    <button
+                      onClick={() => onUnassignSupply(selectedProject.id, s.id)}
+                      className="shrink-0 ml-2 text-white/30 hover:text-ast_pink transition"
+                      title="Remove"
+                    >×</button>
+                  </li>
                 ))}
               </ul>
             )}
