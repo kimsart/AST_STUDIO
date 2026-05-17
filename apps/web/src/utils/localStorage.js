@@ -1,5 +1,14 @@
 import { mockProjects, mockSupplies } from '../data/mockData.js';
 
+export function validateImportedData(data) {
+  return (
+    data !== null &&
+    typeof data === 'object' &&
+    Array.isArray(data.projects) &&
+    Array.isArray(data.supplies)
+  );
+}
+
 const KEYS = {
   projects: 'ast_projects',
   supplies: 'ast_supplies',

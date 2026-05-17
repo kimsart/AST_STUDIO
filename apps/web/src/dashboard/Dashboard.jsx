@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsCard from "../components/ProjectsCard.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -11,9 +11,10 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
-import { loadProjects, saveProjects, loadSupplies, saveSupplies } from "../utils/localStorage.js";
+import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData } from "../utils/localStorage.js";
 
 export default function Dashboard() {
+  const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [inventoryFilter, setInventoryFilter] = useState("All");
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
@@ -40,6 +41,31 @@ export default function Dashboard() {
       { id: newId, ...supplyData, isNew: true },
     ]);
     setShowAddSupplyForm(false);
+  };
+
+  const handleImportData = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    const reader = new FileReader();
+    reader.onerror = () => alert("Could not read file. Import cancelled.");
+    reader.onload = (event) => {
+      let parsed;
+      try {
+        parsed = JSON.parse(event.target.result);
+      } catch {
+        alert("Invalid JSON file. Import cancelled.");
+        return;
+      }
+      if (!validateImportedData(parsed)) {
+        alert("File is missing required projects or supplies arrays. Import cancelled.");
+        return;
+      }
+      setSessionProjects(parsed.projects);
+      setSessionSupplies(parsed.supplies);
+      alert("Import successful.");
+    };
+    reader.readAsText(file);
   };
 
   const handleExportData = () => {
@@ -122,7 +148,20 @@ export default function Dashboard() {
                 onNewProject={() => setShowAddProjectForm(true)}
                 onAddSupply={() => setShowAddSupplyForm(true)}
               />
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json"
+                  className="hidden"
+                  onChange={handleImportData}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
+                >
+                  Import JSON
+                </button>
                 <button
                   onClick={handleExportData}
                   className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
