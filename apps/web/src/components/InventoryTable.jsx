@@ -53,6 +53,8 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
     setIsEditingSupply(false);
   };
 
+  const categories = ["Paint", "Brush", "Paper", "Canvas", "Medium", "Other"];
+
   return (
     <div className="col-span-2 bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6 overflow-x-auto">
       <h3 className="text-sm font-bold text-slate-400 mb-4">INVENTORY OVERVIEW</h3>
@@ -123,25 +125,18 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                 <td className="py-3">
                   {(() => {
                     const ids = Array.isArray(item.usedInProjectIds) ? item.usedInProjectIds : [];
-                    if (ids.length === 0) {
-                      return <span className="text-xs text-white/25">—</span>;
-                    }
+                    if (ids.length === 0) return <span className="text-xs text-white/25">—</span>;
                     const linked = ids
                       .map(id => {
                         const p = sessionProjects.find(proj => proj.id === id);
                         return p ? { id: p.id, title: p.title } : null;
                       })
                       .filter(Boolean);
-                    if (linked.length === 0) {
-                      return <span className="text-xs text-white/25">—</span>;
-                    }
+                    if (linked.length === 0) return <span className="text-xs text-white/25">—</span>;
                     return (
                       <div className="flex flex-wrap gap-1">
                         {linked.map(({ id, title }) => (
-                          <span
-                            key={id}
-                            className="text-xs bg-ast_lavender/20 text-ast_lavender px-1.5 py-0.5 rounded"
-                          >
+                          <span key={id} className="text-xs bg-ast_lavender/20 text-ast_lavender px-1.5 py-0.5 rounded">
                             {title}
                           </span>
                         ))}
@@ -161,120 +156,160 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
 
               {selectedSupplyId === item.id && selectedSupply && (
                 <tr>
-                  <td colSpan={7} className="pb-3 pt-0">
-                    <div className="rounded-lg border border-ast_pink/30 bg-ast_pink/5 p-3">
+                  <td colSpan={7} className="py-3">
+                    <div className="rounded-2xl border border-ast_pink/60 bg-ast_deep/95 p-6 shadow-astPink">
+
                       {isEditingSupply ? (
-                        <div className="space-y-2">
-                          <p className="text-xs uppercase tracking-wider text-ast_pink mb-2">Edit Supply</p>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Name</label>
-                              <input
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.name}
-                                onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Category</label>
-                              <input
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.category}
-                                onChange={e => setEditDraft(d => ({ ...d, category: e.target.value }))}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Qty</label>
-                              <input
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.qty}
-                                onChange={e => setEditDraft(d => ({ ...d, qty: e.target.value }))}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Status</label>
-                              <select
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.status}
-                                onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
-                              >
-                                <option value="ok">ok</option>
-                                <option value="low">low</option>
-                                <option value="critical">critical</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Location</label>
-                              <input
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.location}
-                                onChange={e => setEditDraft(d => ({ ...d, location: e.target.value }))}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs text-white/50 mb-0.5">Notes</label>
-                              <input
-                                className="w-full rounded bg-ast_bg_dark/70 border border-ast_pink/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_pink"
-                                value={editDraft.notes}
-                                onChange={e => setEditDraft(d => ({ ...d, notes: e.target.value }))}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={handleSaveEdit}
-                              className="text-xs bg-ast_pink/20 text-ast_pink px-3 py-1 rounded hover:bg-ast_pink/40 transition"
-                            >
-                              Save Changes
-                            </button>
+                        <>
+                          <div className="mb-6 flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-ast_pink">Edit Supply</h2>
                             <button
                               onClick={handleCancelEdit}
-                              className="text-xs text-white/40 hover:text-white/70 transition"
+                              className="text-xl text-ast_yellow/60 hover:text-ast_yellow transition"
                             >
-                              Cancel
+                              ✕
                             </button>
                           </div>
-                        </div>
+
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Name</label>
+                                <input
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.name}
+                                  onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Category</label>
+                                <select
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.category}
+                                  onChange={e => setEditDraft(d => ({ ...d, category: e.target.value }))}
+                                >
+                                  {categories.map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Quantity</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.qty}
+                                  onChange={e => setEditDraft(d => ({ ...d, qty: e.target.value }))}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Stock Status</label>
+                                <select
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.status}
+                                  onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
+                                >
+                                  <option value="ok">OK</option>
+                                  <option value="low">Low</option>
+                                  <option value="critical">Critical</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Location</label>
+                                <input
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.location}
+                                  onChange={e => setEditDraft(d => ({ ...d, location: e.target.value }))}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Notes</label>
+                                <input
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.notes}
+                                  onChange={e => setEditDraft(d => ({ ...d, notes: e.target.value }))}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="flex gap-3 mt-2">
+                              <button
+                                onClick={handleCancelEdit}
+                                className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={handleSaveEdit}
+                                className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition"
+                              >
+                                Save Changes
+                              </button>
+                            </div>
+                          </div>
+                        </>
                       ) : (
-                        <div>
-                          <p className="text-xs uppercase tracking-wider text-ast_pink mb-2">Selected</p>
-                          <div className="grid grid-cols-3 gap-x-6 gap-y-1 text-xs">
+                        <>
+                          <div className="mb-4 flex items-start justify-between">
                             <div>
-                              <p className="text-white/40">Name</p>
-                              <p className="text-white/80">{selectedSupply.name}</p>
+                              <p className="text-xs uppercase tracking-wider text-ast_pink mb-1">Supply</p>
+                              <h2 className="text-lg font-bold text-ast_yellow">
+                                {selectedSupply.name}
+                                {selectedSupply.isNew && (
+                                  <span className="ml-2 text-xs bg-ast_pink/40 text-ast_pink px-2 py-0.5 rounded-full font-semibold align-middle">
+                                    NEW
+                                  </span>
+                                )}
+                              </h2>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              selectedSupply.status === 'ok'
+                                ? 'bg-ast_turquoise/20 text-ast_turquoise'
+                                : selectedSupply.status === 'low'
+                                ? 'bg-ast_yellow/20 text-ast_yellow'
+                                : 'bg-ast_pink/20 text-ast_pink'
+                            }`}>
+                              {selectedSupply.status === 'ok' ? '✓' : '⚠️'} {selectedSupply.status}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-x-6 gap-y-3 mb-4">
+                            <div>
+                              <p className="text-xs font-medium text-ast_yellow mb-1">Category</p>
+                              <p className="text-sm text-white/80">{selectedSupply.category || "—"}</p>
                             </div>
                             <div>
-                              <p className="text-white/40">Category</p>
-                              <p className="text-white/80">{selectedSupply.category}</p>
+                              <p className="text-xs font-medium text-ast_yellow mb-1">Quantity</p>
+                              <p className="text-sm text-white/80">{selectedSupply.qty}</p>
                             </div>
                             <div>
-                              <p className="text-white/40">Qty</p>
-                              <p className="text-white/80">{selectedSupply.qty}</p>
-                            </div>
-                            <div>
-                              <p className="text-white/40">Status</p>
-                              <p className="text-white/80">{selectedSupply.status}</p>
-                            </div>
-                            <div>
-                              <p className="text-white/40">Location</p>
-                              <p className="text-white/80">{selectedSupply.location || "—"}</p>
+                              <p className="text-xs font-medium text-ast_yellow mb-1">Location</p>
+                              <p className="text-sm text-white/80">{selectedSupply.location || "—"}</p>
                             </div>
                             {selectedSupply.notes && (
                               <div className="col-span-3">
-                                <p className="text-white/40">Notes</p>
-                                <p className="text-white/80">{selectedSupply.notes}</p>
+                                <p className="text-xs font-medium text-ast_yellow mb-1">Notes</p>
+                                <p className="text-sm text-white/80">{selectedSupply.notes}</p>
                               </div>
                             )}
                           </div>
-                          <div className="mt-2 flex gap-3">
+
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => { setSelectedSupplyId(null); setIsEditingSupply(false); }}
+                              className="rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-sm text-ast_yellow hover:bg-ast_yellow/10 transition"
+                            >
+                              Close
+                            </button>
                             <button
                               onClick={() => handleStartEdit(selectedSupply)}
-                              className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition"
+                              className="rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 text-sm font-semibold text-white shadow-astPink hover:shadow-lg transition"
                             >
-                              Edit
+                              Edit Supply
                             </button>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   </td>

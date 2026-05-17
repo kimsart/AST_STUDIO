@@ -73,101 +73,117 @@ export default function ProjectsCard({ selectedProjectId, onSelectProject, sessi
             </button>
 
             {selectedProjectId === project.id && selectedProject && (
-              <div className="mt-1 mb-1 rounded-lg border border-ast_yellow/30 bg-ast_yellow/5 p-3">
+              <div className="mt-2 mb-1 rounded-2xl border border-ast_turquoise/60 bg-ast_deep/95 p-6 shadow-astTurquoise">
 
                 {isEditingProject ? (
-                  <div className="space-y-2">
-                    <p className="text-xs uppercase tracking-wider text-ast_turquoise mb-2">Edit Project</p>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-0.5">Title</label>
-                      <input
-                        className="w-full rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise"
-                        value={editDraft.title}
-                        onChange={e => setEditDraft(d => ({ ...d, title: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-0.5">Status</label>
-                      <select
-                        className="w-full rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise"
-                        value={editDraft.status}
-                        onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
-                      >
-                        <option value="planning">Planning</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="complete">Complete</option>
-                        <option value="on-hold">On Hold</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-0.5">Notes</label>
-                      <textarea
-                        className="w-full rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise resize-none"
-                        rows={3}
-                        value={editDraft.notes}
-                        onChange={e => setEditDraft(d => ({ ...d, notes: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-0.5">Budget</label>
-                      <input
-                        className="w-full rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-2 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise"
-                        value={editDraft.budget}
-                        onChange={e => setEditDraft(d => ({ ...d, budget: e.target.value }))}
-                      />
-                    </div>
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        onClick={handleSaveEdit}
-                        className="text-xs bg-ast_turquoise/20 text-ast_turquoise px-3 py-1 rounded hover:bg-ast_turquoise/40 transition"
-                      >
-                        Save Changes
-                      </button>
+                  <>
+                    <div className="mb-6 flex items-center justify-between">
+                      <h2 className="text-lg font-bold text-ast_turquoise">Edit Project</h2>
                       <button
                         onClick={handleCancelEdit}
-                        className="text-xs text-white/40 hover:text-white/70 transition"
+                        className="text-xl text-ast_yellow/60 hover:text-ast_yellow transition"
                       >
-                        Cancel
+                        ✕
                       </button>
                     </div>
-                  </div>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-ast_yellow mb-2">Project Title</label>
+                        <input
+                          className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
+                          value={editDraft.title}
+                          onChange={e => setEditDraft(d => ({ ...d, title: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-ast_yellow mb-2">Status</label>
+                        <select
+                          className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
+                          value={editDraft.status}
+                          onChange={e => setEditDraft(d => ({ ...d, status: e.target.value }))}
+                        >
+                          <option value="in-progress">In Progress</option>
+                          <option value="planning">Planning</option>
+                          <option value="on-hold">On Hold</option>
+                          <option value="complete">Complete</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-ast_yellow mb-2">Notes</label>
+                        <textarea
+                          rows={3}
+                          className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition resize-none"
+                          value={editDraft.notes}
+                          onChange={e => setEditDraft(d => ({ ...d, notes: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-ast_yellow mb-2">Estimated Budget</label>
+                        <input
+                          type="number"
+                          min="0"
+                          className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
+                          value={editDraft.budget}
+                          onChange={e => setEditDraft(d => ({ ...d, budget: e.target.value }))}
+                        />
+                      </div>
+
+                      <div className="flex gap-3 mt-2">
+                        <button
+                          onClick={handleCancelEdit}
+                          className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSaveEdit}
+                          className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 font-semibold text-white shadow-astTurquoise hover:shadow-lg transition"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
-                    <p className="text-xs uppercase tracking-wider text-ast_turquoise">Selected</p>
-                    <p className="mt-1 text-sm font-semibold text-ast_yellow">{selectedProject.title}</p>
-                    <p className="mt-1 text-xs text-white/60">
-                      <span className="inline-block bg-ast_purple/40 px-2 py-0.5 rounded text-ast_purple">
-                        {selectedProject.status}
-                      </span>
-                      {selectedProject.isNew && (
-                        <span className="ml-2 inline-block bg-ast_turquoise/40 px-2 py-0.5 rounded text-ast_turquoise text-xs font-semibold">
-                          NEW
+                    <div className="mb-4">
+                      <p className="text-xs uppercase tracking-wider text-ast_turquoise mb-1">Project</p>
+                      <h2 className="text-lg font-bold text-ast_yellow">
+                        {selectedProject.title}
+                        {selectedProject.isNew && (
+                          <span className="ml-2 text-xs bg-ast_turquoise/40 text-ast_turquoise px-2 py-0.5 rounded-full font-semibold align-middle">
+                            NEW
+                          </span>
+                        )}
+                      </h2>
+                      <div className="mt-2">
+                        <span className="inline-block bg-ast_purple/40 px-2 py-0.5 rounded text-ast_purple text-xs">
+                          {selectedProject.status}
                         </span>
-                      )}
-                    </p>
-                    <p className="mt-2 text-xs text-white/60">{selectedProject.notes}</p>
-
-                    <div className="mt-2 flex gap-3">
-                      <button
-                        onClick={handleStartEdit}
-                        className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDeleteProject(selectedProject.id); }}
-                        className="text-xs text-white/30 hover:text-ast_pink transition"
-                      >
-                        Delete
-                      </button>
+                      </div>
                     </div>
 
-                    <div className="mt-3 border-t border-ast_turquoise/20 pt-3">
-                      <p className="text-xs uppercase tracking-wider text-ast_turquoise mb-1">Supplies</p>
+                    {selectedProject.notes && (
+                      <div className="mb-4">
+                        <p className="text-xs font-medium text-ast_yellow mb-1">Notes</p>
+                        <p className="text-sm text-white/80">{selectedProject.notes}</p>
+                      </div>
+                    )}
+
+                    {selectedProject.budget > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs font-medium text-ast_yellow mb-1">Budget</p>
+                        <p className="text-sm text-white/80">${selectedProject.budget}</p>
+                      </div>
+                    )}
+
+                    <div className="border-t border-ast_turquoise/20 pt-4 mb-4">
+                      <p className="text-xs font-medium text-ast_yellow mb-2">Supplies</p>
                       {assignedSupplies.length > 0 && (
-                        <ul className="mb-2 space-y-0.5">
+                        <ul className="mb-3 space-y-1">
                           {assignedSupplies.map(s => (
-                            <li key={s.id} className="flex items-center justify-between text-xs text-white/70">
+                            <li key={s.id} className="flex items-center justify-between text-sm text-white/70">
                               <span>· {s.name}</span>
                               <button
                                 onClick={() => onUnassignSupply(selectedProject.id, s.id)}
@@ -181,11 +197,11 @@ export default function ProjectsCard({ selectedProjectId, onSelectProject, sessi
                       {unassignedSupplies.length === 0 ? (
                         <p className="text-xs text-white/40">All supplies assigned</p>
                       ) : (
-                        <div className="flex gap-1 mt-1">
+                        <div className="flex gap-2">
                           <select
                             value={pendingSupplyId}
                             onChange={e => setPendingSupplyId(e.target.value)}
-                            className="flex-1 min-w-0 rounded bg-ast_bg_dark/70 border border-ast_turquoise/30 px-1.5 py-1 text-xs text-white focus:outline-none focus:border-ast_turquoise"
+                            className="flex-1 min-w-0 rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-white focus:outline-none focus:border-ast_turquoise transition"
                           >
                             <option value="">Pick supply…</option>
                             {unassignedSupplies.map(s => (
@@ -195,12 +211,27 @@ export default function ProjectsCard({ selectedProjectId, onSelectProject, sessi
                           <button
                             onClick={handleAssign}
                             disabled={!pendingSupplyId}
-                            className="shrink-0 rounded bg-ast_turquoise/20 px-2 py-1 text-xs text-ast_turquoise hover:bg-ast_turquoise/40 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                            className="shrink-0 rounded-lg bg-ast_turquoise/20 px-4 py-2 text-sm text-ast_turquoise hover:bg-ast_turquoise/40 disabled:opacity-40 disabled:cursor-not-allowed transition"
                           >
                             Assign
                           </button>
                         </div>
                       )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDeleteProject(selectedProject.id); }}
+                        className="rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-sm text-ast_yellow hover:bg-ast_yellow/10 transition"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={handleStartEdit}
+                        className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 text-sm font-semibold text-white shadow-astTurquoise hover:shadow-lg transition"
+                      >
+                        Edit Project
+                      </button>
                     </div>
                   </>
                 )}
