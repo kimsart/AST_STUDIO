@@ -1,4 +1,4 @@
-export default function SuppliesCard({ sessionSupplies = [] }) {
+export default function SuppliesCard({ sessionSupplies = [], sessionProjects = [] }) {
   const allSupplies = sessionSupplies;
 
   return (
@@ -22,9 +22,17 @@ export default function SuppliesCard({ sessionSupplies = [] }) {
               </div>
               <p className="text-xs text-slate-400">{supply.qty} items</p>
             </div>
-            <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-              <div className={`h-full ${supply.color} w-1/2`} />
-            </div>
+
+            {(() => {
+              const ids = Array.isArray(supply.usedInProjectIds) ? supply.usedInProjectIds : [];
+              const count = ids.filter(id => sessionProjects.some(p => p.id === id)).length;
+              if (count === 0) return null;
+              return (
+                <p className="text-xs text-ast_lavender/60 mt-0.5">
+                  Used in {count} project{count > 1 ? 's' : ''}
+                </p>
+              );
+            })()}
           </div>
         ))}
       </div>

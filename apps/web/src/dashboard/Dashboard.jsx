@@ -11,7 +11,9 @@ import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
-import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply } from "../utils/localStorage.js";
+import EditProjectFormInline from "../components/forms/EditProjectFormInline.jsx";
+import EditSupplyFormInline from "../components/forms/EditSupplyFormInline.jsx";
+import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
 
 export default function Dashboard() {
   const fileInputRef = useRef(null);
@@ -21,6 +23,9 @@ export default function Dashboard() {
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
   const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingSupplyId, setEditingSupplyId] = useState(null);
+  const [workspaceView, setWorkspaceView] = useState('home');
 
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
   useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
@@ -41,6 +46,25 @@ export default function Dashboard() {
       { id: newId, usedInProjectIds: [], ...supplyData, isNew: true },
     ]);
     setShowAddSupplyForm(false);
+  };
+
+  const handleEditProject = (projectId, updatedData) => {
+    setSessionProjects(prev => prev.map(p =>
+      p.id === projectId
+        ? { ...p, ...updatedData, id: p.id, supplyIds: p.supplyIds }
+        : p
+    ));
+    setEditingProjectId(null);
+  };
+
+  const handleDeleteProject = (projectId) => {
+    if (!window.confirm("Delete this project? This cannot be undone.")) return;
+    setSessionProjects(prev => prev.filter(p => p.id !== projectId));
+    setSessionSupplies(prev => prev.map(s => ({
+      ...s,
+      usedInProjectIds: s.usedInProjectIds.filter(id => id !== projectId),
+    })));
+    if (selectedProjectId === projectId) setSelectedProjectId(null);
   };
 
   const handleAssignSupply = (projectId, supplyId) => {
@@ -69,6 +93,24 @@ export default function Dashboard() {
     ));
   };
 
+  const handleEditSupply = (supplyId, updatedData) => {
+    setSessionSupplies(prev => prev.map(s =>
+      s.id === supplyId
+        ? { ...s, ...updatedData, id: s.id, usedInProjectIds: s.usedInProjectIds }
+        : s
+    ));
+    setEditingSupplyId(null);
+  };
+
+  const handleDeleteSupply = (supplyId) => {
+    if (!window.confirm("Delete this supply? This cannot be undone.")) return;
+    setSessionSupplies(prev => prev.filter(s => s.id !== supplyId));
+    setSessionProjects(prev => prev.map(p => ({
+      ...p,
+      supplyIds: p.supplyIds.filter(id => id !== supplyId),
+    })));
+  };
+
   const handleImportData = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -87,8 +129,13 @@ export default function Dashboard() {
         alert("File is missing required projects or supplies arrays. Import cancelled.");
         return;
       }
-      setSessionProjects(parsed.projects.map(normalizeProject));
-      setSessionSupplies(parsed.supplies.map(normalizeSupply));
+      const normalized = {
+        projects: parsed.projects.map(normalizeProject),
+        supplies: parsed.supplies.map(normalizeSupply),
+      };
+      const { projects, supplies } = cleanImportedLinks(normalized.projects, normalized.supplies);
+      setSessionProjects(projects);
+      setSessionSupplies(supplies);
       alert("Import successful.");
     };
     reader.readAsText(file);
@@ -121,25 +168,49 @@ export default function Dashboard() {
         <section className="grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
           {/* LEFT PANEL: Creative Workspace */}
           <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/50 bg-ast_deep/70 p-4 shadow-astTurquoise backdrop-blur-xl">
-            <div className="mb-4">
+            <button
+              onClick={() => setWorkspaceView('home')}
+              className="mb-4 w-full text-left hover:opacity-75 transition"
+            >
               <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
                 Creative Workspace
               </p>
               <h2 className="mt-2 text-xl font-semibold text-ast_yellow">
                 My Studio
               </h2>
-            </div>
+            </button>
 
-            <div className="space-y-4">
-              <ProjectsCard
-                selectedProjectId={selectedProjectId}
-                onSelectProject={setSelectedProjectId}
-                sessionProjects={sessionProjects}
-                sessionSupplies={sessionSupplies}
-                onAssignSupply={handleAssignSupply}
-                onUnassignSupply={handleUnassignSupply}
-              />
-              <SuppliesCard sessionSupplies={sessionSupplies} />
+            <div className="space-y-3">
+              <button
+                onClick={() => setWorkspaceView('projects')}
+                className={`w-full text-left rounded-xl border p-4 transition ${
+                  workspaceView === 'projects'
+                    ? 'border-ast_turquoise/70 bg-ast_turquoise/15 shadow-astTurquoise'
+                    : 'border-ast_turquoise/30 bg-white/5 hover:border-ast_turquoise/55 hover:bg-ast_turquoise/10'
+                }`}
+              >
+                <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
+                <p className="mt-1 text-2xl font-bold text-ast_yellow">{sessionProjects.length}</p>
+                <p className="text-xs text-white/50">
+                  {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
+                </p>
+              </button>
+
+              <button
+                onClick={() => setWorkspaceView('supplies')}
+                className={`w-full text-left rounded-xl border p-4 transition ${
+                  workspaceView === 'supplies'
+                    ? 'border-ast_pink/70 bg-ast_pink/15 shadow-astPink'
+                    : 'border-ast_pink/30 bg-white/5 hover:border-ast_pink/55 hover:bg-ast_pink/10'
+                }`}
+              >
+                <p className="text-xs uppercase tracking-wider text-ast_pink">Art Supplies</p>
+                <p className="mt-1 text-2xl font-bold text-ast_yellow">{sessionSupplies.length}</p>
+                <p className="text-xs text-white/50">
+                  {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
+                </p>
+              </button>
+
               <InspirationCard />
 
               <div className="rounded-2xl border border-ast_blue/30 bg-white/5 p-4 shadow-[0_0_16px_rgba(74,105,214,0.18)] backdrop-blur-xl">
@@ -156,54 +227,114 @@ export default function Dashboard() {
             </div>
           </aside>
 
-          {/* CENTER PANEL: Active Work Zone */}
+          {/* CENTER PANEL: Workspace */}
           <main className="col-span-7 min-h-0 rounded-3xl border border-ast_purple/60 bg-ast_deep/75 p-6 shadow-astPurple backdrop-blur-xl">
-            <div className="mb-6">
-              <p className="text-xs uppercase tracking-[0.35em] text-ast_lavender">
-                Active Work Zone
-              </p>
-              <h1 className="mt-2 text-3xl font-bold text-ast_yellow">
-                Today in the Studio
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-white/70">
-                Track your active project, supplies, progress, time, and inventory from one focused workspace.
-              </p>
-            </div>
 
-            <div className="space-y-6">
-              <MetricsStrip />
-              <ProjectSummary />
-              <QuickActions
-                onNewProject={() => setShowAddProjectForm(true)}
-                onAddSupply={() => setShowAddSupplyForm(true)}
-              />
-              <div className="flex justify-end gap-4">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  className="hidden"
-                  onChange={handleImportData}
+            {/* HOME VIEW */}
+            {workspaceView === 'home' && (
+              <>
+                <div className="mb-6">
+                  <p className="text-xs uppercase tracking-[0.35em] text-ast_lavender">
+                    Active Work Zone
+                  </p>
+                  <h1 className="mt-2 text-3xl font-bold text-ast_yellow">
+                    Today in the Studio
+                  </h1>
+                  <p className="mt-2 max-w-2xl text-sm text-white/70">
+                    Track your active project, supplies, progress, time, and inventory from one focused workspace.
+                  </p>
+                </div>
+                <div className="space-y-6">
+                  <MetricsStrip />
+                  <ProjectSummary />
+                  <QuickActions
+                    onNewProject={() => { setWorkspaceView('projects'); setShowAddProjectForm(true); }}
+                    onAddSupply={() => { setWorkspaceView('supplies'); setShowAddSupplyForm(true); }}
+                  />
+                  <div className="flex justify-end gap-4">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".json"
+                      className="hidden"
+                      onChange={handleImportData}
+                    />
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
+                    >
+                      Import JSON
+                    </button>
+                    <button
+                      onClick={handleExportData}
+                      className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
+                    >
+                      Export Data
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* PROJECTS VIEW */}
+            {workspaceView === 'projects' && (
+              <>
+                <div className="mb-6 flex items-start justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
+                      Creative Workspace
+                    </p>
+                    <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Projects</h1>
+                  </div>
+                  <button
+                    onClick={() => setShowAddProjectForm(true)}
+                    className="rounded-xl border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2 text-sm font-semibold text-ast_turquoise hover:bg-ast_turquoise/20 transition"
+                  >
+                    + New Project
+                  </button>
+                </div>
+                <ProjectsCard
+                  selectedProjectId={selectedProjectId}
+                  onSelectProject={setSelectedProjectId}
+                  sessionProjects={sessionProjects}
+                  sessionSupplies={sessionSupplies}
+                  onAssignSupply={handleAssignSupply}
+                  onUnassignSupply={handleUnassignSupply}
+                  onEditProject={setEditingProjectId}
+                  onDeleteProject={handleDeleteProject}
                 />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
-                >
-                  Import JSON
-                </button>
-                <button
-                  onClick={handleExportData}
-                  className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
-                >
-                  Export Data
-                </button>
-              </div>
-              <InventoryTable 
-                inventoryFilter={inventoryFilter} 
-                onFilterChange={setInventoryFilter}
-                sessionSupplies={sessionSupplies}
-              />
-            </div>
+              </>
+            )}
+
+            {/* SUPPLIES VIEW */}
+            {workspaceView === 'supplies' && (
+              <>
+                <div className="mb-6 flex items-start justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-ast_pink">
+                      Inventory
+                    </p>
+                    <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Art Supplies</h1>
+                  </div>
+                  <button
+                    onClick={() => setShowAddSupplyForm(true)}
+                    className="rounded-xl border border-ast_pink/40 bg-ast_pink/10 px-4 py-2 text-sm font-semibold text-ast_pink hover:bg-ast_pink/20 transition"
+                  >
+                    + Add Supply
+                  </button>
+                </div>
+                <div className="space-y-6">
+                  <InventoryTable
+                    inventoryFilter={inventoryFilter}
+                    onFilterChange={setInventoryFilter}
+                    sessionSupplies={sessionSupplies}
+                    sessionProjects={sessionProjects}
+                    onEditSupply={setEditingSupplyId}
+                    onDeleteSupply={handleDeleteSupply}
+                  />
+                </div>
+              </>
+            )}
           </main>
 
           {/* RIGHT PANEL: Community + Chat */}
@@ -250,6 +381,11 @@ export default function Dashboard() {
         <AddProjectFormInline
           onSubmit={handleAddProject}
           onCancel={() => setShowAddProjectForm(false)}
+          sessionProjects={sessionProjects}
+          onSelectExisting={(projectId) => {
+            setSelectedProjectId(projectId);
+            setShowAddProjectForm(false);
+          }}
         />
       )}
 
@@ -259,6 +395,32 @@ export default function Dashboard() {
           onCancel={() => setShowAddSupplyForm(false)}
         />
       )}
+
+      {(() => {
+        const editProject = editingProjectId !== null
+          ? sessionProjects.find(p => p.id === editingProjectId) ?? null
+          : null;
+        return editProject ? (
+          <EditProjectFormInline
+            project={editProject}
+            onSubmit={(data) => handleEditProject(editingProjectId, data)}
+            onCancel={() => setEditingProjectId(null)}
+          />
+        ) : null;
+      })()}
+
+      {(() => {
+        const editSupply = editingSupplyId !== null
+          ? sessionSupplies.find(s => s.id === editingSupplyId) ?? null
+          : null;
+        return editSupply ? (
+          <EditSupplyFormInline
+            supply={editSupply}
+            onSubmit={(data) => handleEditSupply(editingSupplyId, data)}
+            onCancel={() => setEditingSupplyId(null)}
+          />
+        ) : null;
+      })()}
     </main>
   );
 }

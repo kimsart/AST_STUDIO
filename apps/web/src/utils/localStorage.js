@@ -17,6 +17,29 @@ export function validateImportedData(data) {
   );
 }
 
+export function cleanImportedLinks(projects, supplies) {
+  const supplyIdSet = new Set(supplies.map(s => s.id));
+  const projectIdSet = new Set(projects.map(p => p.id));
+  let removed = 0;
+
+  const cleanedProjects = projects.map(p => {
+    const valid = p.supplyIds.filter(id => supplyIdSet.has(id));
+    removed += p.supplyIds.length - valid.length;
+    return valid.length === p.supplyIds.length ? p : { ...p, supplyIds: valid };
+  });
+
+  const cleanedSupplies = supplies.map(s => {
+    const valid = s.usedInProjectIds.filter(id => projectIdSet.has(id));
+    removed += s.usedInProjectIds.length - valid.length;
+    return valid.length === s.usedInProjectIds.length ? s : { ...s, usedInProjectIds: valid };
+  });
+
+  if (removed > 0) {
+    console.warn(`[AST Studio] Import removed ${removed} broken link reference(s).`);
+  }
+  return { projects: cleanedProjects, supplies: cleanedSupplies };
+}
+
 const KEYS = {
   projects: 'ast_projects',
   supplies: 'ast_supplies',
