@@ -1,0 +1,48 @@
+[1mdiff --git a/apps/web/src/dashboard/Dashboard.jsx b/apps/web/src/dashboard/Dashboard.jsx[m
+[1mindex 8a383ec..3605a83 100644[m
+[1m--- a/apps/web/src/dashboard/Dashboard.jsx[m
+[1m+++ b/apps/web/src/dashboard/Dashboard.jsx[m
+[36m@@ -42,6 +42,23 @@[m [mexport default function Dashboard() {[m
+     setShowAddSupplyForm(false);[m
+   };[m
+ [m
+[32m+[m[32m  const handleExportData = () => {[m
+[32m+[m[32m    const payload = {[m
+[32m+[m[32m      app: "AST Studio",[m
+[32m+[m[32m      exportedAt: new Date().toISOString(),[m
+[32m+[m[32m      version: 1,[m
+[32m+[m[32m      projects: sessionProjects,[m
+[32m+[m[32m      supplies: sessionSupplies,[m
+[32m+[m[32m    };[m
+[32m+[m[32m    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });[m
+[32m+[m[32m    const url = URL.createObjectURL(blob);[m
+[32m+[m[32m    const a = document.createElement("a");[m
+[32m+[m[32m    a.href = url;[m
+[32m+[m[32m    a.download = `ast-studio-export-${Date.now()}.json`;[m
+[32m+[m[32m    a.click();[m
+[32m+[m[32m    URL.revokeObjectURL(url);[m
+[32m+[m[32m  };[m
+[32m+[m
+   return ([m
+     <main className="min-h-screen overflow-hidden bg-gradient-to-br from-ast_bg_dark via-ast_deep to-ast_bg_blue text-white">[m
+       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(46,196,182,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(255,77,166,0.16),transparent_30%),radial-gradient(circle_at_center,rgba(90,58,142,0.22),transparent_42%)]" />[m
+[36m@@ -101,10 +118,18 @@[m [mexport default function Dashboard() {[m
+             <div className="space-y-6">[m
+               <MetricsStrip />[m
+               <ProjectSummary />[m
+[31m-              <QuickActions [m
+[32m+[m[32m              <QuickActions[m
+                 onNewProject={() => setShowAddProjectForm(true)}[m
+                 onAddSupply={() => setShowAddSupplyForm(true)}[m
+               />[m
+[32m+[m[32m              <div className="flex justify-end">[m
+[32m+[m[32m                <button[m
+[32m+[m[32m                  onClick={handleExportData}[m
+[32m+[m[32m                  className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"[m
+[32m+[m[32m                >[m
+[32m+[m[32m                  Export Data[m
+[32m+[m[32m                </button>[m
+[32m+[m[32m              </div>[m
+               <InventoryTable [m
+                 inventoryFilter={inventoryFilter} [m
+                 onFilterChange={setInventoryFilter}[m
