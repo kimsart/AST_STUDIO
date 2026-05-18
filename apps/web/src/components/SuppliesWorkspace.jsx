@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { SUPPLY_CATEGORIES } from "../data/supplyCategories.js";
-import InventoryTable from "./InventoryTable.jsx";
+import SuppliesGrid from "./SuppliesGrid.jsx";
 
-export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, onEditSupply, onDeleteSupply, onOpenAddSupply }) {
+export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, onEditSupply, onDeleteSupply, onOpenAddSupply, onImport, onExport }) {
   const [supplyNavView, setSupplyNavView] = useState("categories");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [inventoryFilter, setInventoryFilter] = useState("All");
 
   const currentCategoryDef = selectedCategory
     ? SUPPLY_CATEGORIES.find(c => c.value === selectedCategory)
@@ -35,26 +34,22 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
     const cat = SUPPLY_CATEGORIES.find(c => c.value === catValue);
     setSelectedCategory(catValue);
     setSelectedSubcategory(null);
-    setInventoryFilter("All");
     setSupplyNavView(cat && cat.subcategories.length > 0 ? "subcategories" : "list");
   };
 
   const handleSelectSubcategory = (sub) => {
     setSelectedSubcategory(sub);
-    setInventoryFilter("All");
     setSupplyNavView("list");
   };
 
   const handleViewAll = () => {
     setSelectedSubcategory(null);
-    setInventoryFilter("All");
     setSupplyNavView("list");
   };
 
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setSelectedSubcategory(null);
-    setInventoryFilter("All");
     setSupplyNavView("categories");
   };
 
@@ -116,12 +111,26 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
           )}
         </div>
 
-        <button
-          onClick={onOpenAddSupply}
-          className="rounded-xl border border-ast_pink/40 bg-ast_pink/10 px-4 py-2 text-sm font-semibold text-ast_pink hover:bg-ast_pink/20 transition"
-        >
-          + Add Supply
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onImport}
+            className="text-xs rounded-lg border border-ast_pink/40 px-3 py-1.5 text-ast_pink hover:bg-ast_pink/10 transition"
+          >
+            Import JSON
+          </button>
+          <button
+            onClick={onExport}
+            className="text-xs rounded-lg border border-ast_pink/40 px-3 py-1.5 text-ast_pink hover:bg-ast_pink/10 transition"
+          >
+            Export Data
+          </button>
+          <button
+            onClick={onOpenAddSupply}
+            className="rounded-xl border border-ast_pink/40 bg-ast_pink/10 px-4 py-2 text-sm font-semibold text-ast_pink hover:bg-ast_pink/20 transition"
+          >
+            + Add Supply
+          </button>
+        </div>
       </div>
 
       {/* Category bento grid */}
@@ -211,9 +220,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               </button>
             </div>
           ) : (
-            <InventoryTable
-              inventoryFilter={inventoryFilter}
-              onFilterChange={setInventoryFilter}
+            <SuppliesGrid
               sessionSupplies={filteredSupplies}
               sessionProjects={sessionProjects}
               onEditSupply={onEditSupply}

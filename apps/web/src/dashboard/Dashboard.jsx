@@ -241,6 +241,8 @@ export default function Dashboard() {
                 onDeleteProject={handleDeleteProject}
                 onAssignSupply={handleAssignSupply}
                 onUnassignSupply={handleUnassignSupply}
+                onImport={() => fileInputRef.current?.click()}
+                onExport={handleExportData}
               />
             )}
 
@@ -252,6 +254,8 @@ export default function Dashboard() {
                 onEditSupply={handleEditSupply}
                 onDeleteSupply={handleDeleteSupply}
                 onOpenAddSupply={() => setShowAddSupplyForm(true)}
+                onImport={() => fileInputRef.current?.click()}
+                onExport={handleExportData}
               />
             )}
           </main>

@@ -14,6 +14,8 @@ export default function ProjectsWorkspace({
   onDeleteProject,
   onAssignSupply,
   onUnassignSupply,
+  onImport,
+  onExport,
 }) {
   const [projectNavView, setProjectNavView] = useState("overview");
   const [selectedStatus, setSelectedStatus] = useState(null);
@@ -80,12 +82,26 @@ export default function ProjectsWorkspace({
           )}
         </div>
 
-        <button
-          onClick={onAddProject}
-          className="rounded-xl border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2 text-sm font-semibold text-ast_turquoise hover:bg-ast_turquoise/20 transition"
-        >
-          + New Project
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onImport}
+            className="text-xs rounded-lg border border-ast_turquoise/40 px-3 py-1.5 text-ast_turquoise hover:bg-ast_turquoise/10 transition"
+          >
+            Import JSON
+          </button>
+          <button
+            onClick={onExport}
+            className="text-xs rounded-lg border border-ast_turquoise/40 px-3 py-1.5 text-ast_turquoise hover:bg-ast_turquoise/10 transition"
+          >
+            Export Data
+          </button>
+          <button
+            onClick={onAddProject}
+            className="rounded-xl border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2 text-sm font-semibold text-ast_turquoise hover:bg-ast_turquoise/20 transition"
+          >
+            + New Project
+          </button>
+        </div>
       </div>
 
       {/* OVERVIEW: bento grid */}
