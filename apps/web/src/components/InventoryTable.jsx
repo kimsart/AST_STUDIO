@@ -1,26 +1,25 @@
 import { Fragment, useState } from "react";
+import { SUPPLY_CATEGORIES } from "../data/supplyCategories.js";
 
 export default function InventoryTable({ inventoryFilter, onFilterChange, sessionSupplies = [], sessionProjects = [], onEditSupply, onDeleteSupply }) {
   const [selectedSupplyId, setSelectedSupplyId] = useState(null);
   const [isEditingSupply, setIsEditingSupply] = useState(false);
   const [editDraft, setEditDraft] = useState({});
 
-  const allSupplies = sessionSupplies;
-
   const getFilteredItems = () => {
     switch (inventoryFilter) {
       case "Low Stock":
-        return allSupplies.filter((s) => s.status === "low" || s.status === "critical");
+        return sessionSupplies.filter((s) => s.status === "low" || s.status === "critical");
       case "Out of Stock":
-        return allSupplies.filter((s) => s.status === "critical");
+        return sessionSupplies.filter((s) => s.status === "critical");
       case "All":
       default:
-        return allSupplies;
+        return sessionSupplies;
     }
   };
 
   const filteredItems = getFilteredItems();
-  const selectedSupply = allSupplies.find(s => s.id === selectedSupplyId) ?? null;
+  const selectedSupply = sessionSupplies.find(s => s.id === selectedSupplyId) ?? null;
 
   const handleSelectSupply = (id) => {
     if (selectedSupplyId === id) {
@@ -36,6 +35,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
     setEditDraft({
       name: supply.name ?? "",
       category: supply.category ?? "",
+      subcategory: supply.subcategory ?? "",
       qty: supply.qty ?? "",
       status: supply.status ?? "ok",
       location: supply.location ?? "",
@@ -53,7 +53,8 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
     setIsEditingSupply(false);
   };
 
-  const categories = ["Paint", "Brush", "Paper", "Canvas", "Medium", "Other"];
+  const editCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === editDraft.category);
+  const editSubcategories = editCategoryDef ? editCategoryDef.subcategories : [];
 
   return (
     <div className="col-span-2 bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6 overflow-x-auto">
@@ -108,7 +109,12 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                     )}
                   </div>
                 </td>
-                <td className="py-3 text-slate-400">{item.category}</td>
+                <td className="py-3 text-slate-400">
+                  {item.category}
+                  {item.subcategory ? (
+                    <span className="ml-1 text-white/30 text-xs">· {item.subcategory}</span>
+                  ) : null}
+                </td>
                 <td className="py-3 text-slate-300">{item.qty}</td>
                 <td className="py-3">
                   <span className={`text-xs px-2 py-1 rounded ${
@@ -186,10 +192,19 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 <select
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.category}
-                                  onChange={e => setEditDraft(d => ({ ...d, category: e.target.value }))}
+                                  onChange={e => {
+                                    const newCat = e.target.value;
+                                    const catDef = SUPPLY_CATEGORIES.find(c => c.value === newCat);
+                                    const validSubs = catDef ? catDef.subcategories : [];
+                                    setEditDraft(d => ({
+                                      ...d,
+                                      category: newCat,
+                                      subcategory: validSubs.includes(d.subcategory) ? d.subcategory : "",
+                                    }));
+                                  }}
                                 >
-                                  {categories.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
+                                  {SUPPLY_CATEGORIES.map(cat => (
+                                    <option key={cat.value} value={cat.value}>{cat.label}</option>
                                   ))}
                                 </select>
                               </div>
@@ -232,6 +247,23 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 />
                               </div>
                             </div>
+
+                            {/* Subcategory — only shown when selected category has subcategories */}
+                            {editSubcategories.length > 0 && (
+                              <div>
+                                <label className="block text-sm font-medium text-ast_yellow mb-2">Subcategory</label>
+                                <select
+                                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                                  value={editDraft.subcategory ?? ""}
+                                  onChange={e => setEditDraft(d => ({ ...d, subcategory: e.target.value }))}
+                                >
+                                  <option value="">— None —</option>
+                                  {editSubcategories.map(sub => (
+                                    <option key={sub} value={sub}>{sub}</option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
 
                             <div className="flex gap-3 mt-2">
                               <button
@@ -279,6 +311,12 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                               <p className="text-xs font-medium text-ast_yellow mb-1">Category</p>
                               <p className="text-sm text-white/80">{selectedSupply.category || "—"}</p>
                             </div>
+                            {selectedSupply.subcategory && (
+                              <div>
+                                <p className="text-xs font-medium text-ast_yellow mb-1">Subcategory</p>
+                                <p className="text-sm text-white/80">{selectedSupply.subcategory}</p>
+                              </div>
+                            )}
                             <div>
                               <p className="text-xs font-medium text-ast_yellow mb-1">Quantity</p>
                               <p className="text-sm text-white/80">{selectedSupply.qty}</p>

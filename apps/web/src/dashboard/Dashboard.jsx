@@ -3,9 +3,7 @@ import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
 import InspirationCard from "../components/InspirationCard.jsx";
-import MetricsStrip from "../components/MetricsStrip.jsx";
-import ProjectSummary from "../components/ProjectSummary.jsx";
-import QuickActions from "../components/QuickActions.jsx";
+import HomeWorkspace from "../components/HomeWorkspace.jsx";
 import SuppliesWorkspace from "../components/SuppliesWorkspace.jsx";
 import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
@@ -225,48 +223,10 @@ export default function Dashboard() {
 
             {/* HOME VIEW */}
             {workspaceView === 'home' && (
-              <>
-                <div className="mb-6">
-                  <p className="text-xs uppercase tracking-[0.35em] text-ast_lavender">
-                    Active Work Zone
-                  </p>
-                  <h1 className="mt-2 text-3xl font-bold text-ast_yellow">
-                    Today in the Studio
-                  </h1>
-                  <p className="mt-2 max-w-2xl text-sm text-white/70">
-                    Track your active project, supplies, progress, time, and inventory from one focused workspace.
-                  </p>
-                </div>
-                <div className="space-y-6">
-                  <MetricsStrip />
-                  <ProjectSummary />
-                  <QuickActions
-                    onNewProject={() => { setWorkspaceView('projects'); setShowAddProjectForm(true); }}
-                    onAddSupply={() => { setWorkspaceView('supplies'); setShowAddSupplyForm(true); }}
-                  />
-                  <div className="flex justify-end gap-4">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".json"
-                      className="hidden"
-                      onChange={handleImportData}
-                    />
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
-                    >
-                      Import JSON
-                    </button>
-                    <button
-                      onClick={handleExportData}
-                      className="text-xs text-ast_lavender/70 hover:text-ast_lavender transition underline underline-offset-2"
-                    >
-                      Export Data
-                    </button>
-                  </div>
-                </div>
-              </>
+              <HomeWorkspace
+                onClickImport={() => fileInputRef.current?.click()}
+                onExport={handleExportData}
+              />
             )}
 
             {/* PROJECTS VIEW */}
@@ -334,6 +294,15 @@ export default function Dashboard() {
           </aside>
         </section>
       </div>
+
+      {/* Hidden file input for import — always rendered so ref is always valid */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleImportData}
+      />
 
       {/* Form Modals */}
       {showAddProjectForm && (

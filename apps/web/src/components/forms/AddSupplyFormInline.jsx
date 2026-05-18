@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { SUPPLY_CATEGORIES } from "../../data/supplyCategories.js";
 
 export default function AddSupplyFormInline({ onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
     name: "",
     category: "Paint",
+    subcategory: "",
     qty: "",
     status: "ok",
     location: "",
@@ -12,12 +14,22 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
   const [error, setError] = useState("");
 
+  const activeCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === formData.category);
+  const availableSubcategories = activeCategoryDef ? activeCategoryDef.subcategories : [];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "category") {
+      const catDef = SUPPLY_CATEGORIES.find(c => c.value === value);
+      const validSubs = catDef ? catDef.subcategories : [];
+      setFormData(prev => ({
+        ...prev,
+        category: value,
+        subcategory: validSubs.includes(prev.subcategory) ? prev.subcategory : "",
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
     setError("");
   };
 
@@ -34,6 +46,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
     onSubmit({
       name: formData.name.trim(),
       category: formData.category,
+      subcategory: formData.subcategory,
       qty: parseInt(formData.qty),
       status: formData.status,
       location: formData.location.trim(),
@@ -42,8 +55,6 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
       color: "bg-ast_purple",
     });
   };
-
-  const categories = ["Paint", "Brush", "Paper", "Canvas", "Medium", "Other"];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -85,13 +96,33 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
               onChange={handleChange}
               className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
             >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+              {SUPPLY_CATEGORIES.map(cat => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Subcategory — only when category has subcategories */}
+          {availableSubcategories.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-ast_yellow mb-2">
+                Subcategory
+              </label>
+              <select
+                name="subcategory"
+                value={formData.subcategory}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+              >
+                <option value="">— None —</option>
+                {availableSubcategories.map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Quantity */}
           <div>

@@ -15,13 +15,21 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
   const getCategoryCount = (catValue) =>
     sessionSupplies.filter(s => s.category === catValue).length;
 
+  const getSubcategoryCount = (catValue, sub) =>
+    sessionSupplies.filter(s => s.category === catValue && s.subcategory === sub).length;
+
   const getCategoryHasAlert = (catValue) =>
     sessionSupplies.some(s => s.category === catValue && (s.status === "low" || s.status === "critical"));
 
-  const getFilteredSupplies = () =>
-    selectedCategory
-      ? sessionSupplies.filter(s => s.category === selectedCategory)
-      : sessionSupplies;
+  const getFilteredSupplies = () => {
+    if (!selectedCategory) return sessionSupplies;
+    if (selectedSubcategory) {
+      return sessionSupplies.filter(
+        s => s.category === selectedCategory && s.subcategory === selectedSubcategory
+      );
+    }
+    return sessionSupplies.filter(s => s.category === selectedCategory);
+  };
 
   const handleSelectCategory = (catValue) => {
     const cat = SUPPLY_CATEGORIES.find(c => c.value === catValue);
@@ -62,6 +70,8 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
       handleBackToCategories();
     }
   };
+
+  const filteredSupplies = getFilteredSupplies();
 
   return (
     <>
@@ -163,36 +173,53 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
             <p className="text-xs text-white/40 mt-1">view all</p>
           </button>
 
-          {currentCategoryDef.subcategories.map(sub => (
-            <button
-              key={sub}
-              onClick={() => handleSelectSubcategory(sub)}
-              className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 p-5 text-left hover:border-ast_pink/50 hover:bg-ast_pink/10 transition"
-            >
-              <p className="text-sm font-semibold text-ast_pink/80 mb-3">{sub}</p>
-              <p className="text-xs text-white/30 mt-1">—</p>
-            </button>
-          ))}
+          {currentCategoryDef.subcategories.map(sub => {
+            const subCount = getSubcategoryCount(selectedCategory, sub);
+            return (
+              <button
+                key={sub}
+                onClick={() => handleSelectSubcategory(sub)}
+                className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 p-5 text-left hover:border-ast_pink/50 hover:bg-ast_pink/10 transition"
+              >
+                <p className="text-sm font-semibold text-ast_pink/80 mb-3">{sub}</p>
+                <p className="text-2xl font-bold text-ast_yellow">{subCount}</p>
+                <p className="text-xs text-white/40 mt-1">
+                  {subCount === 1 ? "item" : "items"}
+                </p>
+              </button>
+            );
+          })}
         </div>
       )}
 
       {/* Supply list view */}
       {supplyNavView === "list" && (
         <div className="space-y-3">
-          {selectedSubcategory && (
-            <div className="rounded-xl border border-ast_pink/20 bg-ast_pink/5 px-4 py-2 text-xs text-white/50">
-              Showing all <span className="text-ast_pink font-medium">{currentCategoryDef?.label}</span> supplies.
-              Subcategory filtering (<span className="text-white/70">{selectedSubcategory}</span>) will be available after supplies are tagged with subcategories.
+          {filteredSupplies.length === 0 ? (
+            <div className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 px-6 py-10 text-center">
+              <p className="text-sm font-medium text-ast_pink/60 mb-1">
+                {selectedSubcategory ? selectedSubcategory : currentCategoryDef?.label}
+              </p>
+              <p className="text-sm text-white/40">
+                No supplies here yet.
+              </p>
+              <button
+                onClick={onOpenAddSupply}
+                className="mt-4 rounded-xl border border-ast_pink/30 bg-ast_pink/10 px-4 py-2 text-sm text-ast_pink hover:bg-ast_pink/20 transition"
+              >
+                + Add Supply
+              </button>
             </div>
+          ) : (
+            <InventoryTable
+              inventoryFilter={inventoryFilter}
+              onFilterChange={setInventoryFilter}
+              sessionSupplies={filteredSupplies}
+              sessionProjects={sessionProjects}
+              onEditSupply={onEditSupply}
+              onDeleteSupply={onDeleteSupply}
+            />
           )}
-          <InventoryTable
-            inventoryFilter={inventoryFilter}
-            onFilterChange={setInventoryFilter}
-            sessionSupplies={getFilteredSupplies()}
-            sessionProjects={sessionProjects}
-            onEditSupply={onEditSupply}
-            onDeleteSupply={onDeleteSupply}
-          />
         </div>
       )}
     </>

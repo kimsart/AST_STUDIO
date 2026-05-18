@@ -5,7 +5,11 @@ export function normalizeProject(p) {
 }
 
 export function normalizeSupply(s) {
-  return { ...s, usedInProjectIds: Array.isArray(s.usedInProjectIds) ? s.usedInProjectIds : [] };
+  return {
+    ...s,
+    usedInProjectIds: Array.isArray(s.usedInProjectIds) ? s.usedInProjectIds : [],
+    subcategory: typeof s.subcategory === "string" ? s.subcategory : "",
+  };
 }
 
 export function validateImportedData(data) {
