@@ -6,7 +6,7 @@ import InspirationCard from "../components/InspirationCard.jsx";
 import MetricsStrip from "../components/MetricsStrip.jsx";
 import ProjectSummary from "../components/ProjectSummary.jsx";
 import QuickActions from "../components/QuickActions.jsx";
-import InventoryTable from "../components/InventoryTable.jsx";
+import SuppliesWorkspace from "../components/SuppliesWorkspace.jsx";
 import StudioChat from "../components/StudioChat.jsx";
 import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
@@ -16,7 +16,6 @@ import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImporte
 export default function Dashboard() {
   const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [inventoryFilter, setInventoryFilter] = useState("All");
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
@@ -302,32 +301,13 @@ export default function Dashboard() {
 
             {/* SUPPLIES VIEW */}
             {workspaceView === 'supplies' && (
-              <>
-                <div className="mb-6 flex items-start justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-ast_pink">
-                      Inventory
-                    </p>
-                    <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Art Supplies</h1>
-                  </div>
-                  <button
-                    onClick={() => setShowAddSupplyForm(true)}
-                    className="rounded-xl border border-ast_pink/40 bg-ast_pink/10 px-4 py-2 text-sm font-semibold text-ast_pink hover:bg-ast_pink/20 transition"
-                  >
-                    + Add Supply
-                  </button>
-                </div>
-                <div className="space-y-6">
-                  <InventoryTable
-                    inventoryFilter={inventoryFilter}
-                    onFilterChange={setInventoryFilter}
-                    sessionSupplies={sessionSupplies}
-                    sessionProjects={sessionProjects}
-                    onEditSupply={handleEditSupply}
-                    onDeleteSupply={handleDeleteSupply}
-                  />
-                </div>
-              </>
+              <SuppliesWorkspace
+                sessionSupplies={sessionSupplies}
+                sessionProjects={sessionProjects}
+                onEditSupply={handleEditSupply}
+                onDeleteSupply={handleDeleteSupply}
+                onOpenAddSupply={() => setShowAddSupplyForm(true)}
+              />
             )}
           </main>
 
