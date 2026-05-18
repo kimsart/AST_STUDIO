@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import DashboardHeader from "../components/DashboardHeader.jsx";
-import ProjectsCard from "../components/ProjectsCard.jsx";
+import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
 import InspirationCard from "../components/InspirationCard.jsx";
 import MetricsStrip from "../components/MetricsStrip.jsx";
@@ -271,32 +271,17 @@ export default function Dashboard() {
 
             {/* PROJECTS VIEW */}
             {workspaceView === 'projects' && (
-              <>
-                <div className="mb-6 flex items-start justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
-                      Creative Workspace
-                    </p>
-                    <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Projects</h1>
-                  </div>
-                  <button
-                    onClick={() => setShowAddProjectForm(true)}
-                    className="rounded-xl border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2 text-sm font-semibold text-ast_turquoise hover:bg-ast_turquoise/20 transition"
-                  >
-                    + New Project
-                  </button>
-                </div>
-                <ProjectsCard
-                  selectedProjectId={selectedProjectId}
-                  onSelectProject={setSelectedProjectId}
-                  sessionProjects={sessionProjects}
-                  sessionSupplies={sessionSupplies}
-                  onAssignSupply={handleAssignSupply}
-                  onUnassignSupply={handleUnassignSupply}
-                  onEditProject={handleEditProject}
-                  onDeleteProject={handleDeleteProject}
-                />
-              </>
+              <ProjectsWorkspace
+                sessionProjects={sessionProjects}
+                sessionSupplies={sessionSupplies}
+                selectedProjectId={selectedProjectId}
+                onSelectProject={setSelectedProjectId}
+                onAddProject={() => setShowAddProjectForm(true)}
+                onEditProject={handleEditProject}
+                onDeleteProject={handleDeleteProject}
+                onAssignSupply={handleAssignSupply}
+                onUnassignSupply={handleUnassignSupply}
+              />
             )}
 
             {/* SUPPLIES VIEW */}
