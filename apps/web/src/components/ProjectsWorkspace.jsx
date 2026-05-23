@@ -64,7 +64,7 @@ export default function ProjectsWorkspace({
       <div className="mb-6 flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
-            Creative Workspace
+            Projects
           </p>
           <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Projects</h1>
 

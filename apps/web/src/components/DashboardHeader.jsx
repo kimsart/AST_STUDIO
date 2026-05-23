@@ -40,31 +40,17 @@ export default function DashboardHeader() {
         </nav>
 
         {/* Actions */}
-        <div className="flex min-w-fit items-center gap-4">
-          <button className="text-xl text-ast_lavender hover:text-ast_yellow">
-            ✧
+        <div className="flex min-w-fit items-center gap-3">
+          {/* Placeholder: last-session resume — wire to last active project/view when session state exists */}
+          <button className="flex items-center gap-2 rounded-xl border border-ast_lavender/30 bg-white/5 px-3 py-1.5 text-sm text-ast_lavender transition hover:border-ast_lavender/60 hover:text-ast_yellow">
+            <span>✧</span>
+            What was I working on?
           </button>
 
-          <button className="relative text-xl text-ast_yellow hover:text-ast_pink">
-            🔔
-            <span className="absolute -right-1 -top-1 rounded-full bg-ast_pink px-1.5 text-[10px] font-bold text-white">
-              3
-            </span>
+          {/* Placeholder: account/settings menu — no menu built yet */}
+          <button className="rounded-xl border border-ast_purple/40 bg-white/5 px-3 py-2 text-sm font-semibold text-ast_yellow transition hover:bg-white/10">
+            Hello Artist
           </button>
-
-          <button className="rounded-xl bg-gradient-to-r from-ast_purple to-ast_pink px-4 py-2 text-sm font-semibold text-white shadow-astPink hover:scale-[1.02]">
-            + New
-          </button>
-
-          <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 place-items-center rounded-full border border-ast_pink/60 bg-gradient-to-br from-ast_purple to-ast_pink text-sm font-bold text-white shadow-astPink">
-              AP
-            </div>
-            <div className="hidden text-sm md:block">
-              <p className="font-semibold text-ast_yellow">Artist Pro</p>
-              <p className="text-xs text-white/50">Pro Plan</p>
-            </div>
-          </div>
         </div>
       </div>
     </header>

@@ -157,14 +157,14 @@ export default function Dashboard() {
         <DashboardHeader />
 
         <section className="grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
-          {/* LEFT PANEL: Creative Workspace */}
+          {/* LEFT PANEL: Studio Tools */}
           <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/50 bg-ast_deep/70 p-4 shadow-astTurquoise backdrop-blur-xl">
             <button
               onClick={() => setWorkspaceView('home')}
               className="mb-4 w-full text-left hover:opacity-75 transition"
             >
               <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
-                Creative Workspace
+                Studio Tools
               </p>
               <h2 className="mt-2 text-xl font-semibold text-ast_yellow">
                 My Studio
