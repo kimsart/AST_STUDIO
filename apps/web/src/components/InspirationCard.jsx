@@ -1,7 +1,7 @@
 export default function InspirationCard() {
   return (
-    <div className="bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6">
-      <h2 className="text-sm font-bold text-slate-300 mb-4">INSPIRATION</h2>
+    <div className="bg-[#120724] border border-ast_blue/20 rounded-xl p-6">
+      <h2 className="text-sm font-bold text-ast_lavender/70 mb-4">INSPIRATION</h2>
       
       <div className="space-y-3">
         <div className="h-20 rounded-lg bg-gradient-to-r from-ast_purple via-ast_pink to-ast_turquoise opacity-70 hover:opacity-100 transition cursor-pointer" />

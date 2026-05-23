@@ -12,7 +12,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
       <div className="grid grid-cols-2 gap-4">
 
         {/* 1. Partner Spotlight */}
-        <div className="rounded-2xl border border-ast_blue/40 bg-ast_blue/10 p-6">
+        <div className="rounded-2xl border border-ast_blue/40 bg-[#120724] p-6">
           <div className="flex items-start justify-between mb-3">
             <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender">Partner Spotlight</p>
             <span className="text-xs bg-ast_lavender/20 text-ast_lavender/70 px-2 py-0.5 rounded">
@@ -28,7 +28,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
         </div>
 
         {/* 2. This Day in Art History */}
-        <div className="rounded-2xl border border-ast_purple/40 bg-ast_purple/10 p-6">
+        <div className="rounded-2xl border border-ast_purple/40 bg-[#120724] p-6">
           <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender mb-3">
             Art History
           </p>
@@ -44,7 +44,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
         </div>
 
         {/* 3. Artist Quote */}
-        <div className="rounded-2xl border border-ast_turquoise/40 bg-ast_turquoise/10 p-6 flex flex-col justify-between">
+        <div className="rounded-2xl border border-ast_turquoise/40 bg-[#120724] p-6 flex flex-col justify-between">
           <p className="text-xs uppercase tracking-[0.25em] text-ast_turquoise mb-6">
             Artist Quote
           </p>
@@ -57,7 +57,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
         </div>
 
         {/* 4. Featured Artist */}
-        <div className="rounded-2xl border border-ast_pink/40 bg-ast_pink/10 p-6">
+        <div className="rounded-2xl border border-ast_pink/40 bg-[#120724] p-6">
           <div className="flex items-start justify-between mb-3">
             <p className="text-xs uppercase tracking-[0.25em] text-ast_pink">Featured Artist</p>
             <span className="text-xs bg-ast_pink/20 text-ast_pink/60 px-2 py-0.5 rounded">

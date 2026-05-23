@@ -57,8 +57,8 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
   const editSubcategories = editCategoryDef ? editCategoryDef.subcategories : [];
 
   return (
-    <div className="col-span-2 bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-6 overflow-x-auto">
-      <h3 className="text-sm font-bold text-slate-400 mb-4">INVENTORY OVERVIEW</h3>
+    <div className="col-span-2 bg-[#120724] border border-ast_blue/20 rounded-xl p-6 overflow-x-auto">
+      <h3 className="text-sm font-bold text-ast_pink/70 mb-4">INVENTORY OVERVIEW</h3>
 
       <div className="flex gap-2 mb-4">
         {['All', 'Low Stock', 'Out of Stock'].map((filter) => (
@@ -68,7 +68,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
             className={`text-xs px-3 py-1 rounded-lg transition ${
               filter === inventoryFilter
                 ? 'bg-ast_turquoise/20 text-ast_turquoise'
-                : 'text-slate-400 hover:text-ast_turquoise'
+                : 'text-white/50 hover:text-ast_turquoise'
             }`}
           >
             {filter}
@@ -78,13 +78,13 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
 
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700">
-            <th className="text-left py-2 text-slate-400 font-medium">ITEM</th>
-            <th className="text-left py-2 text-slate-400 font-medium">CATEGORY</th>
-            <th className="text-left py-2 text-slate-400 font-medium">QTY</th>
-            <th className="text-left py-2 text-slate-400 font-medium">STATUS</th>
-            <th className="text-left py-2 text-slate-400 font-medium">LOCATION</th>
-            <th className="text-left py-2 text-slate-400 font-medium">PROJECTS</th>
+          <tr className="border-b border-white/10">
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">ITEM</th>
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">CATEGORY</th>
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">QTY</th>
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">STATUS</th>
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">LOCATION</th>
+            <th className="text-left py-2 text-ast_lavender/60 font-medium">PROJECTS</th>
             <th className="py-2" />
           </tr>
         </thead>
@@ -93,13 +93,13 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
             <Fragment key={item.id}>
               <tr
                 onClick={() => handleSelectSupply(item.id)}
-                className={`border-b border-slate-800/50 cursor-pointer transition ${
+                className={`border-b border-white/10 cursor-pointer transition ${
                   selectedSupplyId === item.id
                     ? 'bg-ast_pink/10'
                     : 'hover:bg-ast_bg_blue/50'
                 }`}
               >
-                <td className="py-3 text-slate-200">
+                <td className="py-3 text-white/90">
                   <div className="flex items-center gap-2">
                     <span>{item.name}</span>
                     {item.isNew && (
@@ -109,13 +109,13 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                     )}
                   </div>
                 </td>
-                <td className="py-3 text-slate-400">
+                <td className="py-3 text-white/55">
                   {item.category}
                   {item.subcategory ? (
                     <span className="ml-1 text-white/30 text-xs">· {item.subcategory}</span>
                   ) : null}
                 </td>
-                <td className="py-3 text-slate-300">{item.qty}</td>
+                <td className="py-3 text-white/75">{item.qty}</td>
                 <td className="py-3">
                   <span className={`text-xs px-2 py-1 rounded ${
                     item.status === 'ok'
@@ -127,7 +127,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                     {item.status === 'ok' ? '✓' : '⚠️'} {item.status}
                   </span>
                 </td>
-                <td className="py-3 text-slate-400">{item.location}</td>
+                <td className="py-3 text-white/55">{item.location}</td>
                 <td className="py-3">
                   {(() => {
                     const ids = Array.isArray(item.usedInProjectIds) ? item.usedInProjectIds : [];
@@ -180,7 +180,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Name</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Name</label>
                                 <input
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.name}
@@ -188,7 +188,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Category</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Category</label>
                                 <select
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.category}
@@ -209,7 +209,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Quantity</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Quantity</label>
                                 <input
                                   type="number"
                                   min="0"
@@ -219,7 +219,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Stock Status</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Stock Status</label>
                                 <select
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.status}
@@ -231,7 +231,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Location</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Location</label>
                                 <input
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.location}
@@ -239,7 +239,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Notes</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Notes</label>
                                 <input
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.notes}
@@ -251,7 +251,7 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
                             {/* Subcategory — only shown when selected category has subcategories */}
                             {editSubcategories.length > 0 && (
                               <div>
-                                <label className="block text-sm font-medium text-ast_yellow mb-2">Subcategory</label>
+                                <label className="block text-sm font-medium text-ast_lavender/80 mb-2">Subcategory</label>
                                 <select
                                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                                   value={editDraft.subcategory ?? ""}
@@ -308,26 +308,26 @@ export default function InventoryTable({ inventoryFilter, onFilterChange, sessio
 
                           <div className="grid grid-cols-3 gap-x-6 gap-y-3 mb-4">
                             <div>
-                              <p className="text-xs font-medium text-ast_yellow mb-1">Category</p>
+                              <p className="text-xs font-medium text-ast_lavender/75 mb-1">Category</p>
                               <p className="text-sm text-white/80">{selectedSupply.category || "—"}</p>
                             </div>
                             {selectedSupply.subcategory && (
                               <div>
-                                <p className="text-xs font-medium text-ast_yellow mb-1">Subcategory</p>
+                                <p className="text-xs font-medium text-ast_lavender/75 mb-1">Subcategory</p>
                                 <p className="text-sm text-white/80">{selectedSupply.subcategory}</p>
                               </div>
                             )}
                             <div>
-                              <p className="text-xs font-medium text-ast_yellow mb-1">Quantity</p>
+                              <p className="text-xs font-medium text-ast_lavender/75 mb-1">Quantity</p>
                               <p className="text-sm text-white/80">{selectedSupply.qty}</p>
                             </div>
                             <div>
-                              <p className="text-xs font-medium text-ast_yellow mb-1">Location</p>
+                              <p className="text-xs font-medium text-ast_lavender/75 mb-1">Location</p>
                               <p className="text-sm text-white/80">{selectedSupply.location || "—"}</p>
                             </div>
                             {selectedSupply.notes && (
                               <div className="col-span-3">
-                                <p className="text-xs font-medium text-ast_yellow mb-1">Notes</p>
+                                <p className="text-xs font-medium text-ast_lavender/75 mb-1">Notes</p>
                                 <p className="text-sm text-white/80">{selectedSupply.notes}</p>
                               </div>
                             )}

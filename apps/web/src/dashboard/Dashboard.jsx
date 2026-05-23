@@ -150,15 +150,14 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="min-h-screen overflow-hidden bg-gradient-to-br from-ast_bg_dark via-ast_deep to-ast_bg_blue text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_left,rgba(46,196,182,0.16),transparent_30%),radial-gradient(circle_at_top_right,rgba(255,77,166,0.16),transparent_30%),radial-gradient(circle_at_center,rgba(90,58,142,0.22),transparent_42%)]" />
+    <main className="min-h-screen overflow-hidden bg-[#050009] text-white">
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <DashboardHeader />
 
         <section className="grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
           {/* LEFT PANEL: Studio Tools */}
-          <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/50 bg-ast_deep/70 p-4 shadow-astTurquoise backdrop-blur-xl">
+          <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl">
             <button
               onClick={() => setWorkspaceView('home')}
               className="mb-4 w-full text-left hover:opacity-75 transition"
@@ -176,8 +175,8 @@ export default function Dashboard() {
                 onClick={() => setWorkspaceView('projects')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'projects'
-                    ? 'border-ast_turquoise/70 bg-ast_turquoise/15 shadow-astTurquoise'
-                    : 'border-ast_turquoise/30 bg-white/5 hover:border-ast_turquoise/55 hover:bg-ast_turquoise/10'
+                    ? 'border-ast_turquoise/60 bg-ast_turquoise/10'
+                    : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_turquoise/55 hover:bg-ast_turquoise/10'
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
@@ -191,8 +190,8 @@ export default function Dashboard() {
                 onClick={() => setWorkspaceView('supplies')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'supplies'
-                    ? 'border-ast_pink/70 bg-ast_pink/15 shadow-astPink'
-                    : 'border-ast_pink/30 bg-white/5 hover:border-ast_pink/55 hover:bg-ast_pink/10'
+                    ? 'border-ast_pink/70 bg-ast_pink/10'
+                    : 'border-ast_pink/30 bg-[#120724] hover:border-ast_pink/55 hover:bg-ast_pink/10'
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-ast_pink">Art Supplies</p>
@@ -204,7 +203,7 @@ export default function Dashboard() {
 
               <InspirationCard />
 
-              <div className="rounded-2xl border border-ast_blue/30 bg-white/5 p-4 shadow-[0_0_16px_rgba(74,105,214,0.18)] backdrop-blur-xl">
+              <div className="rounded-2xl border border-ast_blue/30 bg-[#120724] p-4 backdrop-blur-xl">
                 <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender">
                   Partners
                 </p>
@@ -219,7 +218,7 @@ export default function Dashboard() {
           </aside>
 
           {/* CENTER PANEL: Workspace */}
-          <main className="col-span-7 min-h-0 rounded-3xl border border-ast_purple/60 bg-ast_deep/75 p-6 shadow-astPurple backdrop-blur-xl">
+          <main className="col-span-7 min-h-0 rounded-3xl border border-ast_purple/50 bg-[#0B0018] p-6 backdrop-blur-xl">
 
             {/* HOME VIEW */}
             {workspaceView === 'home' && (
@@ -261,7 +260,7 @@ export default function Dashboard() {
           </main>
 
           {/* RIGHT PANEL: Community + Chat */}
-          <aside className="col-span-2 min-h-0 rounded-3xl border border-ast_pink/60 bg-ast_deep/75 p-4 shadow-astPink backdrop-blur-xl">
+          <aside className="col-span-2 min-h-0 rounded-3xl border border-ast_pink/40 bg-[#0B0018] p-4 backdrop-blur-xl">
             <div className="sticky top-4 z-10 mb-4 space-y-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-ast_pink">
@@ -272,7 +271,7 @@ export default function Dashboard() {
                 </h2>
               </div>
 
-              <div className="rounded-2xl border border-ast_purple/35 bg-white/5 p-3">
+              <div className="rounded-2xl border border-ast_purple/35 bg-[#120724] p-3">
                 <p className="text-sm font-semibold text-ast_lavender">
                   Studio Memory
                 </p>
@@ -281,7 +280,7 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-ast_turquoise/30 bg-white/5 p-3">
+              <div className="rounded-2xl border border-ast_turquoise/30 bg-[#120724] p-3">
                 <p className="text-sm font-semibold text-ast_turquoise">
                   Need help?
                 </p>

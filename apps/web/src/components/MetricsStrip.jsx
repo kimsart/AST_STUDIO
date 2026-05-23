@@ -18,9 +18,9 @@ export default function MetricsStrip() {
       {metrics.map((metric) => (
         <div
           key={metric.label}
-          className="bg-gradient-to-br from-ast_bg_blue/50 to-ast_bg_dark border border-ast_blue/20 rounded-xl p-4 hover:border-ast_blue/40 transition"
+          className="bg-[#120724] border border-ast_blue/20 rounded-xl p-4 hover:border-ast_blue/40 transition"
         >
-          <p className="text-xs text-slate-400 mb-2">{metric.label}</p>
+          <p className="text-xs text-white/55 mb-2">{metric.label}</p>
           <p className={`text-3xl font-bold ${colorMap[metric.color].text} mb-1`}>{metric.value}</p>
           <p className={`text-xs ${colorMap[metric.color].dim}`}>{metric.change}</p>
         </div>

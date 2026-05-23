@@ -1,6 +1,6 @@
 export default function DashboardHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-ast_purple/35 bg-ast_deep/85 px-6 py-4 backdrop-blur-xl shadow-[0_0_28px_rgba(74,105,214,0.18)]">
+    <header className="sticky top-0 z-40 bg-[#050009]/90 px-6 py-4 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-6">
         {/* Brand */}
         <div className="min-w-fit">
@@ -23,21 +23,7 @@ export default function DashboardHeader() {
           </div>
         </div>
 
-        {/* Nav */}
-        <nav className="flex items-center gap-2 rounded-2xl border border-ast_lavender/25 bg-white/5 p-1">
-          {["Overview", "Projects", "Calendar", "Notes"].map((item, index) => (
-            <button
-              key={item}
-              className={`rounded-xl px-4 py-2 text-sm transition-all duration-300 ${
-                index === 0
-                  ? "bg-ast_blue/35 text-white shadow-astBlue"
-                  : "text-ast_yellow/80 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </nav>
+        {/* Top nav removed: workspace navigation lives in Studio Tools/sidebar */}
 
         {/* Actions */}
         <div className="flex min-w-fit items-center gap-3">
