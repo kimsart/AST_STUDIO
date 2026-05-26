@@ -66,7 +66,7 @@ export default function ProjectsWorkspace({
           <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
             Projects
           </p>
-          <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Projects</h1>
+          <h1 className="mt-2 text-3xl font-bold bg-[linear-gradient(90deg,#00E6FF_0%,#2E64FF_35%,#8D5CFF_65%,#FF2FB3_100%)] bg-clip-text text-transparent">Projects</h1>
 
           {projectNavView !== "overview" && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50">
@@ -121,7 +121,7 @@ export default function ProjectsWorkspace({
                 </span>
               )}
             </div>
-            <p className="text-4xl font-bold text-ast_yellow">{sessionProjects.length}</p>
+            <p className="text-4xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
             <p className="text-xs text-white/40 mt-1">
               {sessionProjects.length === 1 ? "project" : "projects"} in your studio
             </p>
@@ -164,6 +164,12 @@ export default function ProjectsWorkspace({
               "on-hold":     "text-ast_yellow",
               "completed":   "text-white/50",
             }[s.value];
+            const countColor = {
+              "planned":     "text-[#B89CFF]",
+              "in-progress": "text-[#00E6FF]",
+              "on-hold":     "text-ast_yellow",
+              "completed":   "text-white/50",
+            }[s.value];
 
             return (
               <button
@@ -172,7 +178,7 @@ export default function ProjectsWorkspace({
                 className={`col-span-1 rounded-2xl border p-5 text-left transition ${styles}`}
               >
                 <p className={`text-sm font-semibold mb-2 ${labelColor}`}>{s.label}</p>
-                <p className="text-2xl font-bold text-ast_yellow">{count}</p>
+                <p className={`text-2xl font-bold ${countColor}`}>{count}</p>
                 <p className="text-xs text-white/30 mt-1">
                   {count === 1 ? "project" : "projects"}
                 </p>

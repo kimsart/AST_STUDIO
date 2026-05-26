@@ -110,7 +110,7 @@ export default function ProjectsCard({
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-ast_yellow mb-2">Project Title</label>
+              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Project Title</label>
               <input
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
                 value={editDraft.title}
@@ -118,7 +118,7 @@ export default function ProjectsCard({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ast_yellow mb-2">Status</label>
+              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Status</label>
               <select
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
                 value={editDraft.status}
@@ -131,7 +131,7 @@ export default function ProjectsCard({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-ast_yellow mb-2">Notes</label>
+              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Notes</label>
               <textarea
                 rows={3}
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition resize-none"
@@ -140,7 +140,7 @@ export default function ProjectsCard({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ast_yellow mb-2">Estimated Budget</label>
+              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Estimated Budget</label>
               <input
                 type="number"
                 min="0"
@@ -183,20 +183,20 @@ export default function ProjectsCard({
 
           {selectedProject.notes && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-ast_yellow mb-1">Notes</p>
+              <p className="text-xs font-medium text-[#C9C3DF] mb-1">Notes</p>
               <p className="text-sm text-white/80">{selectedProject.notes}</p>
             </div>
           )}
 
           {selectedProject.budget > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-ast_yellow mb-1">Budget</p>
+              <p className="text-xs font-medium text-[#C9C3DF] mb-1">Budget</p>
               <p className="text-sm text-white/80">${selectedProject.budget}</p>
             </div>
           )}
 
           <div className="border-t border-ast_turquoise/20 pt-4 mb-4">
-            <p className="text-xs font-medium text-ast_yellow mb-2">Supplies</p>
+            <p className="text-xs font-medium text-[#C9C3DF] mb-2">Supplies</p>
             {assignedSupplies.length > 0 && (
               <ul className="mb-3 space-y-1">
                 {assignedSupplies.map(s => (

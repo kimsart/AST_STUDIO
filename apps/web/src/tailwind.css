@@ -7,4 +7,47 @@
     max-width: 100vw;
     overflow-x: hidden;
   }
+
+  :root {
+    --ast-turquoise: #2EC4B6;
+    --ast-cyan: #00B7EB;
+    --ast-purple: #5B3FD3;
+    --ast-pink: #FE5FA7;
+    --ast-orange: #FFB85C;
+    --ast-yellow: #F4F27A;
+    --ast-coral: #FFE0CC;
+
+    --ast-bg-primary: #121A5A;
+    --ast-bg-secondary: #1822A8;
+
+    --ast-gradient-full: linear-gradient(
+      90deg,
+      #2EC4B6 0%,
+      #00B7EB 15%,
+      #5B3FD3 35%,
+      #FE5FA7 55%,
+      #FFB85C 75%,
+      #F4F27A 100%
+    );
+
+    --ast-gradient-cool: linear-gradient(
+      90deg,
+      #2EC4B6 0%,
+      #00B7EB 50%,
+      #5B3FD3 100%
+    );
+
+    --ast-gradient-warm: linear-gradient(
+      90deg,
+      #FE5FA7 0%,
+      #FFB85C 50%,
+      #F4F27A 100%
+    );
+
+    --ast-gradient-soft: linear-gradient(
+      90deg,
+      #FFE0CC 0%,
+      #F4F27A 100%
+    );
+  }
 }

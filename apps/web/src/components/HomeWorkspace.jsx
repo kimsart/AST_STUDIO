@@ -3,7 +3,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
     <>
       <div className="mb-6">
         <p className="text-xs uppercase tracking-[0.35em] text-ast_lavender">Studio</p>
-        <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Today in the Studio</h1>
+        <h1 className="mt-2 text-3xl font-bold bg-[linear-gradient(90deg,#00E6FF_0%,#2E64FF_35%,#8D5CFF_65%,#FF2FB3_100%)] bg-clip-text text-transparent">Today in the Studio</h1>
         <p className="mt-2 text-sm text-white/50">
           Open a workspace from the left, or explore what&apos;s on today.
         </p>
@@ -19,7 +19,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
               Sponsored
             </span>
           </div>
-          <h2 className="text-lg font-bold text-ast_yellow mb-2">Partner name placeholder</h2>
+          <h2 className="text-lg font-bold text-[#00E6FF] mb-2">Partner name placeholder</h2>
           <p className="text-sm text-white/60 leading-relaxed">
             Partner description placeholder. Real partner content, demos, and product launches
             will appear here once partner integrations are confirmed.
@@ -32,7 +32,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
           <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender mb-3">
             Art History
           </p>
-          <h2 className="text-base font-semibold text-ast_yellow mb-3">The Starry Night</h2>
+          <h2 className="text-base font-semibold text-[#8D5CFF] mb-3">The Starry Night</h2>
           <p className="text-sm text-white/60 leading-relaxed">
             Vincent van Gogh completed <em>The Starry Night</em> in June 1889 while a patient
             at Saint-Paul-de-Mausole in Saint-Rémy-de-Provence. Painted from memory rather than
@@ -48,7 +48,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
           <p className="text-xs uppercase tracking-[0.25em] text-ast_turquoise mb-6">
             Artist Quote
           </p>
-          <blockquote className="text-2xl font-semibold text-ast_yellow leading-snug">
+          <blockquote className="text-2xl font-semibold text-[#2E64FF] leading-snug">
             Famous artist quote placeholder.
           </blockquote>
           <p className="mt-5 text-xs text-white/20">
@@ -64,7 +64,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
               Coming soon
             </span>
           </div>
-          <h2 className="text-lg font-bold text-ast_yellow mb-2">Community Spotlight</h2>
+          <h2 className="text-lg font-bold text-[#FF2FB3] mb-2">Community Spotlight</h2>
           <p className="text-sm text-white/60 leading-relaxed">
             AST Studio will spotlight beta users and community artists here.
             Featured artists will be selected from opt-in submissions only.

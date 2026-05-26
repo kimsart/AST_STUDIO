@@ -20,7 +20,27 @@ content: {
         ast_turquoise: "#2EC4B6",
         ast_pink: "#FF4DA6",
         ast_yellow: "#FFD5A8",
-        ast_coral: "#FF7A7A"
+        ast_coral: "#FF7A7A",
+
+        ast: {
+          turquoise: "#2EC4B6",
+          cyan: "#00B7EB",
+          purple: "#5B3FD3",
+          pink: "#FE5FA7",
+          orange: "#FFB85C",
+          yellow: "#F4F27A",
+          coral: "#FFE0CC",
+          bg: {
+            primary: "#121A5A",
+            secondary: "#1822A8",
+          }
+        }
+      },
+      backgroundImage: {
+        "ast-gradient-full": "var(--ast-gradient-full)",
+        "ast-gradient-cool": "var(--ast-gradient-cool)",
+        "ast-gradient-warm": "var(--ast-gradient-warm)",
+        "ast-gradient-soft": "var(--ast-gradient-soft)",
       },
       boxShadow: {
         astPurple: "0 0 28px rgba(90, 58, 142, 0.55)",

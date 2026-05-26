@@ -165,7 +165,7 @@ export default function Dashboard() {
               <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
                 Studio Tools
               </p>
-              <h2 className="mt-2 text-xl font-semibold text-ast_yellow">
+              <h2 className="mt-2 text-xl font-semibold text-[#00E6FF]">
                 My Studio
               </h2>
             </button>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
-                <p className="mt-1 text-2xl font-bold text-ast_yellow">{sessionProjects.length}</p>
+                <p className="mt-1 text-2xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
                 <p className="text-xs text-white/50">
                   {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
                 </p>
@@ -195,7 +195,7 @@ export default function Dashboard() {
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-ast_pink">Art Supplies</p>
-                <p className="mt-1 text-2xl font-bold text-ast_yellow">{sessionSupplies.length}</p>
+                <p className="mt-1 text-2xl font-bold text-[#FF2FB3]">{sessionSupplies.length}</p>
                 <p className="text-xs text-white/50">
                   {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
                 </p>
@@ -207,7 +207,7 @@ export default function Dashboard() {
                 <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender">
                   Partners
                 </p>
-                <h3 className="mt-2 text-lg font-semibold text-ast_yellow">
+                <h3 className="mt-2 text-lg font-semibold text-[#8D5CFF]">
                   Retailer & Manufacturer Picks
                 </h3>
                 <p className="mt-2 text-sm text-white/70">
@@ -266,7 +266,7 @@ export default function Dashboard() {
                 <p className="text-xs uppercase tracking-[0.3em] text-ast_pink">
                   Community
                 </p>
-                <h2 className="mt-2 text-lg font-semibold text-ast_yellow">
+                <h2 className="mt-2 text-lg font-semibold text-[#FF2FB3]">
                   Studio Chat
                 </h2>
               </div>

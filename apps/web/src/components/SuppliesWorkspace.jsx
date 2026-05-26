@@ -74,7 +74,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
       <div className="mb-6 flex items-start justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-ast_pink">Inventory</p>
-          <h1 className="mt-2 text-3xl font-bold text-ast_yellow">Art Supplies</h1>
+          <h1 className="mt-2 text-3xl font-bold bg-[linear-gradient(90deg,#00E6FF_0%,#2E64FF_35%,#8D5CFF_65%,#FF2FB3_100%)] bg-clip-text text-transparent">Art Supplies</h1>
 
           {supplyNavView !== "categories" && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50">
@@ -153,7 +153,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
                     </span>
                   )}
                 </div>
-                <p className="text-2xl font-bold text-ast_yellow">{count}</p>
+                <p className="text-2xl font-bold text-[#FF2FB3]">{count}</p>
                 <p className="text-xs text-white/40 mt-1">
                   {count === 1 ? "item" : "items"}
                   {cat.subcategories.length > 0 && (
@@ -176,7 +176,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
             <p className="text-sm font-semibold text-ast_pink mb-3">
               All {currentCategoryDef.label}
             </p>
-            <p className="text-2xl font-bold text-ast_yellow">
+            <p className="text-2xl font-bold text-[#FF2FB3]">
               {getCategoryCount(selectedCategory)}
             </p>
             <p className="text-xs text-white/40 mt-1">view all</p>
@@ -191,7 +191,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
                 className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 p-5 text-left hover:border-ast_pink/50 hover:bg-ast_pink/10 transition"
               >
                 <p className="text-sm font-semibold text-ast_pink/80 mb-3">{sub}</p>
-                <p className="text-2xl font-bold text-ast_yellow">{subCount}</p>
+                <p className="text-2xl font-bold text-[#FF2FB3]">{subCount}</p>
                 <p className="text-xs text-white/40 mt-1">
                   {subCount === 1 ? "item" : "items"}
                 </p>
