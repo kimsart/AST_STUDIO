@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -11,14 +12,15 @@ import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
 
-export default function Dashboard() {
+export default function Dashboard({ defaultView = 'home' }) {
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
   const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
-  const [workspaceView, setWorkspaceView] = useState('home');
+  const [workspaceView, setWorkspaceView] = useState(defaultView);
 
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
   useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
@@ -159,7 +161,7 @@ export default function Dashboard() {
           {/* LEFT PANEL: Studio Tools */}
           <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl">
             <button
-              onClick={() => setWorkspaceView('home')}
+              onClick={() => navigate('/dashboard')}
               className="mb-4 w-full text-left hover:opacity-75 transition"
             >
               <p className="text-xs uppercase tracking-[0.35em] text-ast_turquoise">
@@ -172,7 +174,7 @@ export default function Dashboard() {
 
             <div className="space-y-3">
               <button
-                onClick={() => setWorkspaceView('projects')}
+                onClick={() => navigate('/projects')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'projects'
                     ? 'border-ast_turquoise/60 bg-ast_turquoise/10'
@@ -187,16 +189,16 @@ export default function Dashboard() {
               </button>
 
               <button
-                onClick={() => setWorkspaceView('supplies')}
+                onClick={() => navigate('/supplies')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'supplies'
-                    ? 'border-ast_pink/70 bg-ast_pink/10'
-                    : 'border-ast_pink/30 bg-[#120724] hover:border-ast_pink/55 hover:bg-ast_pink/10'
+                    ? 'border-[#00E5FF]/70 bg-[linear-gradient(135deg,rgba(0,229,255,0.08),rgba(159,107,255,0.10))] shadow-[0_0_18px_rgba(0,229,255,0.15)]'
+                    : 'border-[#9F6BFF]/30 bg-[#120724] hover:border-[#00E5FF]/55 hover:bg-[#00E5FF]/5 hover:shadow-[0_0_14px_rgba(0,229,255,0.10)]'
                 }`}
               >
-                <p className="text-xs uppercase tracking-wider text-ast_pink">Art Supplies</p>
-                <p className="mt-1 text-2xl font-bold text-[#FF2FB3]">{sessionSupplies.length}</p>
-                <p className="text-xs text-white/50">
+                <p className="text-xs uppercase tracking-wider text-[#9F6BFF]">Art Supplies</p>
+                <p className="mt-1 text-2xl font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
+                <p className="text-xs text-[#F6B94B]/80">
                   {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
                 </p>
               </button>

@@ -73,14 +73,14 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-ast_pink">Inventory</p>
+          <p className="text-xs uppercase tracking-[0.35em] text-[#9F6BFF]">Inventory</p>
           <h1 className="mt-2 text-3xl font-bold bg-[linear-gradient(90deg,#00E6FF_0%,#2E64FF_35%,#8D5CFF_65%,#FF2FB3_100%)] bg-clip-text text-transparent">Art Supplies</h1>
 
           {supplyNavView !== "categories" && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50">
               <button
                 onClick={handleBackToCategories}
-                className="hover:text-ast_pink transition"
+                className="hover:text-[#00E5FF] transition"
               >
                 Art Supplies
               </button>
@@ -91,12 +91,12 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
                   {supplyNavView === "list" && selectedSubcategory ? (
                     <button
                       onClick={handleBackFromList}
-                      className="hover:text-ast_pink transition"
+                      className="hover:text-[#00E5FF] transition"
                     >
                       {currentCategoryDef?.label}
                     </button>
                   ) : (
-                    <span className="text-ast_pink">{currentCategoryDef?.label}</span>
+                    <span className="text-[#00E5FF]">{currentCategoryDef?.label}</span>
                   )}
                 </>
               )}
@@ -104,7 +104,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               {supplyNavView === "list" && selectedSubcategory && (
                 <>
                   <span className="text-white/25">›</span>
-                  <span className="text-ast_pink">{selectedSubcategory}</span>
+                  <span className="text-[#00E5FF]">{selectedSubcategory}</span>
                 </>
               )}
             </div>
@@ -114,13 +114,13 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
         <div className="flex items-center gap-3">
           <button
             onClick={onImport}
-            className="text-xs rounded-lg border border-ast_pink/40 px-3 py-1.5 text-ast_pink hover:bg-ast_pink/10 transition"
+            className="text-xs rounded-lg border border-[#9F6BFF]/40 px-3 py-1.5 text-[#9F6BFF] hover:border-[#315CFF]/60 hover:bg-[#315CFF]/10 hover:shadow-[0_0_12px_rgba(49,92,255,0.2)] transition"
           >
             Import JSON
           </button>
           <button
             onClick={onExport}
-            className="text-xs rounded-lg border border-ast_pink/40 px-3 py-1.5 text-ast_pink hover:bg-ast_pink/10 transition"
+            className="text-xs rounded-lg border border-[#9F6BFF]/40 px-3 py-1.5 text-[#9F6BFF] hover:border-[#315CFF]/60 hover:bg-[#315CFF]/10 hover:shadow-[0_0_12px_rgba(49,92,255,0.2)] transition"
           >
             Export Data
           </button>
@@ -143,17 +143,17 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               <button
                 key={cat.value}
                 onClick={() => handleSelectCategory(cat.value)}
-                className="rounded-2xl border border-ast_pink/30 bg-ast_pink/5 p-5 text-left hover:border-ast_pink/60 hover:bg-ast_pink/10 transition"
+                className="rounded-2xl border border-[#9F6BFF]/40 bg-[#9F6BFF]/5 p-5 text-left hover:border-[#00E5FF]/65 hover:bg-[#00E5FF]/5 hover:shadow-[0_0_20px_rgba(0,229,255,0.12)] transition"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <p className="text-sm font-semibold text-ast_pink">{cat.label}</p>
+                  <p className="text-sm font-semibold text-[#9F6BFF]">{cat.label}</p>
                   {hasAlert && (
-                    <span className="text-xs bg-ast_yellow/20 text-ast_yellow px-1.5 py-0.5 rounded font-semibold">
+                    <span className="text-xs bg-[#F6B94B]/20 text-[#F6B94B] px-1.5 py-0.5 rounded font-semibold">
                       !
                     </span>
                   )}
                 </div>
-                <p className="text-2xl font-bold text-[#FF2FB3]">{count}</p>
+                <p className="text-2xl font-bold text-[#00E5FF]">{count}</p>
                 <p className="text-xs text-white/40 mt-1">
                   {count === 1 ? "item" : "items"}
                   {cat.subcategories.length > 0 && (
@@ -171,12 +171,12 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
         <div className="grid grid-cols-3 gap-3">
           <button
             onClick={handleViewAll}
-            className="rounded-2xl border border-ast_pink/60 bg-ast_pink/10 p-5 text-left hover:bg-ast_pink/20 transition"
+            className="rounded-2xl border border-[#00D6C9]/80 bg-[linear-gradient(135deg,rgba(0,229,255,0.14),rgba(49,92,255,0.16))] p-5 text-left shadow-[0_0_24px_rgba(0,229,255,0.18)] hover:shadow-[0_0_30px_rgba(0,229,255,0.25)] transition"
           >
-            <p className="text-sm font-semibold text-ast_pink mb-3">
+            <p className="text-sm font-semibold text-[#00D6C9] mb-3">
               All {currentCategoryDef.label}
             </p>
-            <p className="text-2xl font-bold text-[#FF2FB3]">
+            <p className="text-2xl font-bold text-[#00E5FF]">
               {getCategoryCount(selectedCategory)}
             </p>
             <p className="text-xs text-white/40 mt-1">view all</p>
@@ -188,10 +188,10 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               <button
                 key={sub}
                 onClick={() => handleSelectSubcategory(sub)}
-                className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 p-5 text-left hover:border-ast_pink/50 hover:bg-ast_pink/10 transition"
+                className="rounded-2xl border border-[#9F6BFF]/30 bg-[#9F6BFF]/5 p-5 text-left hover:border-[#00E5FF]/65 hover:bg-[#00E5FF]/5 hover:shadow-[0_0_20px_rgba(0,229,255,0.12)] transition"
               >
-                <p className="text-sm font-semibold text-ast_pink/80 mb-3">{sub}</p>
-                <p className="text-2xl font-bold text-[#FF2FB3]">{subCount}</p>
+                <p className="text-sm font-semibold text-[#9F6BFF]/80 mb-3">{sub}</p>
+                <p className="text-2xl font-bold text-[#00E5FF]">{subCount}</p>
                 <p className="text-xs text-white/40 mt-1">
                   {subCount === 1 ? "item" : "items"}
                 </p>
@@ -205,8 +205,8 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
       {supplyNavView === "list" && (
         <div className="space-y-3">
           {filteredSupplies.length === 0 ? (
-            <div className="rounded-2xl border border-ast_pink/20 bg-ast_pink/5 px-6 py-10 text-center">
-              <p className="text-sm font-medium text-ast_pink/60 mb-1">
+            <div className="rounded-2xl border border-[#9F6BFF]/20 bg-[#9F6BFF]/5 px-6 py-10 text-center">
+              <p className="text-sm font-medium text-[#9F6BFF]/60 mb-1">
                 {selectedSubcategory ? selectedSubcategory : currentCategoryDef?.label}
               </p>
               <p className="text-sm text-white/40">
