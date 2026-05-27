@@ -5,7 +5,7 @@ export default function DashboardHeader() {
         {/* Brand */}
         <div className="min-w-fit">
           <img
-            src="/assets/ast-logo-horizontal-cropped.png"
+            src="/assets/ast_logo_horizontal_cropped.png"
             alt="ArtSupplyTracker"
             className="h-10 md:h-12 lg:h-14 w-auto max-w-[320px] object-contain"
           />

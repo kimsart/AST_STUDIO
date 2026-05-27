@@ -5,7 +5,7 @@ export default function StubPage({ title, description }) {
     <main className="min-h-screen bg-[#050009] text-white flex flex-col items-center justify-center px-6">
       <div className="mb-12">
         <img
-          src="/assets/ast-logo-horizontal-cropped.png"
+          src="/assets/ast_logo_horizontal_cropped.png"
           alt="ArtSupplyTracker"
           className="h-10 object-contain"
         />
