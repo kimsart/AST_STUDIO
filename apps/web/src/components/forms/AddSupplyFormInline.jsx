@@ -57,9 +57,11 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl border border-ast_pink/60 bg-ast_deep/95 p-6 shadow-astPink">
-        <div className="mb-6 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg md:max-w-2xl rounded-2xl border border-ast_pink/60 bg-ast_deep/95 shadow-astPink flex flex-col max-h-[calc(100vh-2rem)] overflow-hidden">
+
+        {/* Header — never scrolls away */}
+        <div className="shrink-0 flex items-center justify-between px-6 pt-6 pb-4">
           <h2 className="text-2xl font-bold text-ast_pink">Add Supply</h2>
           <button
             onClick={onCancel}
@@ -69,133 +71,143 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Supply Name *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="e.g., Winsor & Newton Cobalt Blue"
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            />
-          </div>
+        {/* Scrollable form body */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 overflow-y-auto px-6">
+            <div className="pb-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            >
-              {SUPPLY_CATEGORIES.map(cat => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
+                {/* Name — full width */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Supply Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g., Winsor & Newton Cobalt Blue"
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
 
-          {/* Subcategory — only when category has subcategories */}
-          {availableSubcategories.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-ast_yellow mb-2">
-                Subcategory
-              </label>
-              <select
-                name="subcategory"
-                value={formData.subcategory}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-              >
-                <option value="">— None —</option>
-                {availableSubcategories.map(sub => (
-                  <option key={sub} value={sub}>{sub}</option>
-                ))}
-              </select>
+                {/* Category */}
+                <div>
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  >
+                    {SUPPLY_CATEGORIES.map(cat => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Subcategory — only when category has subcategories */}
+                {availableSubcategories.length > 0 ? (
+                  <div>
+                    <label className="block text-sm font-medium text-ast_yellow mb-2">
+                      Subcategory
+                    </label>
+                    <select
+                      name="subcategory"
+                      value={formData.subcategory}
+                      onChange={handleChange}
+                      className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                    >
+                      <option value="">— None —</option>
+                      {availableSubcategories.map(sub => (
+                        <option key={sub} value={sub}>{sub}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div />
+                )}
+
+                {/* Quantity */}
+                <div>
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Quantity *
+                  </label>
+                  <input
+                    type="number"
+                    name="qty"
+                    value={formData.qty}
+                    onChange={handleChange}
+                    placeholder="e.g., 2"
+                    min="1"
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Stock Status
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  >
+                    <option value="ok">OK</option>
+                    <option value="low">Low</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+
+                {/* Location — full width */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    placeholder="e.g., Shelf A, Cabinet"
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
+
+                {/* Notes — full width */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    placeholder="Add details about the supply..."
+                    rows={2}
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
+
+              </div>
+
+              {error && (
+                <div className="mt-4 rounded-lg border border-ast_pink/50 bg-ast_pink/10 px-3 py-2 text-sm text-ast_pink">
+                  {error}
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Quantity */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Quantity *
-            </label>
-            <input
-              type="number"
-              name="qty"
-              value={formData.qty}
-              onChange={handleChange}
-              placeholder="e.g., 2"
-              min="1"
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            />
           </div>
 
-          {/* Status */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Stock Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            >
-              <option value="ok">OK</option>
-              <option value="low">Low</option>
-              <option value="critical">Critical</option>
-            </select>
-          </div>
-
-          {/* Location */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="e.g., Shelf A, Cabinet"
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            />
-          </div>
-
-          {/* Notes */}
-          <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
-              Notes
-            </label>
-            <textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Add details about the supply..."
-              rows={2}
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-            />
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="rounded-lg border border-ast_pink/50 bg-ast_pink/10 px-3 py-2 text-sm text-ast_pink">
-              {error}
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="mt-6 flex gap-3">
+          {/* Footer — never scrolls away */}
+          <div className="shrink-0 flex gap-3 px-6 pt-4 pb-6 border-t border-white/5">
             <button
               type="button"
               onClick={onCancel}
@@ -211,6 +223,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
             </button>
           </div>
         </form>
+
       </div>
     </div>
   );
