@@ -3,10 +3,32 @@ import { useState, useEffect } from "react";
 const GRID_COLS = 3;
 
 const STATUS_STYLES = {
-  "planned":     { label: "Planned",     bg: "bg-ast_lavender/20",  text: "text-ast_lavender" },
-  "in-progress": { label: "In Progress", bg: "bg-ast_turquoise/20", text: "text-ast_turquoise" },
-  "on-hold":     { label: "On Hold",     bg: "bg-ast_yellow/20",    text: "text-ast_yellow" },
-  "completed":   { label: "Completed",   bg: "bg-white/10",         text: "text-white/50" },
+  "planned":     { label: "Planned",     bg: "bg-ast_electric_blue/20", text: "text-ast_electric_blue" },
+  "in-progress": { label: "In Progress", bg: "bg-ast_cyan/20",          text: "text-ast_cyan" },
+  "on-hold":     { label: "On Hold",     bg: "bg-ast_yellow/20",        text: "text-ast_yellow" },
+  "completed":   { label: "Completed",   bg: "bg-ast_lavender/20",      text: "text-ast_lavender" },
+};
+
+// Card border/background reflects project status.
+// Selected state brightens the same color family — not a generic blue override.
+// Theme/colorFamily is a separate metadata field shown as a small tag below the status pill.
+const STATUS_CARD_STYLES = {
+  "planned": {
+    base:     "border-ast_electric_blue/30 bg-ast_electric_blue/5 hover:border-ast_electric_blue/55 hover:bg-ast_electric_blue/10",
+    selected: "border-ast_electric_blue/70 bg-ast_electric_blue/15 shadow-astBlue",
+  },
+  "in-progress": {
+    base:     "border-ast_cyan/30 bg-ast_cyan/5 hover:border-ast_cyan/55 hover:bg-ast_cyan/10",
+    selected: "border-ast_cyan/70 bg-ast_cyan/15 shadow-astCyan",
+  },
+  "on-hold": {
+    base:     "border-ast_yellow/30 bg-ast_yellow/5 hover:border-ast_yellow/55 hover:bg-ast_yellow/10",
+    selected: "border-ast_yellow/70 bg-ast_yellow/15 shadow-astWarm",
+  },
+  "completed": {
+    base:     "border-ast_lavender/25 bg-ast_lavender/5 hover:border-ast_lavender/45 hover:bg-ast_lavender/10",
+    selected: "border-ast_lavender/60 bg-ast_lavender/10 shadow-astLavender",
+  },
 };
 
 function StatusBadge({ status }) {
@@ -28,7 +50,7 @@ function ArtworkPlaceholder() {
       <div className="absolute bottom-5 left-3 w-12 h-px bg-ast_pink/20 -rotate-6" />
       <div className="absolute top-5 right-3 w-1.5 h-1.5 rounded-full bg-ast_yellow/40" />
       <div className="absolute bottom-8 right-4 w-1 h-1 rounded-full bg-ast_turquoise/50" />
-      <span className="absolute bottom-1.5 right-1.5 text-[8px] text-white/20 leading-none">no image</span>
+      <span className="absolute bottom-1.5 right-1.5 text-[8px] text-ast_faint leading-none">no image</span>
     </div>
   );
 }
@@ -110,7 +132,7 @@ export default function ProjectsCard({
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Project Title</label>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Project Title</label>
               <input
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
                 value={editDraft.title}
@@ -118,7 +140,7 @@ export default function ProjectsCard({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Status</label>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Status</label>
               <select
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition"
                 value={editDraft.status}
@@ -131,7 +153,7 @@ export default function ProjectsCard({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Notes</label>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Notes</label>
               <textarea
                 rows={3}
                 className="w-full rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_turquoise focus:outline-none focus:ring-2 focus:ring-ast_turquoise/30 transition resize-none"
@@ -140,7 +162,7 @@ export default function ProjectsCard({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#C9C3DF] mb-2">Estimated Budget</label>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Estimated Budget</label>
               <input
                 type="number"
                 min="0"
@@ -166,7 +188,7 @@ export default function ProjectsCard({
           <div className="flex items-start gap-4 mb-4">
             <div className="flex-1 min-w-0">
               <p className="text-xs uppercase tracking-wider text-ast_turquoise mb-1">Project</p>
-              <h2 className="text-lg font-bold text-ast_yellow">
+              <h2 className="text-lg font-bold text-ast_cyan">
                 {selectedProject.title}
                 {selectedProject.isNew && (
                   <span className="ml-2 text-xs bg-ast_turquoise/40 text-ast_turquoise px-2 py-0.5 rounded-full font-semibold align-middle">
@@ -174,8 +196,13 @@ export default function ProjectsCard({
                   </span>
                 )}
               </h2>
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <StatusBadge status={selectedProject.status} />
+                {selectedProject.colorFamily && (
+                  <span className="text-xs text-ast_faint bg-white/5 px-1.5 py-0.5 rounded">
+                    {selectedProject.colorFamily}
+                  </span>
+                )}
               </div>
             </div>
             <ArtworkPlaceholder />
@@ -183,28 +210,28 @@ export default function ProjectsCard({
 
           {selectedProject.notes && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-[#C9C3DF] mb-1">Notes</p>
-              <p className="text-sm text-white/80">{selectedProject.notes}</p>
+              <p className="text-xs font-medium text-ast_lavender mb-1">Notes</p>
+              <p className="text-sm text-ast_body">{selectedProject.notes}</p>
             </div>
           )}
 
           {selectedProject.budget > 0 && (
             <div className="mb-4">
-              <p className="text-xs font-medium text-[#C9C3DF] mb-1">Budget</p>
-              <p className="text-sm text-white/80">${selectedProject.budget}</p>
+              <p className="text-xs font-medium text-ast_lavender mb-1">Budget</p>
+              <p className="text-sm text-ast_body">${selectedProject.budget}</p>
             </div>
           )}
 
           <div className="border-t border-ast_turquoise/20 pt-4 mb-4">
-            <p className="text-xs font-medium text-[#C9C3DF] mb-2">Supplies</p>
+            <p className="text-xs font-medium text-ast_lavender mb-2">Supplies</p>
             {assignedSupplies.length > 0 && (
               <ul className="mb-3 space-y-1">
                 {assignedSupplies.map(s => (
-                  <li key={s.id} className="flex items-center justify-between text-sm text-white/70">
+                  <li key={s.id} className="flex items-center justify-between text-sm text-ast_body/75">
                     <span>· {s.name}</span>
                     <button
                       onClick={() => onUnassignSupply(selectedProject.id, s.id)}
-                      className="shrink-0 ml-2 text-white/30 hover:text-ast_pink transition"
+                      className="shrink-0 ml-2 text-ast_faint hover:text-ast_pink transition"
                       title="Remove"
                     >×</button>
                   </li>
@@ -212,7 +239,7 @@ export default function ProjectsCard({
               </ul>
             )}
             {unassignedSupplies.length === 0 ? (
-              <p className="text-xs text-white/40">All supplies assigned</p>
+              <p className="text-xs text-ast_body/50">All supplies assigned</p>
             ) : (
               <div className="flex gap-2">
                 <select
@@ -252,7 +279,7 @@ export default function ProjectsCard({
   const content = (
     <div>
       {sessionProjects.length === 0 && (
-        <p className="py-8 text-sm text-white/30 text-center">No projects here yet.</p>
+        <p className="py-8 text-sm text-ast_body/40 text-center">No projects here yet.</p>
       )}
 
       <div className="space-y-3">
@@ -263,14 +290,16 @@ export default function ProjectsCard({
               <div className="grid grid-cols-3 gap-3">
                 {row.map((project) => {
                   const isSelected = selectedProjectId === project.id;
+                  const cardStyle = STATUS_CARD_STYLES[project.status] ?? {
+                    base:     "border-ast_purple/30 bg-ast_purple/5 hover:border-ast_turquoise/40 hover:bg-ast_turquoise/10",
+                    selected: "border-ast_turquoise/70 bg-ast_turquoise/15 shadow-astTurquoise",
+                  };
                   return (
                     <button
                       key={project.id}
                       onClick={() => { onSelectProject(isSelected ? null : project.id); setIsEditingProject(false); }}
                       className={`relative rounded-2xl border p-4 text-left transition ${
-                        isSelected
-                          ? "border-ast_turquoise/70 bg-ast_turquoise/15 shadow-astTurquoise"
-                          : "border-ast_purple/30 bg-ast_purple/5 hover:border-ast_turquoise/40 hover:bg-ast_turquoise/10"
+                        isSelected ? cardStyle.selected : cardStyle.base
                       }`}
                     >
                       {project.isNew && (
@@ -278,10 +307,15 @@ export default function ProjectsCard({
                           NEW
                         </span>
                       )}
-                      <p className={`text-sm font-semibold leading-snug mb-3 ${project.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_yellow" : "text-ast_yellow/80"}`}>
+                      <p className={`text-sm font-semibold leading-snug mb-2 ${project.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
                         {project.title}
                       </p>
                       <StatusBadge status={project.status} />
+                      {project.colorFamily && (
+                        <span className="mt-2 inline-block text-xs text-ast_faint bg-white/5 px-1.5 py-0.5 rounded">
+                          {project.colorFamily}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

@@ -79,7 +79,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Name — full width */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Supply Name *
                   </label>
                   <input
@@ -94,7 +94,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Category */}
                 <div>
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Category
                   </label>
                   <select
@@ -114,7 +114,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
                 {/* Subcategory — only when category has subcategories */}
                 {availableSubcategories.length > 0 ? (
                   <div>
-                    <label className="block text-sm font-medium text-ast_yellow mb-2">
+                    <label className="block text-sm font-medium text-ast_lavender mb-2">
                       Subcategory
                     </label>
                     <select
@@ -135,7 +135,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Quantity */}
                 <div>
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Quantity *
                   </label>
                   <input
@@ -151,7 +151,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Status */}
                 <div>
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Stock Status
                   </label>
                   <select
@@ -168,7 +168,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Location — full width */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Location
                   </label>
                   <input
@@ -183,7 +183,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel }) {
 
                 {/* Notes — full width */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-ast_yellow mb-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">
                     Notes
                   </label>
                   <textarea

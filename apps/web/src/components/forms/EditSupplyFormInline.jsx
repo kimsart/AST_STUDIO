@@ -54,7 +54,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Supply Name *
             </label>
             <input
@@ -67,7 +67,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Category
             </label>
             <select
@@ -83,7 +83,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Quantity *
             </label>
             <input
@@ -97,7 +97,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Stock Status
             </label>
             <select
@@ -113,7 +113,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Location
             </label>
             <input
@@ -126,7 +126,7 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Notes
             </label>
             <textarea

@@ -92,10 +92,10 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
 
             {/* Duplicate body — scrolls if needed */}
             <div className="flex-1 overflow-y-auto px-6 pb-6">
-              <p className="text-sm text-white/80 mb-1">
+              <p className="text-sm text-ast_body mb-1">
                 Another project already uses this title.
               </p>
-              <p className="text-sm text-white/60 mb-4">
+              <p className="text-sm text-ast_muted mb-4">
                 Is this the same project or a different one?
               </p>
 
@@ -104,7 +104,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                 <p className="mt-0.5 text-sm font-semibold text-ast_yellow">
                   {duplicateState.existingProject.title}
                 </p>
-                <p className="text-xs text-white/40">{duplicateState.existingProject.status}</p>
+                <p className="text-xs text-ast_faint">{duplicateState.existingProject.status}</p>
               </div>
 
               <div className="space-y-2">
@@ -115,7 +115,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                   <span className="text-sm font-semibold text-ast_turquoise">
                     Update existing project
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/50">
+                  <span className="mt-0.5 block text-xs text-ast_muted">
                     Select the existing project and close this form
                   </span>
                 </button>
@@ -127,7 +127,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                   <span className="text-sm font-semibold text-ast_lavender">
                     Create draft / version
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/50">
+                  <span className="mt-0.5 block text-xs text-ast_muted">
                     New card titled &ldquo;{duplicateState.draftTitle}&rdquo;
                   </span>
                 </button>
@@ -139,7 +139,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                   <span className="text-sm font-semibold text-ast_pink">
                     Create separate project anyway
                   </span>
-                  <span className="mt-0.5 block text-xs text-white/50">
+                  <span className="mt-0.5 block text-xs text-ast_muted">
                     This is a different project with the same title
                   </span>
                 </button>
@@ -174,7 +174,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
 
                     {/* Title — full width */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-ast_yellow mb-2">
+                      <label className="block text-sm font-medium text-ast_lavender mb-2">
                         Project Title *
                       </label>
                       <input
@@ -189,7 +189,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
 
                     {/* Status */}
                     <div>
-                      <label className="block text-sm font-medium text-ast_yellow mb-2">
+                      <label className="block text-sm font-medium text-ast_lavender mb-2">
                         Status
                       </label>
                       <select
@@ -207,7 +207,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
 
                     {/* Budget */}
                     <div>
-                      <label className="block text-sm font-medium text-ast_yellow mb-2">
+                      <label className="block text-sm font-medium text-ast_lavender mb-2">
                         Estimated Budget
                       </label>
                       <input
@@ -223,7 +223,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
 
                     {/* Notes — full width */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-ast_yellow mb-2">
+                      <label className="block text-sm font-medium text-ast_lavender mb-2">
                         Notes
                       </label>
                       <textarea

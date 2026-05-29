@@ -77,7 +77,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
           <h1 className="mt-2 text-3xl font-bold bg-[linear-gradient(90deg,#00E6FF_0%,#2E64FF_35%,#8D5CFF_65%,#FF2FB3_100%)] bg-clip-text text-transparent">Art Supplies</h1>
 
           {supplyNavView !== "categories" && (
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-white/50">
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-ast_muted">
               <button
                 onClick={handleBackToCategories}
                 className="hover:text-[#00E5FF] transition"
@@ -87,7 +87,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
 
               {selectedCategory && (
                 <>
-                  <span className="text-white/25">›</span>
+                  <span className="text-ast_faint">›</span>
                   {supplyNavView === "list" && selectedSubcategory ? (
                     <button
                       onClick={handleBackFromList}
@@ -103,7 +103,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
 
               {supplyNavView === "list" && selectedSubcategory && (
                 <>
-                  <span className="text-white/25">›</span>
+                  <span className="text-ast_faint">›</span>
                   <span className="text-[#00E5FF]">{selectedSubcategory}</span>
                 </>
               )}
@@ -154,10 +154,10 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
                   )}
                 </div>
                 <p className="text-2xl font-bold text-[#00E5FF]">{count}</p>
-                <p className="text-xs text-white/40 mt-1">
+                <p className="text-xs text-ast_faint mt-1">
                   {count === 1 ? "item" : "items"}
                   {cat.subcategories.length > 0 && (
-                    <span className="ml-1 text-white/25">· {cat.subcategories.length} types</span>
+                    <span className="ml-1 text-ast_faint">· {cat.subcategories.length} types</span>
                   )}
                 </p>
               </button>
@@ -179,7 +179,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
             <p className="text-2xl font-bold text-[#00E5FF]">
               {getCategoryCount(selectedCategory)}
             </p>
-            <p className="text-xs text-white/40 mt-1">view all</p>
+            <p className="text-xs text-ast_faint mt-1">view all</p>
           </button>
 
           {currentCategoryDef.subcategories.map(sub => {
@@ -192,7 +192,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               >
                 <p className="text-sm font-semibold text-[#9F6BFF]/80 mb-3">{sub}</p>
                 <p className="text-2xl font-bold text-[#00E5FF]">{subCount}</p>
-                <p className="text-xs text-white/40 mt-1">
+                <p className="text-xs text-ast_faint mt-1">
                   {subCount === 1 ? "item" : "items"}
                 </p>
               </button>
@@ -209,7 +209,7 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
               <p className="text-sm font-medium text-[#9F6BFF]/60 mb-1">
                 {selectedSubcategory ? selectedSubcategory : currentCategoryDef?.label}
               </p>
-              <p className="text-sm text-white/40">
+              <p className="text-sm text-ast_faint">
                 No supplies here yet.
               </p>
               <button

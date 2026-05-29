@@ -15,7 +15,7 @@ export default function StubPage({ title, description }) {
         {title}
       </h1>
 
-      <p className="text-sm text-white/50 mb-10">
+      <p className="text-sm text-ast_muted mb-10">
         {description || 'This page is coming soon.'}
       </p>
 

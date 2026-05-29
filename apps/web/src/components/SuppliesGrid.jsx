@@ -5,11 +5,11 @@ const GRID_COLS = 3;
 
 function StatusBadge({ status }) {
   const map = {
-    ok:       { label: "OK",       bg: "bg-ast_turquoise/20", text: "text-ast_turquoise" },
-    low:      { label: "Low",      bg: "bg-ast_yellow/20",    text: "text-ast_yellow" },
-    critical: { label: "Critical", bg: "bg-ast_pink/20",      text: "text-ast_pink" },
+    ok:       { label: "OK",       bg: "bg-ast_cyan/15",   text: "text-ast_cyan" },
+    low:      { label: "Low",      bg: "bg-ast_pink/20",   text: "text-ast_pink" },
+    critical: { label: "Critical", bg: "bg-ast_pink/20",   text: "text-ast_pink" },
   };
-  const s = map[status] ?? { label: status || "?", bg: "bg-white/10", text: "text-white/40" };
+  const s = map[status] ?? { label: status || "?", bg: "bg-white/10", text: "text-ast_faint" };
   return (
     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${s.bg} ${s.text}`}>
       {s.label}
@@ -88,7 +88,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Name</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Name</label>
                 <input
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.name}
@@ -96,7 +96,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Category</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Category</label>
                 <select
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.category}
@@ -117,7 +117,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Quantity</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Quantity</label>
                 <input
                   type="number"
                   min="0"
@@ -127,7 +127,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Stock Status</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Stock Status</label>
                 <select
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.status}
@@ -139,7 +139,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Location</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Location</label>
                 <input
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.location}
@@ -147,7 +147,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Notes</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Notes</label>
                 <input
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.notes}
@@ -158,7 +158,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
 
             {editSubcategories.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-ast_yellow mb-2">Subcategory</label>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Subcategory</label>
                 <select
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.subcategory ?? ""}
@@ -189,7 +189,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
           <div className="mb-4 flex items-start justify-between">
             <div>
               <p className="text-xs uppercase tracking-wider text-ast_pink mb-1">Supply</p>
-              <h2 className="text-lg font-bold text-ast_yellow">
+              <h2 className="text-lg font-bold text-ast_cyan">
                 {selectedSupply.name}
                 {selectedSupply.isNew && (
                   <span className="ml-2 text-xs bg-ast_pink/40 text-ast_pink px-2 py-0.5 rounded-full font-semibold align-middle">
@@ -211,27 +211,27 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
 
           <div className="grid grid-cols-3 gap-x-6 gap-y-3 mb-4">
             <div>
-              <p className="text-xs font-medium text-ast_yellow mb-1">Category</p>
-              <p className="text-sm text-white/80">{selectedSupply.category || "—"}</p>
+              <p className="text-xs font-medium text-ast_lavender mb-1">Category</p>
+              <p className="text-sm text-ast_body">{selectedSupply.category || "—"}</p>
             </div>
             {selectedSupply.subcategory && (
               <div>
-                <p className="text-xs font-medium text-ast_yellow mb-1">Subcategory</p>
-                <p className="text-sm text-white/80">{selectedSupply.subcategory}</p>
+                <p className="text-xs font-medium text-ast_lavender mb-1">Subcategory</p>
+                <p className="text-sm text-ast_body">{selectedSupply.subcategory}</p>
               </div>
             )}
             <div>
-              <p className="text-xs font-medium text-ast_yellow mb-1">Quantity</p>
-              <p className="text-sm text-white/80">{selectedSupply.qty ?? "—"}</p>
+              <p className="text-xs font-medium text-ast_lavender mb-1">Quantity</p>
+              <p className="text-sm text-ast_body">{selectedSupply.qty ?? "—"}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-ast_yellow mb-1">Location</p>
-              <p className="text-sm text-white/80">{selectedSupply.location || "—"}</p>
+              <p className="text-xs font-medium text-ast_lavender mb-1">Location</p>
+              <p className="text-sm text-ast_body">{selectedSupply.location || "—"}</p>
             </div>
             {selectedSupply.notes && (
               <div className="col-span-3">
-                <p className="text-xs font-medium text-ast_yellow mb-1">Notes</p>
-                <p className="text-sm text-white/80">{selectedSupply.notes}</p>
+                <p className="text-xs font-medium text-ast_lavender mb-1">Notes</p>
+                <p className="text-sm text-ast_body">{selectedSupply.notes}</p>
               </div>
             )}
           </div>
@@ -242,7 +242,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
             if (linked.length === 0) return null;
             return (
               <div className="mb-4">
-                <p className="text-xs font-medium text-ast_yellow mb-2">Used in Projects</p>
+                <p className="text-xs font-medium text-ast_lavender mb-2">Used in Projects</p>
                 <div className="flex flex-wrap gap-1.5">
                   {linked.map(p => (
                     <span key={p.id} className="text-xs bg-ast_lavender/20 text-ast_lavender px-2 py-0.5 rounded">
@@ -283,15 +283,15 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
             onClick={() => { setStatusFilter(f); setSelectedSupplyId(null); setIsEditingSupply(false); }}
             className={`text-xs px-3 py-1 rounded-lg transition ${
               f === statusFilter
-                ? "bg-ast_turquoise/20 text-ast_turquoise"
-                : "text-white/40 hover:text-ast_turquoise"
+                ? "bg-ast_electric_blue/20 text-ast_electric_blue"
+                : "text-ast_muted hover:text-ast_cyan"
             }`}
           >{f}</button>
         ))}
       </div>
 
       {filteredItems.length === 0 && (
-        <p className="py-8 text-sm text-white/30 text-center">No supplies match this filter.</p>
+        <p className="py-8 text-sm text-ast_body/40 text-center">No supplies match this filter.</p>
       )}
 
       <div className="space-y-3">
@@ -311,8 +311,8 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                       onClick={() => handleSelect(supply.id)}
                       className={`relative rounded-2xl border p-4 text-left transition ${
                         isSelected
-                          ? "border-ast_pink/70 bg-ast_pink/15 shadow-astPink"
-                          : "border-ast_purple/30 bg-ast_purple/5 hover:border-ast_pink/40 hover:bg-ast_pink/5"
+                          ? "border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue"
+                          : "border-ast_purple/30 bg-ast_purple/5 hover:border-ast_lavender/40 hover:bg-ast_lavender/5"
                       }`}
                     >
                       {supply.isNew && (
@@ -320,10 +320,10 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                           NEW
                         </span>
                       )}
-                      <p className={`text-sm font-semibold leading-snug mb-1 ${supply.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_yellow" : "text-ast_yellow/80"}`}>
+                      <p className={`text-sm font-semibold leading-snug mb-1 ${supply.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
                         {supply.name}
                       </p>
-                      <p className="text-xs text-white/40 mb-3">
+                      <p className="text-xs text-ast_body/50 mb-3">
                         {supply.category}
                         {supply.subcategory ? ` · ${supply.subcategory}` : ""}
                       </p>
@@ -331,7 +331,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                         <StatusBadge status={supply.status} />
                         <div className="flex items-center gap-2">
                           {supply.qty != null && (
-                            <span className="text-xs text-white/40">qty {supply.qty}</span>
+                            <span className="text-xs text-ast_body/50">qty {supply.qty}</span>
                           )}
                           {linkedCount > 0 && (
                             <span className="text-xs bg-ast_lavender/20 text-ast_lavender px-1.5 py-0.5 rounded">

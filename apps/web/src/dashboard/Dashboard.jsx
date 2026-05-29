@@ -177,13 +177,13 @@ export default function Dashboard({ defaultView = 'home' }) {
                 onClick={() => navigate('/projects')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'projects'
-                    ? 'border-ast_turquoise/60 bg-ast_turquoise/10'
-                    : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_turquoise/55 hover:bg-ast_turquoise/10'
+                    ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
+                    : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
                 <p className="mt-1 text-2xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-ast_body/55">
                   {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
                 </p>
               </button>
@@ -192,8 +192,8 @@ export default function Dashboard({ defaultView = 'home' }) {
                 onClick={() => navigate('/supplies')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
                   workspaceView === 'supplies'
-                    ? 'border-[#00E5FF]/70 bg-[linear-gradient(135deg,rgba(0,229,255,0.08),rgba(159,107,255,0.10))] shadow-[0_0_18px_rgba(0,229,255,0.15)]'
-                    : 'border-[#9F6BFF]/30 bg-[#120724] hover:border-[#00E5FF]/55 hover:bg-[#00E5FF]/5 hover:shadow-[0_0_14px_rgba(0,229,255,0.10)]'
+                    ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue'
+                    : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                 }`}
               >
                 <p className="text-xs uppercase tracking-wider text-[#9F6BFF]">Art Supplies</p>
@@ -212,7 +212,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                 <h3 className="mt-2 text-lg font-semibold text-[#8D5CFF]">
                   Retailer & Manufacturer Picks
                 </h3>
-                <p className="mt-2 text-sm text-white/70">
+                <p className="mt-2 text-sm text-ast_body/75">
                   Product demos, supply deals, and partner inspiration live here.
                 </p>
               </div>
@@ -277,7 +277,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                 <p className="text-sm font-semibold text-ast_lavender">
                   Studio Memory
                 </p>
-                <p className="mt-1 text-xs text-white/65">
+                <p className="mt-1 text-xs text-ast_body/70">
                   You were working on Watercolor Botanicals.
                 </p>
               </div>
@@ -286,7 +286,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                 <p className="text-sm font-semibold text-ast_turquoise">
                   Need help?
                 </p>
-                <p className="mt-1 text-xs text-white/65">
+                <p className="mt-1 text-xs text-ast_body/70">
                   Ask how to add supplies, track condition, or prep for a show.
                 </p>
               </div>

@@ -10,18 +10,18 @@ export default function ProjectSummary() {
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div>
-          <p className="text-xs text-white/55">Progress</p>
+          <p className="text-xs text-ast_muted">Progress</p>
           <div className="h-2 bg-white/10 rounded-full overflow-hidden mt-1">
             <div className="h-full w-2/3 bg-gradient-to-r from-ast_turquoise to-ast_pink" />
           </div>
           <p className="text-sm font-bold text-ast_turquoise mt-1">67%</p>
         </div>
         <div>
-          <p className="text-xs text-white/55">Pieces</p>
+          <p className="text-xs text-ast_muted">Pieces</p>
           <p className="text-2xl font-bold text-ast_turquoise mt-1">8 of 12</p>
         </div>
         <div>
-          <p className="text-xs text-white/55">Status</p>
+          <p className="text-xs text-ast_muted">Status</p>
           <p className="text-sm font-bold text-ast_turquoise mt-2">In Progress</p>
         </div>
       </div>
@@ -30,12 +30,12 @@ export default function ProjectSummary() {
         <button className="flex-1 bg-ast_turquoise/20 border border-ast_turquoise text-ast_turquoise px-4 py-2 rounded-lg hover:bg-ast_turquoise/30 transition text-sm font-medium">
           Open Project
         </button>
-        <button className="flex-1 text-white/55 hover:text-ast_turquoise transition text-sm font-medium">
+        <button className="flex-1 text-ast_muted hover:text-ast_cyan transition text-sm font-medium">
           Log Hours
         </button>
       </div>
 
-      <div className="mt-4 flex gap-3 text-xs text-white/50">
+      <div className="mt-4 flex gap-3 text-xs text-ast_muted">
         <span>📅 Due May 28</span>
         <span>💰 Budget $340/500</span>
         <span>⏱️ Hours: 45.2</span>

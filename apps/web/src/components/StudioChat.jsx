@@ -8,7 +8,7 @@ export default function StudioChat() {
           <div className="w-6 h-6 rounded-full bg-ast_purple/30 flex-shrink-0" />
           <div>
             <p className="text-xs font-bold text-ast_turquoise">You</p>
-            <p className="text-xs text-white/75">Working on botanicals today</p>
+            <p className="text-xs text-ast_body/80">Working on botanicals today</p>
           </div>
         </div>
         
@@ -16,7 +16,7 @@ export default function StudioChat() {
           <div className="w-6 h-6 rounded-full bg-ast_pink/30 flex-shrink-0" />
           <div>
             <p className="text-xs font-bold text-ast_turquoise">Sarah</p>
-            <p className="text-xs text-white/75">Love your progress! 🎨</p>
+            <p className="text-xs text-ast_body/80">Love your progress! 🎨</p>
           </div>
         </div>
 
@@ -24,7 +24,7 @@ export default function StudioChat() {
           <div className="w-6 h-6 rounded-full bg-ast_yellow/30 flex-shrink-0" />
           <div>
             <p className="text-xs font-bold text-ast_turquoise">Studio</p>
-            <p className="text-xs text-white/75">New supplies available 📦</p>
+            <p className="text-xs text-ast_body/80">New supplies available 📦</p>
           </div>
         </div>
       </div>

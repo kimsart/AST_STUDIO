@@ -7,7 +7,7 @@ export default function CommunitySpotlight() {
         <div className="w-full h-24 rounded-lg bg-gradient-to-br from-ast_purple via-ast_pink to-ast_turquoise opacity-70 mb-3" />
         
         <h3 className="font-bold text-ast_turquoise text-sm mb-1">Maya Chen</h3>
-        <p className="text-xs text-white/60 mb-3">Contemporary watercolor artist exploring botanical themes</p>
+        <p className="text-xs text-ast_body/65 mb-3">Contemporary watercolor artist exploring botanical themes</p>
 
         <div className="flex flex-wrap gap-2">
           <span className="text-xs bg-ast_turquoise/20 text-ast_turquoise px-2 py-1 rounded">Watercolor</span>

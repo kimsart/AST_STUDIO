@@ -44,7 +44,7 @@ export default function EditProjectFormInline({ project, onSubmit, onCancel }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Project Title *
             </label>
             <input
@@ -57,7 +57,7 @@ export default function EditProjectFormInline({ project, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Status
             </label>
             <select
@@ -74,7 +74,7 @@ export default function EditProjectFormInline({ project, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Notes
             </label>
             <textarea
@@ -87,7 +87,7 @@ export default function EditProjectFormInline({ project, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_yellow mb-2">
+            <label className="block text-sm font-medium text-ast_lavender mb-2">
               Estimated Budget
             </label>
             <input

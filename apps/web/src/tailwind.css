@@ -10,12 +10,17 @@
 
   :root {
     --ast-turquoise: #2EC4B6;
-    --ast-cyan: #00B7EB;
+    --ast-cyan: #00E6FF;
     --ast-purple: #5B3FD3;
-    --ast-pink: #FE5FA7;
+    --ast-lavender: #B78BFF;
+    --ast-pink: #FF4DB8;
     --ast-orange: #FFB85C;
     --ast-yellow: #F4F27A;
     --ast-coral: #FFE0CC;
+    --ast-body: #FFF4D6;
+    --ast-muted: #DCC7FF;
+    --ast-faint: #9F7FD6;
+    --ast-electric-blue: #2E64FF;
 
     --ast-bg-primary: #121A5A;
     --ast-bg-secondary: #1822A8;
