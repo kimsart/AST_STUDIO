@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { compressImage } from "../utils/imageUtils.js";
 
 const GRID_COLS = 3;
 
@@ -68,7 +69,7 @@ export default function ProjectsCard({
 }) {
   const [pendingSupplyId, setPendingSupplyId] = useState("");
   const [isEditingProject, setIsEditingProject] = useState(false);
-  const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "", imageDataUrl: "" });
 
   const selectedProject = sessionProjects.find((p) => p.id === selectedProjectId);
 
@@ -96,6 +97,7 @@ export default function ProjectsCard({
       status: selectedProject.status || "planned",
       notes: selectedProject.notes ?? "",
       budget: selectedProject.budget ?? "",
+      imageDataUrl: selectedProject.imageDataUrl ?? "",
     });
     setIsEditingProject(true);
   };
@@ -109,6 +111,18 @@ export default function ProjectsCard({
   const handleCancelEdit = (e) => {
     e.stopPropagation();
     setIsEditingProject(false);
+  };
+
+  const handleEditImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    try {
+      const dataUrl = await compressImage(file);
+      setEditDraft(d => ({ ...d, imageDataUrl: dataUrl }));
+    } catch {
+      // silently ignore — user can try again
+    }
   };
 
   // Split flat project list into rows so the detail panel can be injected
@@ -171,6 +185,31 @@ export default function ProjectsCard({
                 onChange={e => setEditDraft(d => ({ ...d, budget: e.target.value }))}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Photo</label>
+              <div className="flex items-center gap-3">
+                {editDraft.imageDataUrl && (
+                  <img
+                    src={editDraft.imageDataUrl}
+                    alt="preview"
+                    className="w-16 h-16 rounded-lg object-cover border border-ast_turquoise/30 shrink-0"
+                  />
+                )}
+                <label className="cursor-pointer rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
+                  {editDraft.imageDataUrl ? "Change photo" : "Add photo"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleEditImageChange} />
+                </label>
+                {editDraft.imageDataUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setEditDraft(d => ({ ...d, imageDataUrl: "" }))}
+                    className="text-xs text-ast_faint hover:text-ast_pink transition"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
             <div className="flex gap-3 mt-2">
               <button
                 onClick={handleCancelEdit}
@@ -205,7 +244,15 @@ export default function ProjectsCard({
                 )}
               </div>
             </div>
-            <ArtworkPlaceholder />
+            {selectedProject.imageDataUrl ? (
+              <img
+                src={selectedProject.imageDataUrl}
+                alt={selectedProject.title}
+                className="w-24 h-24 shrink-0 rounded-xl object-cover border border-ast_purple/40"
+              />
+            ) : (
+              <ArtworkPlaceholder />
+            )}
           </div>
 
           {selectedProject.notes && (
@@ -307,9 +354,18 @@ export default function ProjectsCard({
                           NEW
                         </span>
                       )}
-                      <p className={`text-sm font-semibold leading-snug mb-2 ${project.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
-                        {project.title}
-                      </p>
+                      <div className="flex items-start gap-2 mb-2">
+                        <p className={`flex-1 text-sm font-semibold leading-snug ${project.isNew ? "pr-10" : ""} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
+                          {project.title}
+                        </p>
+                        {project.imageDataUrl && (
+                          <img
+                            src={project.imageDataUrl}
+                            alt=""
+                            className="shrink-0 w-10 h-10 rounded-lg object-cover opacity-85"
+                          />
+                        )}
+                      </div>
                       <StatusBadge status={project.status} />
                       {project.colorFamily && (
                         <span className="mt-2 inline-block text-xs text-ast_faint bg-white/5 px-1.5 py-0.5 rounded">

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { SUPPLY_CATEGORIES } from "../data/supplyCategories.js";
+import { useState, useEffect, useRef } from "react";
+import { SUPPLY_CATEGORIES, buildCategoryOptions } from "../data/supplyCategories.js";
 
 const GRID_COLS = 3;
 
@@ -17,11 +17,21 @@ function StatusBadge({ status }) {
   );
 }
 
-export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [], onEditSupply, onDeleteSupply }) {
+export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessionProjects = [], onEditSupply, onDeleteSupply, onAssignSupply }) {
   const [selectedSupplyId, setSelectedSupplyId] = useState(null);
   const [isEditingSupply, setIsEditingSupply] = useState(false);
   const [editDraft, setEditDraft] = useState({});
   const [statusFilter, setStatusFilter] = useState("All");
+
+  // Reset status filter when a new supply arrives so it's never hidden by an active filter.
+  const prevCountRef = useRef(sessionSupplies.length);
+  useEffect(() => {
+    if (sessionSupplies.length > prevCountRef.current) {
+      setStatusFilter("All");
+      setSelectedSupplyId(null);
+    }
+    prevCountRef.current = sessionSupplies.length;
+  }, [sessionSupplies.length]);
 
   const getFilteredItems = () => {
     switch (statusFilter) {
@@ -32,11 +42,12 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
   };
 
   const filteredItems = getFilteredItems();
-  // Resolve against filteredItems so detail closes if supply leaves the status filter.
   const selectedSupply = filteredItems.find(s => s.id === selectedSupplyId) ?? null;
 
+  const categoryOptions = buildCategoryOptions(allSupplies ?? sessionSupplies);
   const editCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === editDraft.category);
   const editSubcategories = editCategoryDef ? editCategoryDef.subcategories : [];
+  const editIsOther = editDraft.category === "Other";
 
   const handleSelect = (id) => {
     setSelectedSupplyId(prev => prev === id ? null : id);
@@ -45,19 +56,35 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
 
   const handleStartEdit = () => {
     setEditDraft({
-      name:        selectedSupply.name        ?? "",
-      category:    selectedSupply.category    ?? "",
-      subcategory: selectedSupply.subcategory ?? "",
-      qty:         selectedSupply.qty         ?? "",
-      status:      selectedSupply.status      ?? "ok",
-      location:    selectedSupply.location    ?? "",
-      notes:       selectedSupply.notes       ?? "",
+      name:              selectedSupply.name        ?? "",
+      category:          selectedSupply.category    ?? "",
+      customCategory:    "",
+      subcategory:       selectedSupply.subcategory ?? "",
+      qty:               selectedSupply.qty         ?? "",
+      status:            selectedSupply.status      ?? "ok",
+      location:          selectedSupply.location    ?? "",
+      notes:             selectedSupply.notes       ?? "",
+      assignToProjectId: "",
     });
     setIsEditingSupply(true);
   };
 
   const handleSaveEdit = () => {
-    onEditSupply(selectedSupplyId, editDraft);
+    const { customCategory, assignToProjectId, ...rest } = editDraft;
+    const finalCategory = rest.category === "Other" && customCategory?.trim()
+      ? customCategory.trim()
+      : rest.category;
+
+    onEditSupply(selectedSupplyId, { ...rest, category: finalCategory });
+
+    if (assignToProjectId && onAssignSupply) {
+      const projectIdNum = Number(assignToProjectId);
+      const alreadyAssigned = (selectedSupply.usedInProjectIds || []).includes(projectIdNum);
+      if (!alreadyAssigned) {
+        onAssignSupply(projectIdNum, selectedSupplyId);
+      }
+    }
+
     setIsEditingSupply(false);
   };
 
@@ -72,6 +99,11 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
     rows.push(filteredItems.slice(i, i + GRID_COLS));
   }
 
+  // Projects not yet linked to this supply (for the add-to-project dropdown)
+  const unlinkedProjects = selectedSupply
+    ? sessionProjects.filter(p => !(selectedSupply.usedInProjectIds || []).includes(p.id))
+    : [];
+
   const detailPanel = selectedSupply && (
     <div className="mt-3 rounded-2xl border border-ast_pink/60 bg-ast_deep/95 p-6 shadow-astPink">
 
@@ -79,10 +111,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
         <>
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-lg font-bold text-ast_pink">Edit Supply</h2>
-            <button
-              onClick={handleCancelEdit}
-              className="text-xl text-ast_yellow/60 hover:text-ast_yellow transition"
-            >✕</button>
+            <button onClick={handleCancelEdit} className="text-xl text-ast_yellow/60 hover:text-ast_yellow transition">✕</button>
           </div>
 
           <div className="space-y-4">
@@ -107,11 +136,12 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                     setEditDraft(d => ({
                       ...d,
                       category: newCat,
+                      customCategory: "",
                       subcategory: validSubs.includes(d.subcategory) ? d.subcategory : "",
                     }));
                   }}
                 >
-                  {SUPPLY_CATEGORIES.map(cat => (
+                  {categoryOptions.map(cat => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
                   ))}
                 </select>
@@ -135,7 +165,7 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                 >
                   <option value="ok">OK</option>
                   <option value="low">Low</option>
-                  <option value="critical">Critical</option>
+                  <option value="critical">Critical / Out</option>
                 </select>
               </div>
               <div>
@@ -156,7 +186,19 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
               </div>
             </div>
 
-            {editSubcategories.length > 0 && (
+            {/* Subcategory or custom category */}
+            {editIsOther ? (
+              <div>
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Custom Category</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Colored Pencil, Charcoal"
+                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  value={editDraft.customCategory ?? ""}
+                  onChange={e => setEditDraft(d => ({ ...d, customCategory: e.target.value }))}
+                />
+              </div>
+            ) : editSubcategories.length > 0 ? (
               <div>
                 <label className="block text-sm font-medium text-ast_lavender mb-2">Subcategory</label>
                 <select
@@ -170,7 +212,34 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
                   ))}
                 </select>
               </div>
-            )}
+            ) : null}
+
+            {/* Project assignment */}
+            <div>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Add to Project</label>
+              {(selectedSupply.usedInProjectIds || []).length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {(selectedSupply.usedInProjectIds || []).map(id => {
+                    const p = sessionProjects.find(p => p.id === id);
+                    return p ? (
+                      <span key={id} className="text-xs bg-ast_lavender/20 text-ast_lavender px-2 py-0.5 rounded">
+                        {p.title}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
+              <select
+                className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                value={editDraft.assignToProjectId}
+                onChange={e => setEditDraft(d => ({ ...d, assignToProjectId: e.target.value }))}
+              >
+                <option value="">— Studio inventory (unassigned) —</option>
+                {unlinkedProjects.map(p => (
+                  <option key={p.id} value={p.id}>{p.title}</option>
+                ))}
+              </select>
+            </div>
 
             <div className="flex gap-3 mt-2">
               <button
@@ -275,7 +344,6 @@ export default function SuppliesGrid({ sessionSupplies = [], sessionProjects = [
 
   return (
     <div>
-      {/* Status filter bar */}
       <div className="flex gap-2 mb-4">
         {["All", "Low Stock", "Out of Stock"].map(f => (
           <button

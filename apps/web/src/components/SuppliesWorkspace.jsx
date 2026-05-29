@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SUPPLY_CATEGORIES } from "../data/supplyCategories.js";
 import SuppliesGrid from "./SuppliesGrid.jsx";
 
-export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, onEditSupply, onDeleteSupply, onOpenAddSupply, onImport, onExport }) {
+export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, onEditSupply, onDeleteSupply, onAssignSupply, onOpenAddSupply, onImport, onExport }) {
   const [supplyNavView, setSupplyNavView] = useState("categories");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+
+  // When a supply is added, reset to unfiltered list so the new item is always visible —
+  // including custom categories that have no bento card and would otherwise be unreachable.
+  const prevCountRef = useRef(sessionSupplies.length);
+  useEffect(() => {
+    if (sessionSupplies.length > prevCountRef.current) {
+      setSupplyNavView("list");
+      setSelectedCategory(null);
+      setSelectedSubcategory(null);
+    }
+    prevCountRef.current = sessionSupplies.length;
+  }, [sessionSupplies.length]);
 
   const currentCategoryDef = selectedCategory
     ? SUPPLY_CATEGORIES.find(c => c.value === selectedCategory)
@@ -222,9 +234,11 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
           ) : (
             <SuppliesGrid
               sessionSupplies={filteredSupplies}
+              allSupplies={sessionSupplies}
               sessionProjects={sessionProjects}
               onEditSupply={onEditSupply}
               onDeleteSupply={onDeleteSupply}
+              onAssignSupply={onAssignSupply}
             />
           )}
         </div>

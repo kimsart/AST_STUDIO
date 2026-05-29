@@ -20,8 +20,6 @@ export default function Dashboard({ defaultView = 'home' }) {
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
   const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
-  const [workspaceView, setWorkspaceView] = useState(defaultView);
-
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
   useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
 
@@ -35,11 +33,24 @@ export default function Dashboard({ defaultView = 'home' }) {
   };
 
   const handleAddSupply = (supplyData) => {
+    const { assignedProjectId, ...rest } = supplyData;
     const newId = Math.max(...sessionSupplies.map(s => s.id), 100) + 1;
-    setSessionSupplies((prev) => [
+    setSessionSupplies(prev => [
       ...prev,
-      { id: newId, usedInProjectIds: [], ...supplyData, isNew: true },
+      {
+        id: newId,
+        usedInProjectIds: assignedProjectId ? [assignedProjectId] : [],
+        ...rest,
+        isNew: true,
+      },
     ]);
+    if (assignedProjectId) {
+      setSessionProjects(prev => prev.map(p =>
+        p.id === assignedProjectId && !p.supplyIds.includes(newId)
+          ? { ...p, supplyIds: [...p.supplyIds, newId] }
+          : p
+      ));
+    }
     setShowAddSupplyForm(false);
   };
 
@@ -176,7 +187,7 @@ export default function Dashboard({ defaultView = 'home' }) {
               <button
                 onClick={() => navigate('/projects')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
-                  workspaceView === 'projects'
+                  defaultView === 'projects'
                     ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
                     : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                 }`}
@@ -191,7 +202,7 @@ export default function Dashboard({ defaultView = 'home' }) {
               <button
                 onClick={() => navigate('/supplies')}
                 className={`w-full text-left rounded-xl border p-4 transition ${
-                  workspaceView === 'supplies'
+                  defaultView === 'supplies'
                     ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue'
                     : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                 }`}
@@ -223,7 +234,7 @@ export default function Dashboard({ defaultView = 'home' }) {
           <main className="col-span-7 min-h-0 rounded-3xl border border-ast_purple/50 bg-[#0B0018] p-6 backdrop-blur-xl">
 
             {/* HOME VIEW */}
-            {workspaceView === 'home' && (
+            {defaultView === 'home' && (
               <HomeWorkspace
                 onClickImport={() => fileInputRef.current?.click()}
                 onExport={handleExportData}
@@ -231,7 +242,7 @@ export default function Dashboard({ defaultView = 'home' }) {
             )}
 
             {/* PROJECTS VIEW */}
-            {workspaceView === 'projects' && (
+            {defaultView === 'projects' && (
               <ProjectsWorkspace
                 sessionProjects={sessionProjects}
                 sessionSupplies={sessionSupplies}
@@ -248,12 +259,13 @@ export default function Dashboard({ defaultView = 'home' }) {
             )}
 
             {/* SUPPLIES VIEW */}
-            {workspaceView === 'supplies' && (
+            {defaultView === 'supplies' && (
               <SuppliesWorkspace
                 sessionSupplies={sessionSupplies}
                 sessionProjects={sessionProjects}
                 onEditSupply={handleEditSupply}
                 onDeleteSupply={handleDeleteSupply}
+                onAssignSupply={handleAssignSupply}
                 onOpenAddSupply={() => setShowAddSupplyForm(true)}
                 onImport={() => fileInputRef.current?.click()}
                 onExport={handleExportData}
@@ -326,6 +338,8 @@ export default function Dashboard({ defaultView = 'home' }) {
         <AddSupplyFormInline
           onSubmit={handleAddSupply}
           onCancel={() => setShowAddSupplyForm(false)}
+          sessionProjects={sessionProjects}
+          sessionSupplies={sessionSupplies}
         />
       )}
 
