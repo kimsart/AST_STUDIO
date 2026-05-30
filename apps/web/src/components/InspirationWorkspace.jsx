@@ -109,18 +109,25 @@ function FeaturedArtistCard({ highlight = false }) {
       <div className="h-24 bg-gradient-to-br from-ast_purple via-ast_pink/60 to-ast_turquoise opacity-75" />
       <div className="p-5">
         <p className="text-[10px] uppercase tracking-[0.3em] text-ast_faint mb-2">Featured Artist</p>
-        <h3 className="font-bold text-ast_turquoise text-sm mb-1">Maya Chen</h3>
+        <h3 className="font-bold text-ast_turquoise text-sm mb-0.5">Kim Wyatt</h3>
+        <p className="text-[10px] text-ast_muted mb-1">@kims_studio_labs · Kim Wyatt Studio Art Labs</p>
         <p className="text-xs text-ast_body/65 mb-3 leading-relaxed">
-          Contemporary watercolor artist exploring botanical themes and the intersection of scientific illustration and fine art.
+          Artist and founder behind AST Studio. Kim Wyatt Studio Art Labs is the real-world studio practice this app was built to support.
         </p>
         <div className="flex flex-wrap gap-1.5">
-          <span className="text-[9px] bg-ast_turquoise/20 text-ast_turquoise px-2 py-0.5 rounded-full">Watercolor</span>
-          <span className="text-[9px] bg-ast_lavender/20 text-ast_lavender px-2 py-0.5 rounded-full">Botanical</span>
-          <span className="text-[9px] bg-ast_lavender/10 text-ast_faint px-2 py-0.5 rounded-full">Featured</span>
+          <span className="text-[9px] bg-ast_turquoise/20 text-ast_turquoise px-2 py-0.5 rounded-full">Founder</span>
+          <span className="text-[9px] bg-ast_lavender/20 text-ast_lavender px-2 py-0.5 rounded-full">Studio Artist</span>
+          <span className="text-[9px] bg-ast_lavender/10 text-ast_faint px-2 py-0.5 rounded-full">Beta</span>
         </div>
-        <button className="mt-3 text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition">
-          View Profile →
-        </button>
+        <a
+          href="https://www.kimwyatt.art/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-block text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition"
+        >
+          kimwyatt.art →
+        </a>
+        <p className="mt-2 text-[8px] text-ast_faint/50 leading-snug">Artwork by Kim Wyatt. Used with artist permission for Art Supply Tracker beta testing.</p>
       </div>
     </div>
   );

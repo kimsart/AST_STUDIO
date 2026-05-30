@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -9,13 +9,20 @@ import StudioChat from "../components/StudioChat.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 import InspirationWorkspace from "../components/InspirationWorkspace.jsx";
-import { getTodayInArtHistory, getQuoteOfTheDay } from "../data/inspirationFeed/index.js";
+import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/inspirationFeed/index.js";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
 
 export default function Dashboard({ defaultView = 'home' }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+
+  useEffect(() => {
+    if (location.state?.selectedProjectId != null) {
+      setSelectedProjectId(location.state.selectedProjectId);
+    }
+  }, [location.key]);
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
@@ -188,35 +195,48 @@ export default function Dashboard({ defaultView = 'home' }) {
 
             <div className="space-y-3">
               {/* Compact nav buttons */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-1.5">
                 <button
                   onClick={() => navigate('/projects')}
-                  className={`rounded-xl border p-3 text-left transition ${
+                  className={`rounded-xl border p-2.5 text-left transition ${
                     defaultView === 'projects'
                       ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
                       : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
-                  <p className="mt-0.5 text-xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
-                  <p className="text-[10px] text-ast_body/55 leading-tight">
-                    {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
+                  <p className="text-[9px] uppercase tracking-wider text-ast_turquoise">Projects</p>
+                  <p className="mt-0.5 text-lg font-bold text-[#00E6FF]">{sessionProjects.length}</p>
+                  <p className="text-[9px] text-ast_body/55 leading-tight">
+                    {sessionProjects.filter(p => p.status === 'in-progress').length} active
                   </p>
                 </button>
 
                 <button
                   onClick={() => navigate('/supplies')}
-                  className={`rounded-xl border p-3 text-left transition ${
+                  className={`rounded-xl border p-2.5 text-left transition ${
                     defaultView === 'supplies'
-                      ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue'
+                      ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
                       : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                   }`}
                 >
-                  <p className="text-xs uppercase tracking-wider text-[#9F6BFF]">Art Supplies</p>
-                  <p className="mt-0.5 text-xl font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
-                  <p className="text-[10px] text-[#F6B94B]/80 leading-tight">
-                    {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
+                  <p className="text-[9px] uppercase tracking-wider text-[#9F6BFF]">Supplies</p>
+                  <p className="mt-0.5 text-lg font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
+                  <p className="text-[9px] text-[#F6B94B]/80 leading-tight">
+                    {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low
                   </p>
+                </button>
+
+                <button
+                  onClick={() => navigate('/inspiration')}
+                  className={`rounded-xl border p-2.5 text-left transition ${
+                    defaultView === 'inspiration'
+                      ? 'border-ast_lavender/60 bg-ast_lavender/10'
+                      : 'border-ast_purple/30 bg-[#120724] hover:border-ast_lavender/40 hover:bg-ast_lavender/5'
+                  }`}
+                >
+                  <p className="text-[9px] uppercase tracking-wider text-ast_lavender">Inspo</p>
+                  <p className="mt-0.5 text-lg font-bold text-ast_lavender/80">{allEntries.length}</p>
+                  <p className="text-[9px] text-ast_body/55 leading-tight">entries</p>
                 </button>
               </div>
 
@@ -243,7 +263,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                         return (
                           <button
                             key={project.id}
-                            onClick={() => navigate('/projects')}
+                            onClick={() => navigate('/projects', { state: { selectedProjectId: project.id } })}
                             className="w-full text-left flex items-center gap-2.5 rounded-xl border border-ast_turquoise/20 bg-[#120724] p-2.5 hover:border-ast_electric_blue/50 hover:bg-ast_electric_blue/5 transition group"
                           >
                             {cover ? (
@@ -283,8 +303,8 @@ export default function Dashboard({ defaultView = 'home' }) {
                     <div className="h-9 bg-gradient-to-r from-ast_electric_blue/50 via-ast_purple/50 to-ast_pink/40" />
                     <div className="px-3 py-2">
                       <p className="text-[9px] uppercase tracking-wider text-ast_faint mb-0.5">Featured Artist</p>
-                      <p className="text-xs font-semibold text-ast_turquoise">Maya Chen</p>
-                      <p className="text-[10px] text-ast_muted truncate">Watercolor · Botanical</p>
+                      <p className="text-xs font-semibold text-ast_turquoise">Kim Wyatt</p>
+                      <p className="text-[10px] text-ast_muted truncate">Studio Art Labs</p>
                     </div>
                   </button>
 
