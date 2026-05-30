@@ -89,10 +89,17 @@ function SpotlightCompactCard({ selected, onSelect }) {
       }`}
     >
       <div className="h-10 bg-gradient-to-r from-ast_electric_blue/60 via-ast_purple/60 to-ast_pink/50" />
-      <div className="px-4 py-3">
-        <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-1">Studio Spotlight</p>
-        <p className="text-sm font-bold text-ast_turquoise leading-snug">Kim Wyatt</p>
-        <p className="text-[11px] text-ast_muted mt-0.5 leading-snug">Kim Wyatt Studio Art Labs</p>
+      <div className="px-4 py-3 flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-1">Studio Spotlight</p>
+          <p className="text-sm font-bold text-ast_turquoise leading-snug">Kim Wyatt</p>
+          <p className="text-[11px] text-ast_muted mt-0.5 leading-snug">Kim Wyatt Studio Art Labs</p>
+        </div>
+        <img
+          src="https://static.wixstatic.com/media/0669c1_dccdd785631943a59238f81b9520c5e0~mv2.jpg"
+          alt="Kim Wyatt"
+          className="ast-img-safe shrink-0 w-12 h-12 rounded-xl object-cover object-top -mt-5 border border-ast_purple/40"
+        />
       </div>
     </button>
   );
@@ -178,7 +185,11 @@ function QuoteDetail({ entry, onClose }) {
 function SpotlightDetail({ onClose }) {
   return (
     <div className="rounded-2xl border border-ast_purple/50 bg-[#0d0420] overflow-hidden">
-      <div className="h-20 bg-gradient-to-br from-ast_purple via-ast_pink/60 to-ast_turquoise opacity-75" />
+      <img
+        src="https://static.wixstatic.com/media/0669c1_26396aee2e914839814b379e8efd0070~mv2.jpg"
+        alt="Liberty With Mask by Kim Wyatt"
+        className="ast-img-safe w-full h-44 object-cover object-top"
+      />
       <div className="p-5">
         <div className="flex items-start justify-between mb-2">
           <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint">Studio Spotlight</p>
