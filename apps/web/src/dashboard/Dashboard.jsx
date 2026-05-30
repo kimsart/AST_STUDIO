@@ -185,7 +185,7 @@ export default function Dashboard({ defaultView = 'home' }) {
               onClick={() => navigate('/dashboard')}
               className="mb-4 w-full text-left hover:opacity-75 transition"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-ast_turquoise">
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-ast_turquoise">
                 Studio Tools
               </p>
               <h2 className="mt-2 text-xl font-semibold text-[#00E6FF]">
@@ -204,7 +204,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                       : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                   }`}
                 >
-                  <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_turquoise">Projects</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise">Projects</p>
                   <p className="mt-0.5 text-lg font-bold text-[#00E6FF]">{sessionProjects.length}</p>
                   <p className="text-[9px] text-ast_body/55 leading-tight">
                     {sessionProjects.filter(p => p.status === 'in-progress').length} active
@@ -219,7 +219,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                       : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
                   }`}
                 >
-                  <p className="text-[9px] font-semibold uppercase tracking-wider text-[#9F6BFF]">Supplies</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#9F6BFF]">Supplies</p>
                   <p className="mt-0.5 text-lg font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
                   <p className="text-[9px] text-[#F6B94B]/80 leading-tight">
                     {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low
@@ -234,7 +234,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                       : 'border-ast_purple/30 bg-[#120724] hover:border-ast_lavender/40 hover:bg-ast_lavender/5'
                   }`}
                 >
-                  <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_lavender">Inspo</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender">Inspo</p>
                   <p className="mt-0.5 text-lg font-bold text-ast_lavender/80">{allEntries.length}</p>
                   <p className="text-[9px] text-ast_body/55 leading-tight">entries</p>
                 </button>
@@ -242,7 +242,7 @@ export default function Dashboard({ defaultView = 'home' }) {
 
               {/* Project list */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
                 {sessionProjects.length === 0 ? (
                   <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
                     <p className="text-xs text-ast_body/40 mb-3">No projects yet</p>
@@ -292,7 +292,7 @@ export default function Dashboard({ defaultView = 'home' }) {
 
               {/* Inspiration section */}
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-ast_lavender mb-2">Inspiration</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-ast_lavender mb-2">Inspiration</p>
                 <div className="space-y-1.5">
 
                   {/* Featured Artist */}
@@ -302,7 +302,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                   >
                     <div className="h-9 bg-gradient-to-r from-ast_electric_blue/50 via-ast_purple/50 to-ast_pink/40" />
                     <div className="px-3 py-2">
-                      <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_faint mb-0.5">Featured Artist</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-0.5">Studio Spotlight</p>
                       <p className="text-xs font-semibold text-ast_turquoise">Kim Wyatt</p>
                       <p className="text-[10px] text-ast_muted truncate">Studio Art Labs</p>
                     </div>
@@ -313,7 +313,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                     onClick={() => navigate('/inspiration', { state: { section: 'quote' } })}
                     className="w-full text-left rounded-xl border border-ast_turquoise/20 bg-[#120724] px-3 py-2.5 hover:border-ast_turquoise/50 transition"
                   >
-                    <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_turquoise mb-1">Quote of the Day</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise mb-1">Quote of the Day</p>
                     {sidebarQuote ? (
                       <>
                         <p className="text-xs text-ast_body italic leading-snug line-clamp-2">&ldquo;{sidebarQuote.body_text}&rdquo;</p>
@@ -329,7 +329,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                     onClick={() => navigate('/inspiration', { state: { section: 'art-history-today' } })}
                     className="w-full text-left rounded-xl border border-ast_lavender/20 bg-[#120724] px-3 py-2.5 hover:border-ast_lavender/50 transition"
                   >
-                    <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_lavender mb-1">Today in Art History</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1">Today in Art History</p>
                     {sidebarArtHistory ? (
                       <p className="text-xs font-semibold text-ast_body leading-snug line-clamp-2">{sidebarArtHistory.title}</p>
                     ) : (
@@ -342,7 +342,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                     onClick={() => navigate('/inspiration', { state: { section: 'partner' } })}
                     className="w-full text-left rounded-xl border border-ast_blue/25 bg-[#120724] px-3 py-2.5 hover:border-ast_blue/50 transition"
                   >
-                    <p className="text-[9px] font-semibold uppercase tracking-wider text-ast_lavender mb-1">Partners</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1">Partners</p>
                     <p className="text-xs font-semibold text-[#8D5CFF]">Retailer & Manufacturer Picks</p>
                     <p className="text-[10px] text-ast_body/55 mt-1 leading-snug">Supply deals & partner inspiration.</p>
                   </button>

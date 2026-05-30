@@ -63,7 +63,7 @@ function ArtHistoryCard({ entry, highlight = false }) {
         <div className="w-full h-28 bg-gradient-to-br from-ast_purple/25 via-ast_lavender/10 to-transparent" />
       )}
       <div className="p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ast_lavender mb-2">Today in Art History</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_lavender mb-2">Today in Art History</p>
         <h3 className="text-base font-bold text-ast_body mb-2 leading-snug">{entry.title}</h3>
         <p className="text-sm text-ast_body/75 leading-relaxed">{entry.body_text}</p>
         <Attribution entry={entry} />
@@ -88,7 +88,7 @@ function QuoteCard({ entry, highlight = false }) {
         <div className="w-full h-20 bg-gradient-to-br from-ast_turquoise/20 via-ast_cyan/10 to-transparent" />
       )}
       <div className="p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ast_turquoise mb-3">Artist Quote of the Day</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_turquoise mb-3">Artist Quote of the Day</p>
         <h3 className="text-sm font-semibold text-ast_body/80 mb-3 leading-snug">{entry.title}</h3>
         <blockquote className="text-base font-medium text-ast_body leading-relaxed italic border-l-2 border-ast_turquoise/50 pl-4">
           &ldquo;{entry.body_text}&rdquo;
@@ -108,7 +108,7 @@ function FeaturedArtistCard({ highlight = false }) {
     }`}>
       <div className="h-24 bg-gradient-to-br from-ast_purple via-ast_pink/60 to-ast_turquoise opacity-75" />
       <div className="p-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ast_faint mb-2">Featured Artist</p>
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_faint mb-2">Studio Spotlight</p>
         <h3 className="font-bold text-ast_turquoise text-sm mb-0.5">Kim Wyatt</h3>
         <p className="text-[10px] text-ast_muted mb-1">@kims_studio_labs · Kim Wyatt Studio Art Labs</p>
         <p className="text-xs text-ast_body/65 mb-3 leading-relaxed">
@@ -138,7 +138,7 @@ function PartnerCard({ highlight = false }) {
     <div className={`rounded-2xl bg-[#120724] px-5 py-4 border transition ${
       highlight ? "border-ast_blue/50 ring-1 ring-ast_blue/20" : "border-ast_blue/20"
     }`}>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ast_lavender mb-2">Partners</p>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_lavender mb-2">Partners</p>
       <p className="text-sm font-semibold text-[#8D5CFF] mb-1">Retailer & Manufacturer Picks</p>
       <p className="text-xs text-ast_body/55 leading-relaxed">Product demos, supply deals, and partner inspiration live here.</p>
     </div>
@@ -148,7 +148,7 @@ function PartnerCard({ highlight = false }) {
 function PlaceholderCard({ label, color = "ast_lavender" }) {
   return (
     <div className="rounded-2xl border border-ast_lavender/15 bg-[#120724] px-5 py-4">
-      <p className={`text-[10px] font-semibold uppercase tracking-[0.3em] text-${color} mb-1`}>{label}</p>
+      <p className={`text-xs font-bold uppercase tracking-[0.2em] text-${color} mb-1`}>{label}</p>
       <p className="text-sm text-ast_body/30">Coming soon.</p>
     </div>
   );
