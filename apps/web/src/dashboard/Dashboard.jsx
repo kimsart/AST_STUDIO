@@ -254,7 +254,7 @@ export default function Dashboard({ defaultView = 'home' }) {
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {[...sessionProjects]
                       .sort((a, b) => (b.updatedAt ?? b.id) - (a.updatedAt ?? a.id))
                       .slice(0, 4)
@@ -264,22 +264,22 @@ export default function Dashboard({ defaultView = 'home' }) {
                           <button
                             key={project.id}
                             onClick={() => navigate('/projects', { state: { selectedProjectId: project.id } })}
-                            className="w-full text-left flex items-center gap-2.5 rounded-xl border border-ast_turquoise/20 bg-[#120724] p-2.5 hover:border-ast_electric_blue/50 hover:bg-ast_electric_blue/5 transition group"
+                            className="w-full text-left rounded-xl border border-ast_turquoise/20 bg-[#120724] overflow-hidden hover:border-ast_electric_blue/50 transition group"
                           >
                             {cover ? (
                               <img
                                 src={cover}
                                 alt=""
-                                className="ast-img-safe shrink-0 w-10 h-10 rounded-lg object-cover"
+                                className="ast-img-safe w-full aspect-square object-cover"
                               />
                             ) : (
-                              <div className="shrink-0 w-10 h-10 rounded-lg bg-ast_purple/15 border border-ast_purple/20" />
+                              <div className="w-full aspect-square bg-gradient-to-br from-ast_purple/20 via-ast_lavender/10 to-transparent" />
                             )}
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-semibold text-ast_body group-hover:text-ast_cyan leading-snug truncate transition-colors">
+                            <div className="px-2 py-1.5">
+                              <p className="text-[10px] font-semibold text-ast_body group-hover:text-ast_cyan leading-snug truncate transition-colors">
                                 {project.title}
                               </p>
-                              <p className="text-[10px] text-ast_muted capitalize leading-tight">
+                              <p className="text-[9px] text-ast_muted capitalize leading-tight truncate">
                                 {project.status?.replace('-', ' ')}
                               </p>
                             </div>
