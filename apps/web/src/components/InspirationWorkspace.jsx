@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/inspirationFeed/index.js";
 
-// ── Shared sub-components ──────────────────────────────────────────────────
+// ── Shared detail sub-components ───────────────────────────────────────────
 
 function TagList({ tags }) {
   if (!tags?.length) return null;
@@ -46,69 +46,144 @@ function Attribution({ entry }) {
   );
 }
 
-// ── Feed card types ────────────────────────────────────────────────────────
+// ── Compact grid cards ─────────────────────────────────────────────────────
 
-function ArtHistoryCard({ entry, highlight = false }) {
+function CompactCard({ eyebrow, eyebrowColor, title, preview, imageUrl, imageAlt, borderClass, highlightClass, selected, onSelect, italic = false }) {
   return (
-    <div className={`rounded-2xl bg-[#120724] overflow-hidden border transition ${
-      highlight ? "border-ast_lavender/60 ring-1 ring-ast_lavender/25" : "border-ast_purple/40"
-    }`}>
-      {entry.image_url ? (
+    <button
+      onClick={onSelect}
+      className={`w-full text-left rounded-2xl border bg-[#120724] p-4 transition ${
+        selected
+          ? `${highlightClass} ring-1 ring-white/10`
+          : `${borderClass} hover:brightness-110`
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <p className={`text-[10px] font-bold uppercase tracking-wider ${eyebrowColor} mb-1.5`}>{eyebrow}</p>
+          <p className={`text-sm font-semibold text-ast_body leading-snug line-clamp-2 ${italic ? "italic" : ""}`}>{title}</p>
+          {preview && (
+            <p className="mt-1 text-[11px] text-ast_body/55 leading-snug line-clamp-1">{preview}</p>
+          )}
+        </div>
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={imageAlt ?? ""}
+            className="ast-img-safe shrink-0 w-14 h-14 rounded-xl object-cover object-top"
+          />
+        )}
+      </div>
+    </button>
+  );
+}
+
+function SpotlightCompactCard({ selected, onSelect }) {
+  return (
+    <button
+      onClick={onSelect}
+      className={`w-full text-left rounded-2xl border bg-[#120724] overflow-hidden transition ${
+        selected
+          ? "border-ast_purple/70 ring-1 ring-white/10"
+          : "border-ast_purple/30 hover:brightness-110"
+      }`}
+    >
+      <div className="h-10 bg-gradient-to-r from-ast_electric_blue/60 via-ast_purple/60 to-ast_pink/50" />
+      <div className="px-4 py-3">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-1">Studio Spotlight</p>
+        <p className="text-sm font-bold text-ast_turquoise leading-snug">Kim Wyatt</p>
+        <p className="text-[11px] text-ast_muted mt-0.5 leading-snug">Kim Wyatt Studio Art Labs</p>
+      </div>
+    </button>
+  );
+}
+
+function PartnerCompactCard({ selected, onSelect }) {
+  return (
+    <button
+      onClick={onSelect}
+      className={`w-full text-left rounded-2xl border bg-[#120724] p-4 transition ${
+        selected
+          ? "border-ast_blue/60 ring-1 ring-white/10"
+          : "border-ast_blue/20 hover:brightness-110"
+      }`}
+    >
+      <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1.5">Partners</p>
+      <p className="text-sm font-semibold text-[#8D5CFF] leading-snug line-clamp-2">Retailer & Manufacturer Picks</p>
+      <p className="text-[11px] text-ast_body/55 mt-1 leading-snug">Supply deals & partner inspiration.</p>
+    </button>
+  );
+}
+
+// ── Detail panels ──────────────────────────────────────────────────────────
+
+function CloseButton({ onClose }) {
+  return (
+    <button
+      onClick={onClose}
+      className="shrink-0 text-ast_faint hover:text-ast_body transition text-sm leading-none"
+    >
+      ✕
+    </button>
+  );
+}
+
+function ArtHistoryDetail({ entry, onClose }) {
+  return (
+    <div className="rounded-2xl border border-ast_lavender/40 bg-[#0d0420] p-5">
+      <div className="flex items-start justify-between mb-3">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender">Today in Art History</p>
+        <CloseButton onClose={onClose} />
+      </div>
+      {entry.image_url && (
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
-          className="ast-img-safe w-full h-52 object-cover object-top"
+          className="ast-img-safe w-full h-44 object-cover object-top rounded-xl mb-4"
         />
-      ) : (
-        <div className="w-full h-28 bg-gradient-to-br from-ast_purple/25 via-ast_lavender/10 to-transparent" />
       )}
-      <div className="p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_lavender mb-2">Today in Art History</p>
-        <h3 className="text-base font-bold text-ast_body mb-2 leading-snug">{entry.title}</h3>
-        <p className="text-sm text-ast_body/75 leading-relaxed">{entry.body_text}</p>
-        <Attribution entry={entry} />
-        <TagList tags={entry.tags} />
-      </div>
+      <h3 className="text-base font-bold text-ast_body mb-2 leading-snug">{entry.title}</h3>
+      <p className="text-sm text-ast_body/75 leading-relaxed">{entry.body_text}</p>
+      <Attribution entry={entry} />
+      <TagList tags={entry.tags} />
     </div>
   );
 }
 
-function QuoteCard({ entry, highlight = false }) {
+function QuoteDetail({ entry, onClose }) {
   return (
-    <div className={`rounded-2xl bg-[#120724] overflow-hidden border transition ${
-      highlight ? "border-ast_turquoise/60 ring-1 ring-ast_turquoise/25" : "border-ast_turquoise/30"
-    }`}>
-      {entry.image_url ? (
+    <div className="rounded-2xl border border-ast_turquoise/40 bg-[#0d0420] p-5">
+      <div className="flex items-start justify-between mb-3">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise">Quote of the Day</p>
+        <CloseButton onClose={onClose} />
+      </div>
+      {entry.image_url && (
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
-          className="ast-img-safe w-full h-44 object-cover object-top"
+          className="ast-img-safe w-full h-36 object-cover object-top rounded-xl mb-4"
         />
-      ) : (
-        <div className="w-full h-20 bg-gradient-to-br from-ast_turquoise/20 via-ast_cyan/10 to-transparent" />
       )}
-      <div className="p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_turquoise mb-3">Artist Quote of the Day</p>
-        <h3 className="text-sm font-semibold text-ast_body/80 mb-3 leading-snug">{entry.title}</h3>
-        <blockquote className="text-base font-medium text-ast_body leading-relaxed italic border-l-2 border-ast_turquoise/50 pl-4">
-          &ldquo;{entry.body_text}&rdquo;
-        </blockquote>
-        <p className="mt-2 text-xs text-ast_muted">— {entry.artist_name}</p>
-        <Attribution entry={entry} />
-        <TagList tags={entry.tags} />
-      </div>
+      <h3 className="text-sm font-semibold text-ast_body/80 mb-3 leading-snug">{entry.title}</h3>
+      <blockquote className="text-base font-medium text-ast_body leading-relaxed italic border-l-2 border-ast_turquoise/50 pl-4">
+        &ldquo;{entry.body_text}&rdquo;
+      </blockquote>
+      <p className="mt-2 text-xs text-ast_muted">— {entry.artist_name}</p>
+      <Attribution entry={entry} />
+      <TagList tags={entry.tags} />
     </div>
   );
 }
 
-function FeaturedArtistCard({ highlight = false }) {
+function SpotlightDetail({ onClose }) {
   return (
-    <div className={`rounded-2xl bg-[#120724] overflow-hidden border transition ${
-      highlight ? "border-ast_purple/60 ring-1 ring-ast_purple/30" : "border-ast_purple/25"
-    }`}>
-      <div className="h-24 bg-gradient-to-br from-ast_purple via-ast_pink/60 to-ast_turquoise opacity-75" />
+    <div className="rounded-2xl border border-ast_purple/50 bg-[#0d0420] overflow-hidden">
+      <div className="h-20 bg-gradient-to-br from-ast_purple via-ast_pink/60 to-ast_turquoise opacity-75" />
       <div className="p-5">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_faint mb-2">Studio Spotlight</p>
+        <div className="flex items-start justify-between mb-2">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint">Studio Spotlight</p>
+          <CloseButton onClose={onClose} />
+        </div>
         <h3 className="font-bold text-ast_turquoise text-sm mb-0.5">Kim Wyatt</h3>
         <p className="text-[10px] text-ast_muted mb-1">@kims_studio_labs · Kim Wyatt Studio Art Labs</p>
         <p className="text-xs text-ast_body/65 mb-3 leading-relaxed">
@@ -127,29 +202,25 @@ function FeaturedArtistCard({ highlight = false }) {
         >
           kimwyatt.art →
         </a>
-        <p className="mt-2 text-[8px] text-ast_faint/50 leading-snug">Artwork by Kim Wyatt. Used with artist permission for Art Supply Tracker beta testing.</p>
+        <p className="mt-2 text-[8px] text-ast_faint/50 leading-snug">
+          Artwork by Kim Wyatt. Used with artist permission for Art Supply Tracker beta testing.
+        </p>
       </div>
     </div>
   );
 }
 
-function PartnerCard({ highlight = false }) {
+function PartnerDetail({ onClose }) {
   return (
-    <div className={`rounded-2xl bg-[#120724] px-5 py-4 border transition ${
-      highlight ? "border-ast_blue/50 ring-1 ring-ast_blue/20" : "border-ast_blue/20"
-    }`}>
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-ast_lavender mb-2">Partners</p>
+    <div className="rounded-2xl border border-ast_blue/40 bg-[#0d0420] p-5">
+      <div className="flex items-start justify-between mb-2">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender">Partners</p>
+        <CloseButton onClose={onClose} />
+      </div>
       <p className="text-sm font-semibold text-[#8D5CFF] mb-1">Retailer & Manufacturer Picks</p>
-      <p className="text-xs text-ast_body/55 leading-relaxed">Product demos, supply deals, and partner inspiration live here.</p>
-    </div>
-  );
-}
-
-function PlaceholderCard({ label, color = "ast_lavender" }) {
-  return (
-    <div className="rounded-2xl border border-ast_lavender/15 bg-[#120724] px-5 py-4">
-      <p className={`text-xs font-bold uppercase tracking-[0.2em] text-${color} mb-1`}>{label}</p>
-      <p className="text-sm text-ast_body/30">Coming soon.</p>
+      <p className="text-xs text-ast_body/55 leading-relaxed">
+        Product demos, supply deals, and partner inspiration live here.
+      </p>
     </div>
   );
 }
@@ -157,40 +228,42 @@ function PlaceholderCard({ label, color = "ast_lavender" }) {
 // ── Main workspace ─────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "today",       label: "Today"       },
-  { id: "art-history", label: "Art History"  },
-  { id: "inspire-me",  label: "Inspire Me"   },
+  { id: "today",       label: "Today"      },
+  { id: "art-history", label: "Art History" },
+  { id: "inspire-me",  label: "Inspire Me"  },
 ];
 
 export default function InspirationWorkspace() {
   const location = useLocation();
   const focusSection = location.state?.section ?? null;
-  const focusTag     = location.state?.tag ?? null;
 
-  const [activeTab, setActiveTab] = useState("today");
+  const [activeTab, setActiveTab]   = useState("today");
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  useEffect(() => {
+    if (focusSection) setSelectedCard(focusSection);
+  }, [focusSection]);
 
   const artHistory    = getTodayInArtHistory();
   const quote         = getQuoteOfTheDay();
   const artHistoryAll = allEntries.filter(e => e.type === "art_history");
 
-  const tagMatches = focusTag
-    ? allEntries.filter(e => e.tags?.some(t => t.toLowerCase() === focusTag.toLowerCase()))
-    : [];
+  const toggle = (id) => setSelectedCard(prev => prev === id ? null : id);
 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="shrink-0 mb-4">
-        <p className="text-xs uppercase tracking-[0.35em] text-ast_lavender">Inspiration</p>
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-ast_lavender">Inspiration</p>
         <h2 className="mt-1 text-2xl font-bold text-ast_body">Feed</h2>
       </div>
 
       {/* Tabs */}
-      <div className="shrink-0 flex gap-1.5 mb-5">
+      <div className="shrink-0 flex gap-1.5 mb-4">
         {TABS.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => { setActiveTab(tab.id); setSelectedCard(null); }}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
               activeTab === tab.id
                 ? "bg-ast_lavender/15 text-ast_lavender border border-ast_lavender/40"
@@ -202,53 +275,116 @@ export default function InspirationWorkspace() {
         ))}
       </div>
 
-      {/* Feed */}
-      <div className="flex-1 overflow-y-auto scrollbar-left space-y-4 pr-1 pb-2">
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto scrollbar-left space-y-3 pr-1 pb-2">
 
-        {/* Tag filter notice */}
-        {focusTag && (
-          <div className="rounded-xl border border-ast_lavender/20 bg-ast_lavender/5 px-4 py-2.5">
-            <p className="text-xs text-ast_lavender/80">
-              {tagMatches.length > 0
-                ? `${tagMatches.length} result${tagMatches.length !== 1 ? "s" : ""} for "${focusTag}"`
-                : `No entries yet for "${focusTag}" — showing full feed`}
-            </p>
-          </div>
-        )}
-
-        {/* TODAY */}
+        {/* TODAY — 2×2 compact card grid + detail panel */}
         {activeTab === "today" && (
           <>
-            {artHistory
-              ? <ArtHistoryCard entry={artHistory} highlight={focusSection === "art-history-today"} />
-              : <PlaceholderCard label="Today in Art History" />}
-            {quote
-              ? <QuoteCard entry={quote} highlight={focusSection === "quote"} />
-              : <PlaceholderCard label="Artist Quote of the Day" color="ast_turquoise" />}
-            <FeaturedArtistCard highlight={focusSection === "featured-artist"} />
-            <PlaceholderCard label="Technique of the Week" color="ast_cyan" />
-            <PartnerCard highlight={focusSection === "partner"} />
-          </>
-        )}
+            <div className="grid grid-cols-2 gap-3">
+              {artHistory ? (
+                <CompactCard
+                  eyebrow="Today in Art History"
+                  eyebrowColor="text-ast_lavender"
+                  title={artHistory.title}
+                  preview={artHistory.artist_name}
+                  imageUrl={artHistory.image_url}
+                  imageAlt={artHistory.image_alt_text}
+                  borderClass="border-ast_purple/40"
+                  highlightClass="border-ast_lavender/60"
+                  selected={selectedCard === "art-history-today"}
+                  onSelect={() => toggle("art-history-today")}
+                />
+              ) : (
+                <div className="rounded-2xl border border-ast_purple/20 bg-[#120724] p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1">Today in Art History</p>
+                  <p className="text-xs text-ast_body/30">No entry for today</p>
+                </div>
+              )}
 
-        {/* ART HISTORY */}
-        {activeTab === "art-history" && (
-          artHistoryAll.length > 0
-            ? artHistoryAll.map(e => <ArtHistoryCard key={e.date} entry={e} />)
-            : <PlaceholderCard label="No art history entries yet" />
-        )}
+              {quote ? (
+                <CompactCard
+                  eyebrow="Quote of the Day"
+                  eyebrowColor="text-ast_turquoise"
+                  title={quote.body_text}
+                  preview={`— ${quote.artist_name}`}
+                  imageUrl={quote.image_url}
+                  imageAlt={quote.image_alt_text}
+                  borderClass="border-ast_turquoise/30"
+                  highlightClass="border-ast_turquoise/60"
+                  selected={selectedCard === "quote"}
+                  onSelect={() => toggle("quote")}
+                  italic
+                />
+              ) : (
+                <div className="rounded-2xl border border-ast_turquoise/20 bg-[#120724] p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise mb-1">Quote of the Day</p>
+                  <p className="text-xs text-ast_body/30">Coming soon</p>
+                </div>
+              )}
 
-        {/* INSPIRE ME — defaults to today's content for beta */}
-        {activeTab === "inspire-me" && (
-          <>
-            <div className="rounded-xl border border-ast_lavender/20 bg-ast_lavender/5 px-4 py-2.5">
-              <p className="text-[10px] text-ast_lavender/60">
-                Discovery mode · Random inspiration coming soon — showing today's featured content
-              </p>
+              <SpotlightCompactCard
+                selected={selectedCard === "featured-artist"}
+                onSelect={() => toggle("featured-artist")}
+              />
+
+              <PartnerCompactCard
+                selected={selectedCard === "partner"}
+                onSelect={() => toggle("partner")}
+              />
             </div>
-            {artHistory && <ArtHistoryCard entry={artHistory} />}
-            {quote && <QuoteCard entry={quote} />}
+
+            {selectedCard === "art-history-today" && artHistory && (
+              <ArtHistoryDetail entry={artHistory} onClose={() => setSelectedCard(null)} />
+            )}
+            {selectedCard === "quote" && quote && (
+              <QuoteDetail entry={quote} onClose={() => setSelectedCard(null)} />
+            )}
+            {selectedCard === "featured-artist" && (
+              <SpotlightDetail onClose={() => setSelectedCard(null)} />
+            )}
+            {selectedCard === "partner" && (
+              <PartnerDetail onClose={() => setSelectedCard(null)} />
+            )}
           </>
+        )}
+
+        {/* ART HISTORY — compact card grid with inline detail */}
+        {activeTab === "art-history" && (
+          artHistoryAll.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                {artHistoryAll.map(e => (
+                  <CompactCard
+                    key={e.date}
+                    eyebrow={e.date}
+                    eyebrowColor="text-ast_lavender"
+                    title={e.title}
+                    preview={e.artist_name}
+                    imageUrl={e.image_url}
+                    imageAlt={e.image_alt_text}
+                    borderClass="border-ast_purple/30"
+                    highlightClass="border-ast_lavender/60"
+                    selected={selectedCard === e.date}
+                    onSelect={() => toggle(e.date)}
+                  />
+                ))}
+              </div>
+              {artHistoryAll.filter(e => selectedCard === e.date).map(e => (
+                <ArtHistoryDetail key={e.date} entry={e} onClose={() => setSelectedCard(null)} />
+              ))}
+            </>
+          ) : (
+            <p className="text-xs text-ast_body/30 text-center py-8">No art history entries yet</p>
+          )
+        )}
+
+        {/* INSPIRE ME */}
+        {activeTab === "inspire-me" && (
+          <div className="rounded-2xl border border-ast_lavender/20 bg-ast_lavender/5 px-4 py-4">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender/60 mb-1">Discovery Mode</p>
+            <p className="text-xs text-ast_body/50">Random inspiration coming soon.</p>
+          </div>
         )}
 
       </div>
