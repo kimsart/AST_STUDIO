@@ -48,6 +48,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   const editCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === editDraft.category);
   const editSubcategories = editCategoryDef ? editCategoryDef.subcategories : [];
   const editIsOther = editDraft.category === "Other";
+  const editIsCustomSubcategory = editDraft.subcategory === "__other__";
 
   const handleSelect = (id) => {
     setSelectedSupplyId(prev => prev === id ? null : id);
@@ -60,6 +61,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
       category:          selectedSupply.category    ?? "",
       customCategory:    "",
       subcategory:       selectedSupply.subcategory ?? "",
+      customSubcategory: "",
       qty:               selectedSupply.qty         ?? "",
       status:            selectedSupply.status      ?? "ok",
       location:          selectedSupply.location    ?? "",
@@ -70,12 +72,15 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   };
 
   const handleSaveEdit = () => {
-    const { customCategory, assignToProjectId, ...rest } = editDraft;
+    const { customCategory, customSubcategory, assignToProjectId, ...rest } = editDraft;
     const finalCategory = rest.category === "Other" && customCategory?.trim()
       ? customCategory.trim()
       : rest.category;
+    const finalSubcategory = rest.subcategory === "__other__"
+      ? (customSubcategory?.trim() || "")
+      : rest.subcategory;
 
-    onEditSupply(selectedSupplyId, { ...rest, category: finalCategory });
+    onEditSupply(selectedSupplyId, { ...rest, category: finalCategory, subcategory: finalSubcategory });
 
     if (assignToProjectId && onAssignSupply) {
       const projectIdNum = Number(assignToProjectId);
@@ -138,6 +143,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                       category: newCat,
                       customCategory: "",
                       subcategory: validSubs.includes(d.subcategory) ? d.subcategory : "",
+                      customSubcategory: "",
                     }));
                   }}
                 >
@@ -204,13 +210,23 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                 <select
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.subcategory ?? ""}
-                  onChange={e => setEditDraft(d => ({ ...d, subcategory: e.target.value }))}
+                  onChange={e => setEditDraft(d => ({ ...d, subcategory: e.target.value, customSubcategory: "" }))}
                 >
                   <option value="">— None —</option>
                   {editSubcategories.map(sub => (
                     <option key={sub} value={sub}>{sub}</option>
                   ))}
+                  <option value="__other__">Other / Custom…</option>
                 </select>
+                {editIsCustomSubcategory && (
+                  <input
+                    type="text"
+                    placeholder="e.g., Dry brush, Palette knife…"
+                    className="mt-2 w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                    value={editDraft.customSubcategory ?? ""}
+                    onChange={e => setEditDraft(d => ({ ...d, customSubcategory: e.target.value }))}
+                  />
+                )}
               </div>
             ) : null}
 

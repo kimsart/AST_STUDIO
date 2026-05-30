@@ -7,6 +7,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
     category: "Paint",
     customCategory: "",
     subcategory: "",
+    customSubcategory: "",
     qty: "",
     status: "ok",
     location: "",
@@ -19,6 +20,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
   const activeCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === formData.category);
   const availableSubcategories = activeCategoryDef ? activeCategoryDef.subcategories : [];
   const isOther = formData.category === "Other";
+  const isCustomSubcategory = formData.subcategory === "__other__";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,6 +32,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
         category: value,
         customCategory: "",
         subcategory: validSubs.includes(prev.subcategory) ? prev.subcategory : "",
+        customSubcategory: "",
       }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -53,10 +56,14 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
       ? formData.customCategory.trim()
       : formData.category;
 
+    const finalSubcategory = isCustomSubcategory
+      ? formData.customSubcategory.trim()
+      : formData.subcategory;
+
     onSubmit({
       name: formData.name.trim(),
       category: finalCategory,
-      subcategory: formData.subcategory,
+      subcategory: finalSubcategory,
       qty: qtyRaw,
       status: formData.status,
       location: formData.location.trim(),
@@ -135,7 +142,18 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                       {availableSubcategories.map(sub => (
                         <option key={sub} value={sub}>{sub}</option>
                       ))}
+                      <option value="__other__">Other / Custom…</option>
                     </select>
+                    {isCustomSubcategory && (
+                      <input
+                        type="text"
+                        name="customSubcategory"
+                        value={formData.customSubcategory}
+                        onChange={handleChange}
+                        placeholder="e.g., Dry brush, Palette knife…"
+                        className="mt-2 w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                      />
+                    )}
                   </div>
                 ) : (
                   <div />

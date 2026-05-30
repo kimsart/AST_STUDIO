@@ -69,7 +69,7 @@ export default function ProjectsCard({
 }) {
   const [pendingSupplyId, setPendingSupplyId] = useState("");
   const [isEditingProject, setIsEditingProject] = useState(false);
-  const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "", imageDataUrl: "" });
+  const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "", images: [] });
 
   const selectedProject = sessionProjects.find((p) => p.id === selectedProjectId);
 
@@ -97,7 +97,7 @@ export default function ProjectsCard({
       status: selectedProject.status || "planned",
       notes: selectedProject.notes ?? "",
       budget: selectedProject.budget ?? "",
-      imageDataUrl: selectedProject.imageDataUrl ?? "",
+      images: selectedProject.images ?? [],
     });
     setIsEditingProject(true);
   };
@@ -113,16 +113,21 @@ export default function ProjectsCard({
     setIsEditingProject(false);
   };
 
-  const handleEditImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleEditImagesChange = async (e) => {
+    const files = Array.from(e.target.files);
     e.target.value = "";
+    const slots = 30 - editDraft.images.length;
+    if (slots <= 0) return;
     try {
-      const dataUrl = await compressImage(file);
-      setEditDraft(d => ({ ...d, imageDataUrl: dataUrl }));
+      const compressed = await Promise.all(files.slice(0, slots).map(compressImage));
+      setEditDraft(d => ({ ...d, images: [...d.images, ...compressed].slice(0, 30) }));
     } catch {
-      // silently ignore — user can try again
+      // silently ignore
     }
+  };
+
+  const handleRemoveEditImage = (index) => {
+    setEditDraft(d => ({ ...d, images: d.images.filter((_, i) => i !== index) }));
   };
 
   // Split flat project list into rows so the detail panel can be injected
@@ -186,29 +191,36 @@ export default function ProjectsCard({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-ast_lavender mb-2">Photo</label>
-              <div className="flex items-center gap-3">
-                {editDraft.imageDataUrl && (
-                  <img
-                    src={editDraft.imageDataUrl}
-                    alt="preview"
-                    className="w-16 h-16 rounded-lg object-cover border border-ast_turquoise/30 shrink-0"
-                  />
-                )}
-                <label className="cursor-pointer rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
-                  {editDraft.imageDataUrl ? "Change photo" : "Add photo"}
-                  <input type="file" accept="image/*" className="hidden" onChange={handleEditImageChange} />
+              <label className="block text-sm font-medium text-ast_lavender mb-2">
+                Photos{editDraft.images.length > 0 && ` (${editDraft.images.length}/30)`}
+              </label>
+              {editDraft.images.length > 0 && (
+                <div className="grid grid-cols-5 gap-2 mb-3">
+                  {editDraft.images.map((src, i) => (
+                    <div key={i} className="relative group">
+                      <img
+                        src={src}
+                        alt=""
+                        className="w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveEditImage(i)}
+                        className="absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs opacity-0 group-hover:opacity-100 transition hover:bg-ast_pink"
+                      >×</button>
+                      {i === 0 && (
+                        <span className="absolute bottom-0.5 left-0.5 text-[9px] bg-black/60 text-ast_turquoise px-1 rounded leading-tight">cover</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {editDraft.images.length < 30 && (
+                <label className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
+                  {editDraft.images.length === 0 ? "Add photos" : "Add more"}
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleEditImagesChange} />
                 </label>
-                {editDraft.imageDataUrl && (
-                  <button
-                    type="button"
-                    onClick={() => setEditDraft(d => ({ ...d, imageDataUrl: "" }))}
-                    className="text-xs text-ast_faint hover:text-ast_pink transition"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
+              )}
             </div>
             <div className="flex gap-3 mt-2">
               <button
@@ -244,9 +256,9 @@ export default function ProjectsCard({
                 )}
               </div>
             </div>
-            {selectedProject.imageDataUrl ? (
+            {selectedProject.images?.[0] ? (
               <img
-                src={selectedProject.imageDataUrl}
+                src={selectedProject.images[0]}
                 alt={selectedProject.title}
                 className="w-24 h-24 shrink-0 rounded-xl object-cover border border-ast_purple/40"
               />
@@ -254,6 +266,24 @@ export default function ProjectsCard({
               <ArtworkPlaceholder />
             )}
           </div>
+
+          {selectedProject.images?.length > 1 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-ast_lavender mb-2">
+                Images ({selectedProject.images.length})
+              </p>
+              <div className="grid grid-cols-5 gap-2">
+                {selectedProject.images.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className="w-full aspect-square rounded-lg object-cover border border-ast_purple/20"
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {selectedProject.notes && (
             <div className="mb-4">
@@ -358,9 +388,9 @@ export default function ProjectsCard({
                         <p className={`flex-1 text-sm font-semibold leading-snug ${project.isNew ? "pr-10" : ""} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
                           {project.title}
                         </p>
-                        {project.imageDataUrl && (
+                        {project.images?.[0] && (
                           <img
-                            src={project.imageDataUrl}
+                            src={project.images[0]}
                             alt=""
                             className="shrink-0 w-10 h-10 rounded-lg object-cover opacity-85"
                           />

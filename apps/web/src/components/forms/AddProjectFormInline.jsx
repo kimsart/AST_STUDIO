@@ -17,7 +17,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     status: "planned",
     notes: "",
     budget: "",
-    imageDataUrl: "",
+    images: [],
   });
   const [error, setError] = useState("");
   const [duplicateState, setDuplicateState] = useState(null);
@@ -28,16 +28,21 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     setError("");
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleImagesChange = async (e) => {
+    const files = Array.from(e.target.files);
     e.target.value = "";
+    const slots = 30 - formData.images.length;
+    if (slots <= 0) return;
     try {
-      const dataUrl = await compressImage(file);
-      setFormData((prev) => ({ ...prev, imageDataUrl: dataUrl }));
+      const compressed = await Promise.all(files.slice(0, slots).map(compressImage));
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...compressed].slice(0, 30) }));
     } catch {
-      setError("Could not load image. Try a different file.");
+      setError("Could not load one or more images. Try different files.");
     }
+  };
+
+  const handleRemoveImage = (index) => {
+    setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
   };
 
   const buildPayload = (titleOverride) => ({
@@ -45,7 +50,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     status: formData.status,
     notes: formData.notes.trim(),
     budget: formData.budget ? parseInt(formData.budget) : 0,
-    imageDataUrl: formData.imageDataUrl,
+    images: formData.images,
   });
 
   const handleSubmit = (e) => {
@@ -179,31 +184,38 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                       />
                     </div>
 
-                    {/* Photo upload */}
+                    {/* Photo gallery */}
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-ast_lavender mb-2">Photo</label>
-                      <div className="flex items-center gap-3">
-                        {formData.imageDataUrl && (
-                          <img
-                            src={formData.imageDataUrl}
-                            alt="preview"
-                            className="w-16 h-16 rounded-lg object-cover border border-ast_turquoise/30 shrink-0"
-                          />
-                        )}
-                        <label className="cursor-pointer rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
-                          {formData.imageDataUrl ? "Change photo" : "Add photo"}
-                          <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                      <label className="block text-sm font-medium text-ast_lavender mb-2">
+                        Photos{formData.images.length > 0 && ` (${formData.images.length}/30)`}
+                      </label>
+                      {formData.images.length > 0 && (
+                        <div className="grid grid-cols-5 gap-2 mb-3">
+                          {formData.images.map((src, i) => (
+                            <div key={i} className="relative group">
+                              <img
+                                src={src}
+                                alt=""
+                                className="w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(i)}
+                                className="absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs opacity-0 group-hover:opacity-100 transition hover:bg-ast_pink"
+                              >×</button>
+                              {i === 0 && (
+                                <span className="absolute bottom-0.5 left-0.5 text-[9px] bg-black/60 text-ast_turquoise px-1 rounded leading-tight">cover</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {formData.images.length < 30 && (
+                        <label className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
+                          {formData.images.length === 0 ? "Add photos" : "Add more"}
+                          <input type="file" accept="image/*" multiple className="hidden" onChange={handleImagesChange} />
                         </label>
-                        {formData.imageDataUrl && (
-                          <button
-                            type="button"
-                            onClick={() => setFormData(d => ({ ...d, imageDataUrl: "" }))}
-                            className="text-xs text-ast_faint hover:text-ast_pink transition"
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
+                      )}
                     </div>
 
                   </div>

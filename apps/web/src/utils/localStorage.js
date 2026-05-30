@@ -1,7 +1,14 @@
 import { mockProjects, mockSupplies } from '../data/mockData.js';
 
 export function normalizeProject(p) {
-  return { ...p, supplyIds: Array.isArray(p.supplyIds) ? p.supplyIds : [] };
+  // Migrate old single imageDataUrl field to images array
+  let images = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+  if (images.length === 0 && p.imageDataUrl) images = [p.imageDataUrl];
+  return {
+    ...p,
+    supplyIds: Array.isArray(p.supplyIds) ? p.supplyIds : [],
+    images,
+  };
 }
 
 export function normalizeSupply(s) {
