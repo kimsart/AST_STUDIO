@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
-import InspirationCard from "../components/InspirationCard.jsx";
 import HomeWorkspace from "../components/HomeWorkspace.jsx";
 import SuppliesWorkspace from "../components/SuppliesWorkspace.jsx";
 import StudioChat from "../components/StudioChat.jsx";
-import CommunitySpotlight from "../components/CommunitySpotlight.jsx";
 import AddProjectFormInline from "../components/forms/AddProjectFormInline.jsx";
 import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
+import InspirationWorkspace from "../components/InspirationWorkspace.jsx";
+import { getTodayInArtHistory, getQuoteOfTheDay } from "../data/inspirationFeed/index.js";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
 
 export default function Dashboard({ defaultView = 'home' }) {
@@ -23,11 +23,14 @@ export default function Dashboard({ defaultView = 'home' }) {
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
   useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
 
+  const sidebarArtHistory = getTodayInArtHistory();
+  const sidebarQuote      = getQuoteOfTheDay();
+
   const handleAddProject = (projectData) => {
     const newId = Math.max(...sessionProjects.map(p => p.id), 3) + 1;
     setSessionProjects((prev) => [
       ...prev,
-      { id: newId, supplyIds: [], ...projectData, isNew: true },
+      { id: newId, supplyIds: [], ...projectData, isNew: true, updatedAt: Date.now() },
     ]);
     setShowAddProjectForm(false);
   };
@@ -57,7 +60,7 @@ export default function Dashboard({ defaultView = 'home' }) {
   const handleEditProject = (projectId, updatedData) => {
     setSessionProjects(prev => prev.map(p =>
       p.id === projectId
-        ? { ...p, ...updatedData, id: p.id, supplyIds: p.supplyIds }
+        ? { ...p, ...updatedData, id: p.id, supplyIds: p.supplyIds, updatedAt: Date.now() }
         : p
     ));
   };
@@ -170,7 +173,7 @@ export default function Dashboard({ defaultView = 'home' }) {
 
         <section className="grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
           {/* LEFT PANEL: Studio Tools */}
-          <aside className="col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl">
+          <aside className="scrollbar-left col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl overflow-y-auto">
             <button
               onClick={() => navigate('/dashboard')}
               className="mb-4 w-full text-left hover:opacity-75 transition"
@@ -184,54 +187,156 @@ export default function Dashboard({ defaultView = 'home' }) {
             </button>
 
             <div className="space-y-3">
-              <button
-                onClick={() => navigate('/projects')}
-                className={`w-full text-left rounded-xl border p-4 transition ${
-                  defaultView === 'projects'
-                    ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
-                    : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
-                }`}
-              >
-                <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
-                <p className="mt-1 text-2xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
-                <p className="text-xs text-ast_body/55">
-                  {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
-                </p>
-              </button>
+              {/* Compact nav buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => navigate('/projects')}
+                  className={`rounded-xl border p-3 text-left transition ${
+                    defaultView === 'projects'
+                      ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10'
+                      : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-wider text-ast_turquoise">Projects</p>
+                  <p className="mt-0.5 text-xl font-bold text-[#00E6FF]">{sessionProjects.length}</p>
+                  <p className="text-[10px] text-ast_body/55 leading-tight">
+                    {sessionProjects.filter(p => p.status === 'in-progress').length} in progress
+                  </p>
+                </button>
 
-              <button
-                onClick={() => navigate('/supplies')}
-                className={`w-full text-left rounded-xl border p-4 transition ${
-                  defaultView === 'supplies'
-                    ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue'
-                    : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
-                }`}
-              >
-                <p className="text-xs uppercase tracking-wider text-[#9F6BFF]">Art Supplies</p>
-                <p className="mt-1 text-2xl font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
-                <p className="text-xs text-[#F6B94B]/80">
-                  {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
-                </p>
-              </button>
+                <button
+                  onClick={() => navigate('/supplies')}
+                  className={`rounded-xl border p-3 text-left transition ${
+                    defaultView === 'supplies'
+                      ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10 shadow-astBlue'
+                      : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-wider text-[#9F6BFF]">Art Supplies</p>
+                  <p className="mt-0.5 text-xl font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
+                  <p className="text-[10px] text-[#F6B94B]/80 leading-tight">
+                    {sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low or critical
+                  </p>
+                </button>
+              </div>
 
-              <InspirationCard />
+              {/* Project list */}
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
+                {sessionProjects.length === 0 ? (
+                  <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
+                    <p className="text-xs text-ast_body/40 mb-3">No projects yet</p>
+                    <button
+                      onClick={() => setShowAddProjectForm(true)}
+                      className="w-full rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition"
+                    >
+                      + Create Project
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {[...sessionProjects]
+                      .sort((a, b) => (b.updatedAt ?? b.id) - (a.updatedAt ?? a.id))
+                      .slice(0, 4)
+                      .map(project => {
+                        const cover = project.images?.[0];
+                        return (
+                          <button
+                            key={project.id}
+                            onClick={() => navigate('/projects')}
+                            className="w-full text-left flex items-center gap-2.5 rounded-xl border border-ast_turquoise/20 bg-[#120724] p-2.5 hover:border-ast_electric_blue/50 hover:bg-ast_electric_blue/5 transition group"
+                          >
+                            {cover ? (
+                              <img
+                                src={cover}
+                                alt=""
+                                className="ast-img-safe shrink-0 w-10 h-10 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="shrink-0 w-10 h-10 rounded-lg bg-ast_purple/15 border border-ast_purple/20" />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-semibold text-ast_body group-hover:text-ast_cyan leading-snug truncate transition-colors">
+                                {project.title}
+                              </p>
+                              <p className="text-[10px] text-ast_muted capitalize leading-tight">
+                                {project.status?.replace('-', ' ')}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
 
-              <div className="rounded-2xl border border-ast_blue/30 bg-[#120724] p-4 backdrop-blur-xl">
-                <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender">
-                  Partners
-                </p>
-                <h3 className="mt-2 text-lg font-semibold text-[#8D5CFF]">
-                  Retailer & Manufacturer Picks
-                </h3>
-                <p className="mt-2 text-sm text-ast_body/75">
-                  Product demos, supply deals, and partner inspiration live here.
-                </p>
+              {/* Inspiration section */}
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-ast_lavender mb-2">Inspiration</p>
+                <div className="space-y-1.5">
+
+                  {/* Featured Artist */}
+                  <button
+                    onClick={() => navigate('/inspiration', { state: { section: 'featured-artist' } })}
+                    className="w-full text-left rounded-xl border border-ast_purple/30 bg-[#120724] overflow-hidden hover:border-ast_purple/60 transition"
+                  >
+                    <div className="h-9 bg-gradient-to-r from-ast_electric_blue/50 via-ast_purple/50 to-ast_pink/40" />
+                    <div className="px-3 py-2">
+                      <p className="text-[9px] uppercase tracking-wider text-ast_faint mb-0.5">Featured Artist</p>
+                      <p className="text-xs font-semibold text-ast_turquoise">Maya Chen</p>
+                      <p className="text-[10px] text-ast_muted truncate">Watercolor · Botanical</p>
+                    </div>
+                  </button>
+
+                  {/* Artist Quote of the Day */}
+                  <button
+                    onClick={() => navigate('/inspiration', { state: { section: 'quote' } })}
+                    className="w-full text-left rounded-xl border border-ast_turquoise/20 bg-[#120724] px-3 py-2.5 hover:border-ast_turquoise/50 transition"
+                  >
+                    <p className="text-[9px] uppercase tracking-wider text-ast_turquoise mb-1">Quote of the Day</p>
+                    {sidebarQuote ? (
+                      <>
+                        <p className="text-xs text-ast_body italic leading-snug line-clamp-2">&ldquo;{sidebarQuote.body_text}&rdquo;</p>
+                        <p className="text-[10px] text-ast_muted mt-1">— {sidebarQuote.artist_name}</p>
+                      </>
+                    ) : (
+                      <p className="text-xs text-ast_body/40">Inspiration coming soon</p>
+                    )}
+                  </button>
+
+                  {/* Today in Art History */}
+                  <button
+                    onClick={() => navigate('/inspiration', { state: { section: 'art-history-today' } })}
+                    className="w-full text-left rounded-xl border border-ast_lavender/20 bg-[#120724] px-3 py-2.5 hover:border-ast_lavender/50 transition"
+                  >
+                    <p className="text-[9px] uppercase tracking-wider text-ast_lavender mb-1">Today in Art History</p>
+                    {sidebarArtHistory ? (
+                      <p className="text-xs font-semibold text-ast_body leading-snug line-clamp-2">{sidebarArtHistory.title}</p>
+                    ) : (
+                      <p className="text-xs text-ast_body/40">No entry for today</p>
+                    )}
+                  </button>
+
+                  {/* Partner / Ad */}
+                  <button
+                    onClick={() => navigate('/inspiration', { state: { section: 'partner' } })}
+                    className="w-full text-left rounded-xl border border-ast_blue/25 bg-[#120724] px-3 py-2.5 hover:border-ast_blue/50 transition"
+                  >
+                    <p className="text-[9px] uppercase tracking-wider text-ast_lavender mb-1">Partners</p>
+                    <p className="text-xs font-semibold text-[#8D5CFF]">Retailer & Manufacturer Picks</p>
+                    <p className="text-[10px] text-ast_body/55 mt-1 leading-snug">Supply deals & partner inspiration.</p>
+                  </button>
+
+                </div>
               </div>
             </div>
           </aside>
 
           {/* CENTER PANEL: Workspace */}
           <main className="col-span-7 min-h-0 rounded-3xl border border-ast_purple/50 bg-[#0B0018] p-6 backdrop-blur-xl">
+
+            {/* INSPIRATION VIEW */}
+            {defaultView === 'inspiration' && <InspirationWorkspace />}
 
             {/* HOME VIEW */}
             {defaultView === 'home' && (
@@ -304,9 +409,8 @@ export default function Dashboard({ defaultView = 'home' }) {
               </div>
             </div>
 
-            <div className="max-h-[calc(100vh-16rem)] space-y-4 overflow-y-auto pr-1">
+            <div className="scrollbar-right max-h-[calc(100vh-16rem)] space-y-4 overflow-y-auto pr-1">
               <StudioChat />
-              <CommunitySpotlight />
             </div>
           </aside>
         </section>

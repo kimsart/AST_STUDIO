@@ -196,7 +196,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                               <img
                                 src={src}
                                 alt=""
-                                className="w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
+                                className="ast-img-safe w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
                               />
                               <button
                                 type="button"

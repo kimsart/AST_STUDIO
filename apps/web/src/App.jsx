@@ -9,6 +9,7 @@ export default function App() {
       <Route path="/dashboard" element={<Dashboard defaultView="home" />} />
       <Route path="/projects" element={<Dashboard defaultView="projects" />} />
       <Route path="/supplies" element={<Dashboard defaultView="supplies" />} />
+      <Route path="/inspiration" element={<Dashboard defaultView="inspiration" />} />
       <Route path="/partners" element={<StubPage title="Partners" description="Partner integrations, product demos, and supply deals coming soon." />} />
       <Route path="/beta" element={<StubPage title="Beta" description="Beta program information coming soon." />} />
       <Route path="/investors" element={<StubPage title="Investors" description="Investor relations coming soon." />} />

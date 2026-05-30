@@ -56,3 +56,35 @@
     );
   }
 }
+
+/* Sidebar scrollbars — no glow */
+.scrollbar-left {
+  scrollbar-width: thin;
+  scrollbar-color: #2EC4B6 transparent;
+}
+.scrollbar-left::-webkit-scrollbar { width: 3px; }
+.scrollbar-left::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-left::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #2EC4B6, #2E64FF);
+  border-radius: 9999px;
+}
+
+.scrollbar-right {
+  scrollbar-width: thin;
+  scrollbar-color: #FF4DB8 transparent;
+}
+.scrollbar-right::-webkit-scrollbar { width: 3px; }
+.scrollbar-right::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-right::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #FF4DB8, #5A3A8E);
+  border-radius: 9999px;
+}
+
+/* Prevent browser forced-dark-mode from inverting uploaded artwork */
+.ast-img-safe {
+  color-scheme: only light;
+  forced-color-adjust: none;
+  filter: none !important;
+  mix-blend-mode: normal;
+  background: transparent;
+}

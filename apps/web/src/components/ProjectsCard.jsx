@@ -201,7 +201,7 @@ export default function ProjectsCard({
                       <img
                         src={src}
                         alt=""
-                        className="w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
+                        className="ast-img-safe w-full aspect-square rounded-lg object-cover border border-ast_turquoise/20"
                       />
                       <button
                         type="button"
@@ -260,7 +260,7 @@ export default function ProjectsCard({
               <img
                 src={selectedProject.images[0]}
                 alt={selectedProject.title}
-                className="w-24 h-24 shrink-0 rounded-xl object-cover border border-ast_purple/40"
+                className="ast-img-safe w-24 h-24 shrink-0 rounded-xl object-cover border border-ast_purple/40"
               />
             ) : (
               <ArtworkPlaceholder />
@@ -278,7 +278,7 @@ export default function ProjectsCard({
                     key={i}
                     src={src}
                     alt=""
-                    className="w-full aspect-square rounded-lg object-cover border border-ast_purple/20"
+                    className="ast-img-safe w-full aspect-square rounded-lg object-cover border border-ast_purple/20"
                   />
                 ))}
               </div>
@@ -392,7 +392,7 @@ export default function ProjectsCard({
                           <img
                             src={project.images[0]}
                             alt=""
-                            className="shrink-0 w-10 h-10 rounded-lg object-cover opacity-85"
+                            className="ast-img-safe shrink-0 w-10 h-10 rounded-lg object-cover opacity-85"
                           />
                         )}
                       </div>
