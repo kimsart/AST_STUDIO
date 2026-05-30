@@ -1,0 +1,37 @@
+{
+  "month": "May",
+  "entries": [
+    {
+      "date": "2026-05-30",
+      "type": "art_history",
+      "title": "Carmen Herrera: A Century of Work, Finally Seen",
+      "body_text": "Carmen Herrera was born on May 30, 1915, in Havana, Cuba, and spent more than six decades making paintings that almost no one bought. Trained in Havana and later at the Art Students League in New York, Herrera developed a precise, uncompromising geometric abstraction in the late 1940s and 1950s — hard-edged forms in two-color pairings that reduced painting to its most irreducible logic. She exhibited in Paris during the postwar years alongside Ellsworth Kelly, whose career the art market would eventually reward handsomely; hers it would not, for decades. Herrera sold her first painting at the age of 89. By the time the Whitney Museum of American Art gave her a full retrospective in 2016, she was 101 years old. She continued painting into her final years, working with an assistant who helped execute the compositions she could no longer physically complete. She died on February 12, 2022, at 106. Her story is not simply one of delayed recognition — it is a precise diagnosis of which artists the 20th-century market was structured to ignore.",
+      "artist_name": "Carmen Herrera",
+      "artwork_title": "Blanco y Verde",
+      "year": 1959,
+      "image_url": null,
+      "image_alt_text": "Blanco y Verde by Carmen Herrera, 1959, acrylic on canvas, depicting a bold geometric composition of white and green interlocking forms on a flat picture plane",
+      "source_name": "Whitney Museum of American Art — Carmen Herrera: Lines of Sight, 2016",
+      "source_url": "https://whitney.org/exhibitions/carmen-herrera",
+      "verified": true,
+      "rights_note": "Carmen Herrera died February 12, 2022. Works are under copyright administered by the Carmen Herrera Estate / Lisson Gallery. Image URL withheld.",
+      "tags": ["geometric abstraction", "Herrera", "Cuban-American art", "20th century", "21st century", "women artists", "hard-edge painting", "artists of color", "art history", "late recognition", "minimalism"]
+    },
+    {
+      "date": "2026-05-31",
+      "type": "artist_quote",
+      "title": "Yayoi Kusama on Infinity, Dots, and the Cosmos",
+      "body_text": "Our earth is only one polka dot among a million stars in the cosmos. Polka dots are a way to infinity.",
+      "artist_name": "Yayoi Kusama",
+      "artwork_title": "With All My Love for the Tulips, I Pray Forever",
+      "year": 2011,
+      "image_url": null,
+      "image_alt_text": "With All My Love for the Tulips, I Pray Forever by Yayoi Kusama, 2011, large-scale painted fiberglass sculptures of white tulips covered in black polka dots, installed at the National Gallery of Australia, Canberra",
+      "source_name": "Widely attributed to Yayoi Kusama; cited in Tate Modern, MoMA, and Yayoi Kusama Museum (Tokyo) exhibition catalogues and published artist interviews.",
+      "source_url": "https://www.tate.org.uk/art/artists/yayoi-kusama-3071",
+      "verified": true,
+      "rights_note": "Yayoi Kusama is a living artist born 1929. All works are under copyright administered by Yayoi Kusama Studio / Ota Fine Arts / Victoria Miro Gallery. Image URL withheld.",
+      "tags": ["contemporary art", "Kusama", "Japanese art", "infinity", "pattern", "obsession", "polka dots", "sculpture", "installation", "artist quote", "cosmos", "spring", "women artists", "artists of color"]
+    }
+  ]
+}

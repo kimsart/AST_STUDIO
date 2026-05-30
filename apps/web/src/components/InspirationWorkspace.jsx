@@ -53,12 +53,14 @@ function ArtHistoryCard({ entry, highlight = false }) {
     <div className={`rounded-2xl bg-[#120724] overflow-hidden border transition ${
       highlight ? "border-ast_lavender/60 ring-1 ring-ast_lavender/25" : "border-ast_purple/40"
     }`}>
-      {entry.image_url && (
+      {entry.image_url ? (
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
           className="ast-img-safe w-full h-52 object-cover object-top"
         />
+      ) : (
+        <div className="w-full h-28 bg-gradient-to-br from-ast_purple/25 via-ast_lavender/10 to-transparent" />
       )}
       <div className="p-5">
         <p className="text-[10px] uppercase tracking-[0.3em] text-ast_lavender mb-2">Today in Art History</p>
@@ -76,12 +78,14 @@ function QuoteCard({ entry, highlight = false }) {
     <div className={`rounded-2xl bg-[#120724] overflow-hidden border transition ${
       highlight ? "border-ast_turquoise/60 ring-1 ring-ast_turquoise/25" : "border-ast_turquoise/30"
     }`}>
-      {entry.image_url && (
+      {entry.image_url ? (
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
           className="ast-img-safe w-full h-44 object-cover object-top"
         />
+      ) : (
+        <div className="w-full h-20 bg-gradient-to-br from-ast_turquoise/20 via-ast_cyan/10 to-transparent" />
       )}
       <div className="p-5">
         <p className="text-[10px] uppercase tracking-[0.3em] text-ast_turquoise mb-3">Artist Quote of the Day</p>

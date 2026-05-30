@@ -2,9 +2,10 @@
 // To add a new month: import the JSON and add it to allMonths.
 // When switching to an API, replace getClosestEntry() — component is untouched.
 
+import may2026  from '../inspiration/may.json';
 import june2026 from './june2026.json';
 
-const allMonths = [june2026];
+const allMonths = [may2026, june2026];
 export const allEntries = allMonths.flatMap(m => m.entries);
 
 // Returns the most recent past entry of the given type; falls back to soonest future entry.
