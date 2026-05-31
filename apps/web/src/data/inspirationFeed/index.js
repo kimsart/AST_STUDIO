@@ -3,7 +3,7 @@
 // When switching to an API, replace getClosestEntry() — component is untouched.
 
 import may2026  from '../inspiration/may.json';
-import june2026 from './june2026.json';
+import june2026 from '../inspiration/june.json';
 import july2026 from '../inspiration/july.json';
 
 const allMonths = [may2026, june2026, july2026];

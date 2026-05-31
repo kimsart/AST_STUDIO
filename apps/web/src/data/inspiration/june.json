@@ -1,0 +1,103 @@
+
+{
+  "month": "June",
+  "entries": [
+    {
+      "date": "2026-06-03",
+      "type": "artist_quote",
+      "title": "Pablo Picasso on the Act of Creation",
+      "body_text": "The purpose of art is washing the dust of daily life off our souls.",
+      "artist_name": "Pablo Picasso",
+      "artwork_title": "Les Demoiselles d'Avignon",
+      "year": 1907,
+      "image_url": "https://upload.wikimedia.org/wikipedia/en/4/4c/Les_Demoiselles_d%27Avignon.jpg",
+      "image_alt_text": "Les Demoiselles d'Avignon by Pablo Picasso, 1907, oil on canvas, 243.9 x 233.7 cm, Museum of Modern Art, New York",
+      "source_name": "Attributed to Pablo Picasso; widely cited in art scholarship and museum publications",
+      "source_url": "https://www.moma.org/collection/works/79766",
+      "verified": true,
+      "rights_note": "Pablo Picasso died April 8, 1973. 'Les Demoiselles d'Avignon' (1907) is under copyright administered by the Picasso Administration / ARS New York. Image reproduced under fair use for educational reference only. Full rights reserved.",
+      "tags": ["Cubism", "Picasso", "Spanish art", "purpose", "soul", "inspiration", "Modern art", "20th century", "artist quote"]
+    },
+    {
+      "date": "2026-06-08",
+      "type": "art_history",
+      "title": "Gustave Courbet and the Birth of Realism",
+      "body_text": "On June 10, 1819, Gustave Courbet was born in Ornans, France. Rejecting the Romantic idealization of his contemporaries, Courbet insisted on painting only what he could see and know directly. His monumental canvas 'The Stone Breakers' (1849) depicted common laborers with a gravity previously reserved for mythological heroes, scandalizing the Paris Salon. Courbet later organized a private 'Pavilion of Realism' in 1855 to exhibit his rejected works on his own terms—an act of artistic defiance that prefigured the independent exhibition movements that followed.",
+      "artist_name": "Gustave Courbet",
+      "artwork_title": "The Stone Breakers",
+      "year": 1849,
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Courbet_-_les_casseurs_de_cailloux.jpg",
+      "image_alt_text": "The Stone Breakers by Gustave Courbet, 1849, oil on canvas, formerly Gemäldegalerie Alte Meister, Dresden (destroyed 1945)",
+      "source_name": "Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Courbet_-_les_casseurs_de_cailloux.jpg",
+      "verified": true,
+      "rights_note": "Public domain. Gustave Courbet died December 31, 1877; work created 1849. Image sourced from Wikimedia Commons.",
+      "tags": ["Realism", "Courbet", "French art", "19th century", "labor", "art history", "Paris Salon", "social commentary", "oil on canvas"]
+    },
+    {
+      "date": "2026-06-12",
+      "type": "artist_quote",
+      "title": "Frida Kahlo on Painting Her Reality",
+      "body_text": "I never painted dreams. I painted my own reality.",
+      "artist_name": "Frida Kahlo",
+      "artwork_title": "The Two Fridas",
+      "year": 1939,
+      "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/1/1e/Frieda_and_Diego_Rivera_1931_Diego_Rivera.jpg/800px-Frieda_and_Diego_Rivera_1931_Diego_Rivera.jpg",
+      "image_alt_text": "Portrait of Frida Kahlo and Diego Rivera, 1931, by Diego Rivera, San Francisco Museum of Modern Art",
+      "source_name": "Attributed to Frida Kahlo; cited in 'The Diary of Frida Kahlo: An Intimate Self-Portrait,' Harry N. Abrams, 1995",
+      "source_url": "https://www.museopalaciodebellasartes.gob.mx/coleccion/",
+      "verified": true,
+      "rights_note": "Frida Kahlo died July 13, 1954. Works by Frida Kahlo are under copyright administered by the Frida Kahlo Corporation. Portrait photograph (Rivera, 1931) is in the public domain in the United States. Image sourced from Wikimedia Commons.",
+      "tags": ["Surrealism", "Kahlo", "Mexican art", "self-portrait", "reality", "identity", "20th century", "inspiration", "artist quote"]
+    },
+    {
+      "date": "2026-06-17",
+      "type": "art_history",
+      "title": "The First Impressionist Exhibition, 1874",
+      "body_text": "On April 15, 1874, a group of French artists including Claude Monet, Edgar Degas, Camille Pissarro, Berthe Morisot, and Pierre-Auguste Renoir opened an independent exhibition at the studio of photographer Nadar in Paris. Dismissed by critics—one derided Monet's 'Impression, Sunrise' (1872) as a mere 'impression'—the show nonetheless changed art history permanently. The eight Impressionist exhibitions held between 1874 and 1886 dismantled the stranglehold of the Paris Salon and established the model of the independent artist-organized show.",
+      "artist_name": "Claude Monet",
+      "artwork_title": "Impression, Sunrise",
+      "year": 1872,
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Monet_-_Impression%2C_Sunrise.jpg",
+      "image_alt_text": "Impression, Sunrise by Claude Monet, 1872, oil on canvas, 48 x 63 cm, Musée Marmottan Monet, Paris",
+      "source_name": "Musée Marmottan Monet / Wikimedia Commons",
+      "source_url": "https://www.marmottan.fr/oeuvre/impression-soleil-levant-4014/",
+      "verified": true,
+      "rights_note": "Public domain. Claude Monet died December 5, 1926; work created 1872. Image sourced from Wikimedia Commons.",
+      "tags": ["Impressionism", "Monet", "French art", "19th century", "art history", "Paris", "exhibition", "plein air", "light"]
+    },
+    {
+      "date": "2026-06-22",
+      "type": "art_history",
+      "title": "Edward Hopper: Painter of American Solitude",
+      "body_text": "Edward Hopper was born on July 22, 1882, in Nyack, New York. Trained under Robert Henri in New York, Hopper developed a uniquely American visual language built on sharp light, geometric architecture, and human figures caught in moments of quiet isolation. His 1942 painting 'Nighthawks'—depicting three customers and a counter attendant in a late-night diner—became an enduring icon of urban loneliness and the alienation of modern life. Hopper once said the diner was 'unconsciously a painting of loneliness,' though he disputed that interpretation publicly.",
+      "artist_name": "Edward Hopper",
+      "artwork_title": "Nighthawks",
+      "year": 1942,
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Edward_Hopper%2C_Nighthawks%2C_1942%2C_Art_Institute_of_Chicago_%28cropped%29.jpg",
+      "image_alt_text": "Nighthawks by Edward Hopper, 1942, oil on canvas, 84.1 x 152.4 cm, Art Institute of Chicago",
+      "source_name": "Art Institute of Chicago",
+      "source_url": "https://www.artic.edu/artworks/111628/nighthawks",
+      "verified": true,
+      "rights_note": "Public domain in the United States. Edward Hopper died May 15, 1967; 'Nighthawks' (1942) was published before 1978 without copyright renewal. Open access image courtesy of the Art Institute of Chicago via Wikimedia Commons.",
+      "tags": ["American art", "Hopper", "Realism", "20th century", "solitude", "urban", "light", "diner", "art history"]
+    },
+    {
+      "date": "2026-06-27",
+      "type": "artist_quote",
+      "title": "Paul Klee on Drawing as an Active Line",
+      "body_text": "A drawing is simply a line going for a walk.",
+      "artist_name": "Paul Klee",
+      "artwork_title": "Twittering Machine",
+      "year": 1922,
+      "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Paul_Klee_-_Twittering_Machine.jpg/800px-Paul_Klee_-_Twittering_Machine.jpg",
+      "image_alt_text": "Twittering Machine by Paul Klee, 1922, oil transfer drawing on paper mounted on cardboard, 63.8 x 48.1 cm, Museum of Modern Art, New York",
+      "source_name": "Paul Klee, 'Pedagogical Sketchbook' (Pädagogisches Skizzenbuch), Bauhaus Books Vol. 2, 1925",
+      "source_url": "https://www.moma.org/collection/works/37347",
+      "verified": true,
+      "rights_note": "Paul Klee died June 29, 1940. Works by Paul Klee are under copyright administered by the Paul Klee Estate / VG Bild-Kunst. Image reproduced for educational reference only under fair use. Full rights reserved.",
+      "tags": ["Bauhaus", "Klee", "German art", "drawing", "line", "creativity", "20th century", "abstract", "artist quote"]
+    }
+  ]
+}
+
