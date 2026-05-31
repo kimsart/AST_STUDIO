@@ -70,7 +70,8 @@ function CompactCard({ eyebrow, eyebrowColor, title, preview, imageUrl, imageAlt
           <img
             src={imageUrl}
             alt={imageAlt ?? ""}
-            className="ast-img-safe shrink-0 w-14 h-14 rounded-xl object-cover object-top"
+            className="ast-img-safe shrink-0 w-14 rounded-xl object-contain object-center bg-transparent"
+            style={{ maxHeight: "3.5rem" }}
           />
         )}
       </div>
@@ -98,7 +99,8 @@ function SpotlightCompactCard({ selected, onSelect }) {
         <img
           src="https://static.wixstatic.com/media/0669c1_dccdd785631943a59238f81b9520c5e0~mv2.jpg"
           alt="Kim Wyatt"
-          className="ast-img-safe shrink-0 w-12 h-12 rounded-xl object-cover object-top -mt-5 border border-ast_purple/40"
+          className="ast-img-safe shrink-0 w-12 rounded-xl object-contain object-center border border-ast_purple/40"
+          style={{ maxHeight: "3rem" }}
         />
       </div>
     </button>
@@ -146,7 +148,8 @@ function ArtHistoryDetail({ entry, onClose }) {
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
-          className="ast-img-safe w-full h-44 object-cover object-top rounded-xl mb-4"
+          className="ast-img-safe w-full rounded-xl object-contain object-center mb-4"
+          style={{ maxHeight: "11rem" }}
         />
       ) : (
         <p className="text-[10px] text-ast_faint/60 italic mb-3 leading-snug">
@@ -168,18 +171,23 @@ function QuoteDetail({ entry, onClose }) {
         <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise">Quote of the Day</p>
         <CloseButton onClose={onClose} />
       </div>
-      {entry.image_url && (
-        <img
-          src={entry.image_url}
-          alt={entry.image_alt_text ?? ""}
-          className="ast-img-safe w-full h-36 object-cover object-top rounded-xl mb-4"
-        />
-      )}
-      <h3 className="text-sm font-semibold text-ast_body/80 mb-3 leading-snug">{entry.title}</h3>
-      <blockquote className="text-base font-medium text-ast_body leading-relaxed italic border-l-2 border-ast_turquoise/50 pl-4">
-        &ldquo;{entry.body_text}&rdquo;
-      </blockquote>
-      <p className="mt-2 text-xs text-ast_muted">— {entry.artist_name}</p>
+      <div className={entry.image_url ? "flex gap-4" : ""}>
+        {entry.image_url && (
+          <img
+            src={entry.image_url}
+            alt={entry.image_alt_text ?? ""}
+            className="ast-img-safe shrink-0 w-20 rounded-xl object-contain object-top"
+            style={{ maxHeight: "8rem" }}
+          />
+        )}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-semibold text-ast_body/80 mb-2 leading-snug">{entry.title}</h3>
+          <blockquote className="text-base font-medium text-ast_body leading-relaxed italic border-l-2 border-ast_turquoise/50 pl-4">
+            &ldquo;{entry.body_text}&rdquo;
+          </blockquote>
+          <p className="mt-2 text-xs text-ast_muted">— {entry.artist_name}</p>
+        </div>
+      </div>
       <Attribution entry={entry} />
       <TagList tags={entry.tags} />
     </div>
