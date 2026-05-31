@@ -19,6 +19,22 @@
     },
     {
       "date": "2026-05-31",
+      "type": "art_history",
+      "title": "Van Gogh Completes The Starry Night",
+      "body_text": "In June 1889, Vincent van Gogh completed The Starry Night while voluntarily committed at the Saint-Paul-de-Mausole asylum in Saint-Rémy-de-Provence. Painted from memory rather than direct observation — van Gogh rarely painted at night — it depicts a swirling nocturnal sky over a village, with a luminous crescent moon and a cypress tree dominating the foreground. Van Gogh himself was ambivalent about the work, calling it an 'exaggeration' in a letter to his brother Theo. He sent it to Theo in Paris, where it passed through several hands before entering the collection of the Museum of Modern Art in New York in 1941. It is now one of the most recognized paintings in Western art.",
+      "artist_name": "Vincent van Gogh",
+      "artwork_title": "The Starry Night",
+      "year": 1889,
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "image_alt_text": "The Starry Night by Vincent van Gogh, 1889, oil on canvas, 73.7 x 92.1 cm, Museum of Modern Art, New York",
+      "source_name": "Vincent van Gogh, Public domain, via Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "verified": true,
+      "rights_note": "Vincent van Gogh died July 29, 1890. The Starry Night (1889) is in the public domain. Image sourced from Wikimedia Commons via the Google Art Project.",
+      "tags": ["Post-Impressionism", "Van Gogh", "Dutch art", "19th century", "night", "landscape", "MoMA", "oil on canvas", "art history"]
+    },
+    {
+      "date": "2026-05-31",
       "type": "artist_quote",
       "title": "Yayoi Kusama on Infinity, Dots, and the Cosmos",
       "body_text": "Our earth is only one polka dot among a million stars in the cosmos. Polka dots are a way to infinity.",

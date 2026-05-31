@@ -1,8 +1,12 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getTodayInArtHistory } from '../data/inspirationFeed/index.js'
 import kevinPortrait from '../assets/studiospotlight/kevinlewis/portrait-01.jpg'
 
 export default function HomeWorkspace({ onClickImport, onExport }) {
   const navigate = useNavigate()
+  const artHistory = getTodayInArtHistory()
+  const [artImgFailed, setArtImgFailed] = useState(false)
   return (
     <>
       <div className="mb-6">
@@ -36,6 +40,16 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
           <p className="text-xs uppercase tracking-[0.25em] text-ast_lavender mb-3">
             Art History
           </p>
+          {artHistory?.image_url && !artImgFailed ? (
+            <img
+              src={artHistory.image_url}
+              alt={artHistory.image_alt_text ?? artHistory.title}
+              className="w-full h-28 object-cover rounded-xl mb-3"
+              onError={() => setArtImgFailed(true)}
+            />
+          ) : (
+            <div className="w-full h-28 rounded-xl bg-gradient-to-br from-ast_purple/20 via-ast_lavender/15 to-ast_blue/20 mb-3" />
+          )}
           <h2 className="text-base font-semibold text-[#8D5CFF] mb-3">The Starry Night</h2>
           <p className="text-sm text-ast_body/70 leading-relaxed">
             Vincent van Gogh completed <em>The Starry Night</em> in June 1889 while a patient

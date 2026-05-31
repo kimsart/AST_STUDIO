@@ -154,6 +154,9 @@ function CompactCard({ eyebrow, eyebrowColor, title, preview, imageUrl, imageAlt
           alt={imageAlt}
           className="ast-img-safe shrink-0 w-14 rounded-xl object-contain object-center bg-transparent"
           style={{ maxHeight: "3.5rem" }}
+          fallback={
+            <div className="shrink-0 w-14 rounded-xl bg-gradient-to-br from-ast_purple/20 via-ast_lavender/15 to-ast_blue/20" style={{ height: "3.5rem" }} />
+          }
         />
       </div>
     </button>
