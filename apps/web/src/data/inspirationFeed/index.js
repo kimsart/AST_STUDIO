@@ -4,8 +4,9 @@
 
 import may2026  from '../inspiration/may.json';
 import june2026 from './june2026.json';
+import july2026 from '../inspiration/july.json';
 
-const allMonths = [may2026, june2026];
+const allMonths = [may2026, june2026, july2026];
 export const allEntries = allMonths.flatMap(m => m.entries);
 
 // Returns the most recent past entry of the given type; falls back to soonest future entry.
