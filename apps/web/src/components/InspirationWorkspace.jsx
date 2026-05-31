@@ -1,10 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { getTodayInArtHistory, allEntries } from "../data/inspirationFeed/index.js";
+import kevinPortrait   from "../assets/studiospotlight/kevinlewis/portrait-01.jpg";
+import kevinArtwork01  from "../assets/studiospotlight/kevinlewis/artwork-01.jpg";
+import kevinArtwork02  from "../assets/studiospotlight/kevinlewis/artwork-02.jpg";
+import kevinArtwork03  from "../assets/studiospotlight/kevinlewis/artwork-03.jpg";
+import kevinArtwork04  from "../assets/studiospotlight/kevinlewis/artwork-04.jpg";
+import kevinStudio     from "../assets/studiospotlight/kevinlewis/studio-01.jpeg";
 
 // ── Static spotlight data ──────────────────────────────────────────────────
 
 const SPOTLIGHT_ENTRIES = [
+  {
+    id: "kevin-lewis",
+    name: "Kevin Lewis",
+    handle: "@kevinlewisart",
+    studio: "Kevin Lewis Studio",
+    bio: "Kevin Lewis is a San Diego artist whose work is vivid, intense, and sometimes frightening. His imagery carries forward the ideas, moods, and theatrical instincts he developed while working in makeup and costume design on horror movie sets.",
+    tags: ["Mixed Media", "Textile", "Spotlight"],
+    tagColors: [
+      "text-ast_pink bg-ast_pink/20",
+      "text-ast_purple bg-ast_purple/20",
+      "text-ast_turquoise bg-ast_turquoise/20",
+    ],
+    profileUrl: kevinPortrait,
+    gallery: [
+      { url: kevinArtwork01, alt: "Kevin Lewis — artwork 1" },
+      { url: kevinArtwork02, alt: "Kevin Lewis — artwork 2" },
+      { url: kevinArtwork03, alt: "Kevin Lewis — artwork 3" },
+      { url: kevinArtwork04, alt: "Kevin Lewis — artwork 4" },
+      { url: kevinStudio,    alt: "Kevin Lewis's studio" },
+    ],
+    rightsNote: "Artwork by Kevin Lewis. Used with artist permission.",
+  },
   {
     id: "kim-wyatt",
     name: "Kim Wyatt",
@@ -16,8 +44,12 @@ const SPOTLIGHT_ENTRIES = [
     website: "https://www.kimwyatt.art/",
     websiteLabel: "kimwyatt.art",
     profileUrl: "https://static.wixstatic.com/media/0669c1_dccdd785631943a59238f81b9520c5e0~mv2.jpg",
-    artworkUrl: "https://static.wixstatic.com/media/0669c1_26396aee2e914839814b379e8efd0070~mv2.jpg/v1/fill/w_460,h_800,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Liberty%20With%20Mask%20by%20Kim%20Wyatt.jpg",
-    artworkAlt: "Liberty With Mask by Kim Wyatt",
+    gallery: [
+      {
+        url: "https://static.wixstatic.com/media/0669c1_26396aee2e914839814b379e8efd0070~mv2.jpg/v1/fill/w_460,h_800,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Liberty%20With%20Mask%20by%20Kim%20Wyatt.jpg",
+        alt: "Liberty With Mask by Kim Wyatt",
+      },
+    ],
     rightsNote: "Artwork by Kim Wyatt. Used with artist permission for Art Supply Tracker beta testing.",
   },
 ];
@@ -130,36 +162,38 @@ function CompactCard({ eyebrow, eyebrowColor, title, preview, imageUrl, imageAlt
 
 function SpotlightCard({ entry, selected, onSelect }) {
   return (
-    <button
-      onClick={onSelect}
-      className={`w-full text-left rounded-2xl border bg-[#120724] overflow-hidden transition ${
+    <div
+      className={`p-1 rounded-2xl bg-gradient-to-br transition ${
         selected
-          ? "border-ast_purple/70 ring-1 ring-white/10"
-          : "border-ast_purple/30 hover:brightness-110"
+          ? "from-ast_electric_blue via-ast_purple to-ast_pink"
+          : "from-ast_electric_blue/70 via-ast_purple/70 to-ast_pink/60 hover:from-ast_electric_blue/90 hover:via-ast_purple/90 hover:to-ast_pink/80"
       }`}
     >
-      <div className="h-10 bg-gradient-to-r from-ast_electric_blue/60 via-ast_purple/60 to-ast_pink/50" />
-      <div className="px-4 py-3 flex items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-1">Studio Spotlight</p>
-          <p className="text-sm font-bold text-ast_turquoise leading-snug">{entry.name}</p>
-          <p className="text-[11px] text-ast_muted mt-0.5 leading-snug">{entry.studio}</p>
-        </div>
+      <button
+        onClick={onSelect}
+        className="w-full aspect-square rounded-[12px] bg-[#120724] overflow-hidden relative block"
+      >
         <SafeImage
           src={entry.profileUrl}
           alt={entry.name}
-          className="ast-img-safe shrink-0 w-12 rounded-xl object-contain object-center border border-ast_purple/40"
-          style={{ maxHeight: "3rem" }}
+          className="ast-img-safe block w-full h-full object-cover"
+          style={{ objectPosition: "center top" }}
+          fallback={
+            <div className="w-full h-full bg-gradient-to-br from-ast_electric_blue/20 via-ast_purple/20 to-ast_pink/15" />
+          }
         />
-      </div>
-    </button>
+        <div className="absolute bottom-0 left-0 right-0 px-2.5 py-1.5 bg-gradient-to-t from-black/65 to-transparent">
+          <p className="text-[10px] font-bold text-white/90 leading-tight truncate">{entry.name}</p>
+        </div>
+      </button>
+    </div>
   );
 }
 
 function SpotlightCTACard({ label }) {
   return (
-    <div className="w-full rounded-2xl border border-dashed border-ast_purple/20 bg-transparent p-4 flex items-center justify-center min-h-[5rem]">
-      <p className="text-[11px] text-ast_body/30 text-center leading-snug">{label}</p>
+    <div className="w-full aspect-square rounded-2xl border border-dashed border-ast_purple/20 bg-transparent flex items-center justify-center">
+      <p className="text-[11px] text-ast_body/30 text-center leading-snug px-3">{label}</p>
     </div>
   );
 }
@@ -267,45 +301,74 @@ function QuoteDetail({ entry, onClose }) {
 }
 
 function SpotlightDetail({ entry, onClose }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const gallery = entry.gallery ?? [];
+  const active = gallery[activeIdx] ?? null;
+
   return (
     <div className="rounded-2xl border border-ast_purple/50 bg-[#0d0420] p-4 mt-3">
       <div className="flex items-start justify-between mb-3">
         <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint">Studio Spotlight</p>
         <CloseButton onClose={onClose} />
       </div>
-      <div className="flex gap-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-ast_turquoise text-base leading-snug">{entry.name}</h3>
-          <p className="text-[10px] text-ast_muted mt-0.5 mb-2">{entry.handle} · {entry.studio}</p>
-          <p className="text-xs text-ast_body/65 mb-2 leading-relaxed">{entry.bio}</p>
-          <div className="flex flex-wrap gap-1.5 mb-2">
-            {entry.tags.map((tag, i) => (
-              <span key={tag} className={`text-[9px] px-2 py-0.5 rounded-full ${entry.tagColors[i] ?? "text-ast_faint bg-ast_lavender/10"}`}>
-                {tag}
-              </span>
-            ))}
-          </div>
-          {entry.website && (
-            <a
-              href={entry.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition"
-            >
-              {entry.websiteLabel ?? entry.website} →
-            </a>
-          )}
-          {entry.rightsNote && (
-            <p className="mt-1.5 text-[8px] text-ast_faint/50 leading-snug">{entry.rightsNote}</p>
-          )}
-        </div>
+
+      {/* Main artwork */}
+      {active && (
         <SafeImage
-          src={entry.artworkUrl}
-          alt={entry.artworkAlt ?? entry.name}
-          className="ast-img-safe shrink-0 w-24 rounded-xl object-contain"
-          style={{ maxHeight: "8rem" }}
+          src={active.url}
+          alt={active.alt ?? entry.name}
+          className="ast-img-safe w-full rounded-xl object-contain object-center mb-3"
+          style={{ maxHeight: "16rem" }}
         />
+      )}
+
+      {/* Gallery thumbnail strip — shown only when > 1 image */}
+      {gallery.length > 1 && (
+        <div className="flex gap-2 mb-3">
+          {gallery.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIdx(i)}
+              className={`w-12 h-12 shrink-0 rounded-lg overflow-hidden border-2 transition ${
+                i === activeIdx
+                  ? "border-ast_turquoise/60"
+                  : "border-transparent hover:border-ast_purple/40"
+              }`}
+            >
+              <SafeImage
+                src={img.url}
+                alt={img.alt ?? ""}
+                className="ast-img-safe block w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Artist info */}
+      <h3 className="font-bold text-ast_turquoise text-base leading-snug">{entry.name}</h3>
+      <p className="text-[10px] text-ast_muted mt-0.5 mb-2">{entry.handle} · {entry.studio}</p>
+      <p className="text-xs text-ast_body/65 mb-2 leading-relaxed">{entry.bio}</p>
+      <div className="flex flex-wrap gap-1.5 mb-2">
+        {entry.tags.map((tag, i) => (
+          <span key={tag} className={`text-[9px] px-2 py-0.5 rounded-full ${entry.tagColors[i] ?? "text-ast_faint bg-ast_lavender/10"}`}>
+            {tag}
+          </span>
+        ))}
       </div>
+      {entry.website && (
+        <a
+          href={entry.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition"
+        >
+          {entry.websiteLabel ?? entry.website} →
+        </a>
+      )}
+      {entry.rightsNote && (
+        <p className="mt-2 text-[8px] text-ast_faint/50 leading-snug">{entry.rightsNote}</p>
+      )}
     </div>
   );
 }
@@ -355,6 +418,16 @@ export default function InspirationWorkspace() {
   const previewQuotes = [...pastQuotes, ...futureQuotes].slice(0, 4);
 
   const toggle = (id) => setSelectedCard(prev => prev === id ? null : id);
+
+  const spotlightDetailRef = useRef(null);
+  useEffect(() => {
+    if (selectedCard?.startsWith("spotlight-")) {
+      const timer = setTimeout(() => {
+        spotlightDetailRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCard]);
 
   const ctaNeeded = Math.max(0, SPOTLIGHT_MIN_SLOTS - SPOTLIGHT_ENTRIES.length);
   const ctaLabels = SPOTLIGHT_CTA_LABELS.slice(0, ctaNeeded);
@@ -420,7 +493,7 @@ export default function InspirationWorkspace() {
             {/* 2. Studio Spotlight grid */}
             <div>
               <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-2 px-0.5">Studio Spotlight</p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-4 gap-2">
                 {SPOTLIGHT_ENTRIES.map(entry => (
                   <SpotlightCard
                     key={entry.id}
@@ -433,11 +506,13 @@ export default function InspirationWorkspace() {
                   <SpotlightCTACard key={label} label={label} />
                 ))}
               </div>
-              {SPOTLIGHT_ENTRIES.map(entry =>
-                selectedCard === `spotlight-${entry.id}` ? (
-                  <SpotlightDetail key={entry.id} entry={entry} onClose={() => setSelectedCard(null)} />
-                ) : null
-              )}
+              <div ref={spotlightDetailRef}>
+                {SPOTLIGHT_ENTRIES.map(entry =>
+                  selectedCard === `spotlight-${entry.id}` ? (
+                    <SpotlightDetail key={entry.id} entry={entry} onClose={() => setSelectedCard(null)} />
+                  ) : null
+                )}
+              </div>
             </div>
 
             {/* 3. Compact bottom row — Art History + Partners */}

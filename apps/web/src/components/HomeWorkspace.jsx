@@ -1,4 +1,8 @@
+import { useNavigate } from 'react-router-dom'
+import kevinPortrait from '../assets/studiospotlight/kevinlewis/portrait-01.jpg'
+
 export default function HomeWorkspace({ onClickImport, onExport }) {
+  const navigate = useNavigate()
   return (
     <>
       <div className="mb-6">
@@ -56,21 +60,25 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
           </p>
         </div>
 
-        {/* 4. Featured Artist */}
-        <div className="rounded-2xl border border-ast_pink/40 bg-[#120724] p-6">
-          <div className="flex items-start justify-between mb-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-ast_pink">Featured Artist</p>
-            <span className="text-xs bg-ast_pink/20 text-ast_pink/60 px-2 py-0.5 rounded">
-              Coming soon
-            </span>
+        {/* 4. Studio Spotlight */}
+        <div
+          className="rounded-2xl border border-ast_pink/40 bg-[#120724] p-6 cursor-pointer hover:brightness-110 transition"
+          onClick={() => navigate('/inspiration', { state: { section: 'spotlight-kevin-lewis' } })}
+        >
+          <p className="text-xs uppercase tracking-[0.25em] text-ast_pink mb-3">Studio Spotlight</p>
+          <div className="flex items-center gap-3 mb-3">
+            <img
+              src={kevinPortrait}
+              alt="Kevin Lewis"
+              className="w-14 h-14 rounded-full object-cover border border-ast_pink/30 shrink-0"
+            />
+            <div>
+              <h2 className="text-lg font-bold text-[#FF2FB3]">Kevin Lewis</h2>
+              <p className="text-xs text-ast_body/60">Mixed media &amp; textile artist</p>
+            </div>
           </div>
-          <h2 className="text-lg font-bold text-[#FF2FB3] mb-2">Community Spotlight</h2>
           <p className="text-sm text-ast_body/70 leading-relaxed">
-            AST Studio will spotlight beta users and community artists here.
-            Featured artists will be selected from opt-in submissions only.
-          </p>
-          <p className="mt-5 text-xs text-ast_body/30">
-            Artist opt-in required — feature coming in a future release
+            Vivid, intense, and sometimes frightening work rooted in makeup and costume design for horror film.
           </p>
         </div>
 
