@@ -597,3 +597,23 @@ Data model sketch (for when this is built):
 ```
 
 Do not build until archive UI and opt-in flow are designed.
+
+---
+
+### Public Inspiration / Studio Spotlight mirror
+
+Mirror approved Inspiration Feed content to the public Art Supply Tracker website.
+
+Studio Spotlight entries should have public share pages so featured artists can link to their spotlight feature, their website, their social/profile links, and selected artwork or project notes.
+
+Rules:
+- Opt-in only — no artist is featured publicly without explicit consent
+- Artist controls which links are shown on their public page
+- Rights and permission note required per entry before publishing
+- Past spotlights are archived and remain accessible (not deleted)
+- The app feed and the public website mirror must pull from the same approved content source — no duplicate data management
+
+Architecture note:
+The current local JSON pipeline (`inspirationFeed/index.js`) is intentionally simple and replaceable. When this feature is built, `getClosestEntry()` and the feed loader should be swapped for an API call to a shared approved-content backend. The component layer (`InspirationWorkspace`, `CompactCard`, detail panels) does not need to change — only the data source.
+
+Do not build until: opt-in consent flow, public page design, and shared content backend are defined.
