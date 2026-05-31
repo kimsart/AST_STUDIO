@@ -142,12 +142,16 @@ function ArtHistoryDetail({ entry, onClose }) {
         <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender">Today in Art History</p>
         <CloseButton onClose={onClose} />
       </div>
-      {entry.image_url && (
+      {entry.image_url ? (
         <img
           src={entry.image_url}
           alt={entry.image_alt_text ?? ""}
           className="ast-img-safe w-full h-44 object-cover object-top rounded-xl mb-4"
         />
+      ) : (
+        <p className="text-[10px] text-ast_faint/60 italic mb-3 leading-snug">
+          Image unavailable · rights protected — search the web to discover this artist's work.
+        </p>
       )}
       <h3 className="text-base font-bold text-ast_body mb-2 leading-snug">{entry.title}</h3>
       <p className="text-sm text-ast_body/75 leading-relaxed">{entry.body_text}</p>
@@ -184,19 +188,19 @@ function QuoteDetail({ entry, onClose }) {
 
 function SpotlightDetail({ onClose }) {
   return (
-    <div className="rounded-2xl border border-ast_purple/50 bg-[#0d0420] p-5">
-      <div className="flex items-start justify-between mb-4">
+    <div className="rounded-2xl border border-ast_purple/50 bg-[#0d0420] p-4">
+      <div className="flex items-start justify-between mb-3">
         <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint">Studio Spotlight</p>
         <CloseButton onClose={onClose} />
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-ast_turquoise text-sm mb-0.5">Kim Wyatt</h3>
-          <p className="text-[10px] text-ast_muted mb-2">@kims_studio_labs · Kim Wyatt Studio Art Labs</p>
-          <p className="text-xs text-ast_body/65 mb-3 leading-relaxed">
+          <h3 className="font-bold text-ast_turquoise text-base leading-snug">Kim Wyatt</h3>
+          <p className="text-[10px] text-ast_muted mt-0.5 mb-2">@kims_studio_labs · Kim Wyatt Studio Art Labs</p>
+          <p className="text-xs text-ast_body/65 mb-2 leading-relaxed">
             Artist and founder behind AST Studio. Kim Wyatt Studio Art Labs is the real-world studio practice this app was built to support.
           </p>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 mb-2">
             <span className="text-[9px] bg-ast_turquoise/20 text-ast_turquoise px-2 py-0.5 rounded-full">Founder</span>
             <span className="text-[9px] bg-ast_lavender/20 text-ast_lavender px-2 py-0.5 rounded-full">Studio Artist</span>
             <span className="text-[9px] bg-ast_lavender/10 text-ast_faint px-2 py-0.5 rounded-full">Beta</span>
@@ -205,19 +209,19 @@ function SpotlightDetail({ onClose }) {
             href="https://www.kimwyatt.art/"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-block text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition"
+            className="text-xs text-ast_turquoise/70 hover:text-ast_turquoise transition"
           >
             kimwyatt.art →
           </a>
-          <p className="mt-2 text-[8px] text-ast_faint/50 leading-snug">
+          <p className="mt-1.5 text-[8px] text-ast_faint/50 leading-snug">
             Artwork by Kim Wyatt. Used with artist permission for Art Supply Tracker beta testing.
           </p>
         </div>
         <img
           src="https://static.wixstatic.com/media/0669c1_26396aee2e914839814b379e8efd0070~mv2.jpg/v1/fill/w_460,h_800,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Liberty%20With%20Mask%20by%20Kim%20Wyatt.jpg"
           alt="Liberty With Mask by Kim Wyatt"
-          className="ast-img-safe shrink-0 w-28 rounded-xl object-contain"
-          style={{ maxHeight: "10rem" }}
+          className="ast-img-safe shrink-0 w-24 rounded-xl object-contain"
+          style={{ maxHeight: "8rem" }}
         />
       </div>
     </div>
