@@ -6,10 +6,11 @@ import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/insp
 
 function TagList({ tags }) {
   if (!tags?.length) return null;
+  const visible = tags.slice(0, 4);
   return (
     <div className="flex flex-wrap gap-1.5 mt-3">
-      {tags.map(tag => (
-        <span key={tag} className="text-[9px] uppercase tracking-wide bg-ast_lavender/10 text-ast_faint px-2 py-0.5 rounded-full">
+      {visible.map(tag => (
+        <span key={tag} className="text-[10px] uppercase tracking-wide bg-ast_lavender/10 text-ast_muted px-2 py-0.5 rounded-full">
           {tag}
         </span>
       ))}
@@ -19,11 +20,11 @@ function TagList({ tags }) {
 
 function Attribution({ entry }) {
   return (
-    <div className="mt-3 space-y-0.5">
-      <p className="text-[10px] text-ast_muted">
-        <span className="font-medium text-ast_body/70">{entry.artwork_title}</span>
-        {entry.year && <span className="text-ast_faint"> ({entry.year})</span>}
-        {entry.artist_name && <span className="text-ast_faint"> · {entry.artist_name}</span>}
+    <div className="mt-3 space-y-1">
+      <p className="text-xs text-ast_muted">
+        <span className="font-medium text-ast_body/80">{entry.artwork_title}</span>
+        {entry.year && <span className="text-ast_muted"> ({entry.year})</span>}
+        {entry.artist_name && <span className="text-ast_muted"> · {entry.artist_name}</span>}
       </p>
       {entry.source_name && (
         entry.source_url ? (
@@ -31,16 +32,16 @@ function Attribution({ entry }) {
             href={entry.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[9px] text-ast_turquoise/70 hover:text-ast_turquoise transition underline underline-offset-2"
+            className="text-xs text-ast_turquoise/80 hover:text-ast_turquoise transition underline underline-offset-2"
           >
             {entry.source_name}
           </a>
         ) : (
-          <p className="text-[9px] text-ast_faint">{entry.source_name}</p>
+          <p className="text-xs text-ast_muted">{entry.source_name}</p>
         )
       )}
       {entry.rights_note && (
-        <p className="text-[8px] text-ast_faint/50 leading-snug mt-1">{entry.rights_note}</p>
+        <p className="text-[10px] text-ast_muted/70 leading-snug mt-1">{entry.rights_note}</p>
       )}
     </div>
   );
