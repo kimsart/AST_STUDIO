@@ -563,3 +563,37 @@ Make the default workspace useful for beta testers instead of showing fake edito
   - `#00E6FF → #2E64FF → #8D5CFF → #FF2FB3`
 - Use the gradient for thin outer frames, corner accents, progress indicators, and active/hover states.
 - Do not use the gradient as a full background flood.
+
+---
+
+## Future data model / nice-to-have notes
+
+### Studio Spotlight archive
+
+Keep a record of past Studio Spotlight artists/items so users can revisit them later.
+
+Future behavior:
+- Current Studio Spotlight shows the active (today / this week) spotlight
+- Past spotlights move into a Studio Spotlight archive tab or section
+- Users can browse previous featured artists
+- Users can pin or heart favorite spotlights for quick access
+- Only opt-in artists should ever be included
+- Each spotlight entry should carry a `permissions` or `rights_note` field confirming consent
+
+Data model sketch (for when this is built):
+```json
+{
+  "type": "studio_spotlight",
+  "status": "active" | "archived",
+  "date_featured": "2026-05-30",
+  "artist_name": "...",
+  "studio_name": "...",
+  "handle": "...",
+  "source_url": "...",
+  "image_url": "...",
+  "opt_in": true,
+  "rights_note": "..."
+}
+```
+
+Do not build until archive UI and opt-in flow are designed.
