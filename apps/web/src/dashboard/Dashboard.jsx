@@ -25,6 +25,8 @@ export default function Dashboard({ defaultView = 'home' }) {
   }, [location.key]);
   const [showAddProjectForm, setShowAddProjectForm] = useState(false);
   const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const [sessionProjects, setSessionProjects] = useState(loadProjects);
   const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
   useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
@@ -178,7 +180,127 @@ export default function Dashboard({ defaultView = 'home' }) {
       <div className="relative z-10 flex min-h-screen flex-col">
         <DashboardHeader />
 
-        <section className="grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
+        {/* ── Mobile drawer overlays ── */}
+        {(leftOpen || rightOpen) && (
+          <div
+            className="fixed inset-0 z-40 bg-black/60 md:hidden"
+            onClick={() => { setLeftOpen(false); setRightOpen(false); }}
+          />
+        )}
+
+        {/* Left drawer */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 w-4/5 max-w-xs scrollbar-left rounded-r-3xl border-r border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl overflow-y-auto transition-transform duration-300 md:hidden ${
+            leftOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <button onClick={() => setLeftOpen(false)} className="mb-4 text-xs text-ast_turquoise/60 hover:text-ast_turquoise transition">✕ Close</button>
+          <button
+            onClick={() => { navigate('/dashboard'); setLeftOpen(false); }}
+            className="mb-4 w-full text-left hover:opacity-75 transition"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-ast_turquoise">Studio Tools</p>
+            <h2 className="mt-2 text-xl font-semibold text-[#00E6FF]">My Studio</h2>
+          </button>
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-1.5">
+              <button onClick={() => { navigate('/projects'); setLeftOpen(false); }} className={`rounded-xl border p-2.5 text-left transition ${defaultView === 'projects' ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10' : 'border-ast_turquoise/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'}`}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise">Projects</p>
+                <p className="mt-0.5 text-lg font-bold text-[#00E6FF]">{sessionProjects.length}</p>
+                <p className="text-[9px] text-ast_body/55 leading-tight">{sessionProjects.filter(p => p.status === 'in-progress').length} active</p>
+              </button>
+              <button onClick={() => { navigate('/supplies'); setLeftOpen(false); }} className={`rounded-xl border p-2.5 text-left transition ${defaultView === 'supplies' ? 'border-ast_electric_blue/60 bg-ast_electric_blue/10' : 'border-ast_lavender/30 bg-[#120724] hover:border-ast_electric_blue/40 hover:bg-ast_electric_blue/5'}`}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#9F6BFF]">Supplies</p>
+                <p className="mt-0.5 text-lg font-bold text-[#00E5FF]">{sessionSupplies.length}</p>
+                <p className="text-[9px] text-[#F6B94B]/80 leading-tight">{sessionSupplies.filter(s => s.status === 'low' || s.status === 'critical').length} low</p>
+              </button>
+              <button onClick={() => { navigate('/inspiration'); setLeftOpen(false); }} className={`rounded-xl border p-2.5 text-left transition ${defaultView === 'inspiration' ? 'border-ast_lavender/60 bg-ast_lavender/10' : 'border-ast_purple/30 bg-[#120724] hover:border-ast_lavender/40 hover:bg-ast_lavender/5'}`}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender">Inspo</p>
+                <p className="mt-0.5 text-lg font-bold text-ast_lavender/80">{allEntries.length}</p>
+                <p className="text-[9px] text-ast_body/55 leading-tight">entries</p>
+              </button>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
+              {sessionProjects.length === 0 ? (
+                <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
+                  <p className="text-xs text-ast_body/40 mb-3">No projects yet</p>
+                  <button onClick={() => { setShowAddProjectForm(true); setLeftOpen(false); }} className="w-full rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition">+ Create Project</button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[...sessionProjects].sort((a, b) => (b.updatedAt ?? b.id) - (a.updatedAt ?? a.id)).slice(0, 4).map(project => {
+                    const cover = project.images?.[0];
+                    return (
+                      <button key={project.id} onClick={() => { navigate('/projects', { state: { selectedProjectId: project.id } }); setLeftOpen(false); }} className="w-full text-left rounded-xl border border-ast_turquoise/20 bg-[#120724] overflow-hidden hover:border-ast_electric_blue/50 transition group">
+                        {cover ? <img src={cover} alt="" className="ast-img-safe w-full aspect-square object-cover" /> : <div className="w-full aspect-square bg-gradient-to-br from-ast_purple/20 via-ast_lavender/10 to-transparent" />}
+                        <div className="px-2 py-1.5">
+                          <p className="text-[10px] font-semibold text-ast_body group-hover:text-ast_cyan leading-snug truncate transition-colors">{project.title}</p>
+                          <p className="text-[9px] text-ast_muted capitalize leading-tight truncate">{project.status?.replace('-', ' ')}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-ast_lavender mb-2">Inspiration</p>
+              <div className="space-y-1.5">
+                <button onClick={() => { navigate('/inspiration', { state: { section: 'featured-artist' } }); setLeftOpen(false); }} className="w-full text-left rounded-xl border border-ast_purple/30 bg-[#120724] overflow-hidden hover:border-ast_purple/60 transition">
+                  <div className="h-9 bg-gradient-to-r from-ast_electric_blue/50 via-ast_purple/50 to-ast_pink/40" />
+                  <div className="px-3 py-2">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-ast_faint mb-0.5">Studio Spotlight</p>
+                    <p className="text-xs font-semibold text-ast_turquoise">Kim Wyatt</p>
+                    <p className="text-[10px] text-ast_muted truncate">Studio Art Labs</p>
+                  </div>
+                </button>
+                <button onClick={() => { navigate('/inspiration', { state: { section: 'quote' } }); setLeftOpen(false); }} className="w-full text-left rounded-xl border border-ast_turquoise/20 bg-[#120724] px-3 py-2.5 hover:border-ast_turquoise/50 transition">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_turquoise mb-1">Quote of the Day</p>
+                  {sidebarQuote ? (<><p className="text-xs text-ast_body italic leading-snug line-clamp-2">&ldquo;{sidebarQuote.body_text}&rdquo;</p><p className="text-[10px] text-ast_muted mt-1">— {sidebarQuote.artist_name}</p></>) : <p className="text-xs text-ast_body/40">Inspiration coming soon</p>}
+                </button>
+                <button onClick={() => { navigate('/inspiration', { state: { section: 'art-history-today' } }); setLeftOpen(false); }} className="w-full text-left rounded-xl border border-ast_lavender/20 bg-[#120724] px-3 py-2.5 hover:border-ast_lavender/50 transition">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1">Today in Art History</p>
+                  {sidebarArtHistory ? <p className="text-xs font-semibold text-ast_body leading-snug line-clamp-2">{sidebarArtHistory.title}</p> : <p className="text-xs text-ast_body/40">No entry for today</p>}
+                </button>
+                <button onClick={() => { navigate('/inspiration', { state: { section: 'partner' } }); setLeftOpen(false); }} className="w-full text-left rounded-xl border border-ast_blue/25 bg-[#120724] px-3 py-2.5 hover:border-ast_blue/50 transition">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ast_lavender mb-1">Partners</p>
+                  <p className="text-xs font-semibold text-[#8D5CFF]">Retailer &amp; Manufacturer Picks</p>
+                  <p className="text-[10px] text-ast_body/55 mt-1 leading-snug">Supply deals &amp; partner inspiration.</p>
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Right drawer */}
+        <aside
+          className={`fixed inset-y-0 right-0 z-50 w-4/5 max-w-xs rounded-l-3xl border-l border-ast_pink/40 bg-[#0B0018] p-4 backdrop-blur-xl overflow-y-auto transition-transform duration-300 md:hidden ${
+            rightOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <button onClick={() => setRightOpen(false)} className="mb-4 text-xs text-ast_pink/60 hover:text-ast_pink transition">✕ Close</button>
+          <div className="sticky top-4 z-10 mb-4 space-y-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-ast_pink">Community</p>
+              <h2 className="mt-2 text-lg font-semibold text-[#FF2FB3]">Studio Chat</h2>
+            </div>
+            <div className="rounded-2xl border border-ast_purple/35 bg-[#120724] p-3">
+              <p className="text-sm font-semibold text-ast_lavender">Studio Memory</p>
+              <p className="mt-1 text-xs text-ast_body/70">You were working on Watercolor Botanicals.</p>
+            </div>
+            <div className="rounded-2xl border border-ast_turquoise/30 bg-[#120724] p-3">
+              <p className="text-sm font-semibold text-ast_turquoise">Need help?</p>
+              <p className="mt-1 text-xs text-ast_body/70">Ask how to add supplies, track condition, or prep for a show.</p>
+            </div>
+          </div>
+          <div className="space-y-4">
+            <StudioChat />
+          </div>
+        </aside>
+
+        {/* ── Desktop three-panel grid (hidden on mobile) ── */}
+        <section className="hidden md:grid flex-1 grid-cols-12 gap-4 px-4 pb-4">
           {/* LEFT PANEL: Studio Tools */}
           <aside className="scrollbar-left col-span-3 min-h-0 rounded-3xl border border-ast_turquoise/30 bg-[#0B0018] p-4 backdrop-blur-xl overflow-y-auto">
             <button
@@ -399,7 +521,7 @@ export default function Dashboard({ defaultView = 'home' }) {
           </main>
 
           {/* RIGHT PANEL: Community + Chat */}
-          <aside className="col-span-2 min-h-0 rounded-3xl border border-ast_pink/40 bg-[#0B0018] p-4 backdrop-blur-xl">
+          <aside className="col-span-2 min-h-0 rounded-3xl border border-ast_pink/40 bg-[#0B0018] p-4 backdrop-blur-xl overflow-hidden">
             <div className="sticky top-4 z-10 mb-4 space-y-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-ast_pink">
@@ -433,6 +555,55 @@ export default function Dashboard({ defaultView = 'home' }) {
               <StudioChat />
             </div>
           </aside>
+        </section>
+
+        {/* ── Mobile center workspace (visible only on mobile) ── */}
+        <section className="flex md:hidden flex-1 flex-col min-h-0 mx-4 mb-4 rounded-3xl border border-ast_purple/50 bg-[#0B0018] p-6 backdrop-blur-xl overflow-y-auto">
+          {/* Mobile drawer toggle buttons */}
+          <div className="flex justify-between mb-4">
+            <button
+              onClick={() => setLeftOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl border border-ast_turquoise/30 bg-[#120724] px-3 py-2 text-xs font-semibold text-ast_turquoise hover:border-ast_turquoise/60 transition"
+            >
+              ☰ Studio Tools
+            </button>
+            <button
+              onClick={() => setRightOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl border border-ast_pink/30 bg-[#120724] px-3 py-2 text-xs font-semibold text-ast_pink hover:border-ast_pink/60 transition"
+            >
+              Chat ☰
+            </button>
+          </div>
+
+          {defaultView === 'inspiration' && <InspirationWorkspace />}
+          {defaultView === 'home' && <HomeWorkspace onClickImport={() => fileInputRef.current?.click()} onExport={handleExportData} />}
+          {defaultView === 'projects' && (
+            <ProjectsWorkspace
+              sessionProjects={sessionProjects}
+              sessionSupplies={sessionSupplies}
+              selectedProjectId={selectedProjectId}
+              onSelectProject={setSelectedProjectId}
+              onAddProject={() => setShowAddProjectForm(true)}
+              onEditProject={handleEditProject}
+              onDeleteProject={handleDeleteProject}
+              onAssignSupply={handleAssignSupply}
+              onUnassignSupply={handleUnassignSupply}
+              onImport={() => fileInputRef.current?.click()}
+              onExport={handleExportData}
+            />
+          )}
+          {defaultView === 'supplies' && (
+            <SuppliesWorkspace
+              sessionSupplies={sessionSupplies}
+              sessionProjects={sessionProjects}
+              onEditSupply={handleEditSupply}
+              onDeleteSupply={handleDeleteSupply}
+              onAssignSupply={handleAssignSupply}
+              onOpenAddSupply={() => setShowAddSupplyForm(true)}
+              onImport={() => fileInputRef.current?.click()}
+              onExport={handleExportData}
+            />
+          )}
         </section>
       </div>
 

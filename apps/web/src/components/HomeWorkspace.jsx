@@ -17,7 +17,7 @@ export default function HomeWorkspace({ onClickImport, onExport }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
         {/* 1. Partner Spotlight */}
         <div className="rounded-2xl border border-ast_blue/40 bg-[#120724] p-6">
