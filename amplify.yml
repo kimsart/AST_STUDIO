@@ -11,7 +11,7 @@ applications:
           commands:
             - npm run build --workspace=web
       artifacts:
-        baseDirectory: apps/web/dist
+        baseDirectory: dist
         files:
           - "**/*"
       cache:
