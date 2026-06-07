@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { SUPPLY_CATEGORIES, buildCategoryOptions } from "../data/supplyCategories.js";
+import { compressImage } from "../utils/imageUtils.js";
 
 const GRID_COLS = 3;
 
@@ -66,6 +67,8 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
       status:            selectedSupply.status      ?? "ok",
       location:          selectedSupply.location    ?? "",
       notes:             selectedSupply.notes       ?? "",
+      barcode:           selectedSupply.barcode     ?? "",
+      image:             selectedSupply.image       ?? null,
       assignToProjectId: "",
     });
     setIsEditingSupply(true);
@@ -120,8 +123,8 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
           </div>
 
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="flex gap-4 items-start">
+              <div className="flex-1">
                 <label className="block text-sm font-medium text-ast_lavender mb-2">Name</label>
                 <input
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
@@ -129,6 +132,42 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                   onChange={e => setEditDraft(d => ({ ...d, name: e.target.value }))}
                 />
               </div>
+              <div className="shrink-0">
+                <label className="block text-sm font-medium text-ast_lavender mb-2">Photo</label>
+                {editDraft.image ? (
+                  <div className="relative">
+                    <img src={editDraft.image} alt="" className="ast-img-safe w-16 h-16 rounded-xl object-cover border border-ast_pink/30" />
+                    <button
+                      type="button"
+                      onClick={() => setEditDraft(d => ({ ...d, image: null }))}
+                      className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs hover:bg-ast_pink transition"
+                    >×</button>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition">
+                    <span className="text-lg leading-none">📷</span>
+                    <span className="text-[9px] mt-1">Add photo</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        try {
+                          const compressed = await compressImage(file);
+                          setEditDraft(d => ({ ...d, image: compressed }));
+                        } catch (err) {
+                          window.alert(err.message);
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-ast_lavender mb-2">Category</label>
                 <select
@@ -229,6 +268,17 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                 )}
               </div>
             ) : null}
+
+            {/* Barcode */}
+            <div>
+              <label className="block text-sm font-medium text-ast_lavender mb-2">Barcode / UPC</label>
+              <input
+                className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                placeholder="e.g., 012345678901"
+                value={editDraft.barcode ?? ""}
+                onChange={e => setEditDraft(d => ({ ...d, barcode: e.target.value }))}
+              />
+            </div>
 
             {/* Project assignment */}
             <div>
@@ -339,6 +389,20 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
             );
           })()}
 
+          {selectedSupply.image && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-ast_lavender mb-1">Photo</p>
+              <img src={selectedSupply.image} alt="" className="ast-img-safe w-32 h-32 rounded-xl object-cover border border-ast_pink/30" />
+            </div>
+          )}
+
+          {selectedSupply.barcode && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-ast_lavender mb-1">Barcode / UPC</p>
+              <p className="text-sm font-mono text-ast_body">{selectedSupply.barcode}</p>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <button
               onClick={() => { setSelectedSupplyId(null); setIsEditingSupply(false); }}
@@ -403,6 +467,9 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                         <span className="absolute top-2 right-2 text-xs bg-ast_turquoise/40 text-ast_turquoise px-2 py-0.5 rounded-full font-semibold">
                           NEW
                         </span>
+                      )}
+                      {supply.image && (
+                        <img src={supply.image} alt="" className="ast-img-safe w-full h-16 object-cover rounded-xl mb-2" />
                       )}
                       <p className={`text-sm font-semibold leading-snug mb-1 ${supply.isNew ? "pr-12" : "pr-2"} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
                         {supply.name}

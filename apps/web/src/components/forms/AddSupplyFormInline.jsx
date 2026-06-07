@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { compressImage } from "../../utils/imageUtils.js";
 import { SUPPLY_CATEGORIES, buildCategoryOptions } from "../../data/supplyCategories.js";
 
 export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProjects = [], sessionSupplies = [] }) {
@@ -13,6 +14,8 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
     location: "",
     notes: "",
     assignedProjectId: "",
+    barcode: "",
+    image: null,
   });
   const [error, setError] = useState("");
 
@@ -21,6 +24,18 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
   const availableSubcategories = activeCategoryDef ? activeCategoryDef.subcategories : [];
   const isOther = formData.category === "Other";
   const isCustomSubcategory = formData.subcategory === "__other__";
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const image = await compressImage(file);
+      setFormData(prev => ({ ...prev, image }));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +86,8 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
       condition: "Good",
       color: "bg-ast_purple",
       assignedProjectId: formData.assignedProjectId ? Number(formData.assignedProjectId) : null,
+      barcode: formData.barcode.trim(),
+      image: formData.image,
     });
   };
 
@@ -87,17 +104,38 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
           <div className="flex-1 overflow-y-auto px-6">
             <div className="pb-2 space-y-4">
 
-              {/* Name — full width */}
-              <div>
-                <label className="block text-sm font-medium text-ast_lavender mb-2">Supply Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="e.g., Winsor & Newton Cobalt Blue"
-                  className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
-                />
+              {/* Name + Photo — side by side at top */}
+              <div className="flex gap-4 items-start">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">Supply Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="e.g., Winsor & Newton Cobalt Blue"
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
+                <div className="shrink-0">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">Photo</label>
+                  {formData.image ? (
+                    <div className="relative">
+                      <img src={formData.image} alt="" className="ast-img-safe w-16 h-16 rounded-xl object-cover border border-ast_pink/30" />
+                      <button
+                        type="button"
+                        onClick={() => setFormData(p => ({ ...p, image: null }))}
+                        className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs hover:bg-ast_pink transition"
+                      >×</button>
+                    </div>
+                  ) : (
+                    <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition">
+                      <span className="text-lg leading-none">📷</span>
+                      <span className="text-[9px] mt-1">Add photo</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                    </label>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,6 +248,19 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                     onChange={handleChange}
                     placeholder="Add details about the supply..."
                     rows={2}
+                    className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+                  />
+                </div>
+
+                {/* Project assignment — full width */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-ast_lavender mb-2">Barcode / UPC</label>
+                  <input
+                    type="text"
+                    name="barcode"
+                    value={formData.barcode}
+                    onChange={handleChange}
+                    placeholder="e.g., 012345678901"
                     className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   />
                 </div>

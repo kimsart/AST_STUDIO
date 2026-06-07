@@ -1,3 +1,4 @@
+const MAX_FILE_MB = 5;
 const MAX_WIDTH = 800;
 const JPEG_QUALITY = 0.82;
 
@@ -8,6 +9,10 @@ const JPEG_QUALITY = 0.82;
  */
 export function compressImage(file) {
   return new Promise((resolve, reject) => {
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      reject(new Error(`Image is too large. Please use a file under ${MAX_FILE_MB} MB.`));
+      return;
+    }
     const objectUrl = URL.createObjectURL(file);
     const img = new Image();
     img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Image load failed")); };
