@@ -176,16 +176,17 @@ export default function EditSupplyFormInline({ supply, onSubmit, onCancel }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-ast_lavender mb-2">
+            <label className="block text-sm font-semibold text-ast_lavender mb-2">
               Barcode / UPC
             </label>
             <input
               type="text"
+              inputMode="numeric"
               name="barcode"
-              value={formData.barcode}
+              value={formData.barcode || ""}
               onChange={handleChange}
-              placeholder="e.g., 012345678901"
-              className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
+              placeholder="Enter barcode manually"
+              className="w-full rounded-lg border border-blue-500/40 bg-black/30 px-3 py-2 text-white placeholder-white/40 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition"
             />
           </div>
 
