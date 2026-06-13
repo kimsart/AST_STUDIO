@@ -13,10 +13,15 @@ import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 import InspirationWorkspace from "../components/InspirationWorkspace.jsx";
 import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/inspirationFeed/index.js";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
-const client = generateClient();
+
 export default function Dashboard({ defaultView = 'home' }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const clientRef = useRef(null);
+  if (clientRef.current === null) {
+    clientRef.current = generateClient();
+  }
+  const client = clientRef.current;
   const handleSignOut = async () => {
   try {
     await signOut();
@@ -43,8 +48,19 @@ useEffect(() => {
   async function loadCloudProjects() {
     try {
       const { data } = await client.models.Project.list();
+      console.log('[AST Studio] Project.list coverImageUrl values:',
+        (data || []).map(project => ({
+          id: project.id,
+          title: project.title,
+          hasCoverImageUrl: Boolean(project.coverImageUrl),
+          coverImageUrlLength: project.coverImageUrl?.length ?? 0,
+        }))
+      );
       setSessionProjects((data || []).map(project => ({
-        ...normalizeProject(project),
+        ...normalizeProject({
+          ...project,
+          images: project.coverImageUrl ? [project.coverImageUrl] : [],
+        }),
         budget: project.budget ?? "",
       })));
     } catch (error) {
@@ -71,18 +87,40 @@ useEffect(() => {
 
  const handleAddProject = async (projectData) => {
   try {
-    const { data } = await client.models.Project.create({
+    const createInput = {
       title: projectData.title,
       description: projectData.description,
       status: projectData.status,
       notes: projectData.notes,
-      coverImageUrl: projectData.coverImageUrl,
+      coverImageUrl: projectData.images?.[0] ?? projectData.coverImageUrl,
+    };
+
+    console.log('[AST Studio] Add project first image:', {
+      hasImage: Boolean(projectData.images?.[0]),
+      imageLength: projectData.images?.[0]?.length ?? 0,
+    });
+    console.log('[AST Studio] Project.create input:', {
+      ...createInput,
+      coverImageUrl: createInput.coverImageUrl
+        ? `[image string length ${createInput.coverImageUrl.length}]`
+        : createInput.coverImageUrl,
+    });
+
+    const { data } = await client.models.Project.create(createInput);
+
+    console.log('[AST Studio] Project.create returned coverImageUrl:', {
+      hasCoverImageUrl: Boolean(data?.coverImageUrl),
+      coverImageUrlLength: data?.coverImageUrl?.length ?? 0,
     });
 
     setSessionProjects((prev) => [
       ...prev,
       {
-        ...data,
+        ...normalizeProject({
+          ...data,
+          images: data.coverImageUrl ? [data.coverImageUrl] : [],
+        }),
+        budget: projectData.budget ?? "",
         isNew: true,
       },
     ]);
