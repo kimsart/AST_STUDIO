@@ -77,11 +77,15 @@ export default function ProjectsCard({
     setIsEditingProject(false);
   }, [selectedProjectId]);
 
+  const selectedSupplyIds = Array.isArray(selectedProject?.supplyIds)
+    ? selectedProject.supplyIds
+    : [];
+
   const assignedSupplies = selectedProject
-    ? sessionSupplies.filter(s => selectedProject.supplyIds.includes(s.id))
+    ? sessionSupplies.filter(s => selectedSupplyIds.includes(s.id))
     : [];
   const unassignedSupplies = selectedProject
-    ? sessionSupplies.filter(s => !selectedProject.supplyIds.includes(s.id))
+    ? sessionSupplies.filter(s => !selectedSupplyIds.includes(s.id))
     : [];
 
   const handleAssign = () => {

@@ -1,3 +1,5 @@
+import { signOut } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/data';
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader.jsx";
@@ -11,10 +13,18 @@ import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 import InspirationWorkspace from "../components/InspirationWorkspace.jsx";
 import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/inspirationFeed/index.js";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
-
+const client = generateClient();
 export default function Dashboard({ defaultView = 'home' }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const handleSignOut = async () => {
+  try {
+    await signOut();
+    window.location.reload();
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+};
   const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
@@ -23,39 +33,89 @@ export default function Dashboard({ defaultView = 'home' }) {
       setSelectedProjectId(location.state.selectedProjectId);
     }
   }, [location.key]);
-  const [showAddProjectForm, setShowAddProjectForm] = useState(false);
-  const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
-  const [leftOpen, setLeftOpen] = useState(false);
-  const [rightOpen, setRightOpen] = useState(false);
-  const [sessionProjects, setSessionProjects] = useState(loadProjects);
-  const [sessionSupplies, setSessionSupplies] = useState(loadSupplies);
-  useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
-  useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
+ const [showAddProjectForm, setShowAddProjectForm] = useState(false);
+const [showAddSupplyForm, setShowAddSupplyForm] = useState(false);
+const [leftOpen, setLeftOpen] = useState(false);
+const [rightOpen, setRightOpen] = useState(false);
+const [sessionProjects, setSessionProjects] = useState([]);
+const [sessionSupplies, setSessionSupplies] = useState([]);
+useEffect(() => {
+  async function loadCloudProjects() {
+    try {
+      const { data } = await client.models.Project.list();
+      setSessionProjects((data || []).map(project => ({
+        ...normalizeProject(project),
+        budget: project.budget ?? "",
+      })));
+    } catch (error) {
+      console.error('Error loading cloud projects:', error);
+    }
+  }
 
+  async function loadCloudSupplies() {
+    try {
+      const { data } = await client.models.Supply.list();
+      setSessionSupplies(data || []);
+    } catch (error) {
+      console.error('Error loading cloud supplies:', error);
+    }
+  }
+
+  loadCloudProjects();
+  loadCloudSupplies();
+}, []);
+// useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
+// useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
   const sidebarArtHistory = getTodayInArtHistory();
   const sidebarQuote      = getQuoteOfTheDay();
 
-  const handleAddProject = (projectData) => {
-    const newId = Math.max(...sessionProjects.map(p => p.id), 3) + 1;
+ const handleAddProject = async (projectData) => {
+  try {
+    const { data } = await client.models.Project.create({
+      title: projectData.title,
+      description: projectData.description,
+      status: projectData.status,
+      notes: projectData.notes,
+      coverImageUrl: projectData.coverImageUrl,
+    });
+
     setSessionProjects((prev) => [
       ...prev,
-      { id: newId, supplyIds: [], ...projectData, isNew: true, updatedAt: Date.now() },
-    ]);
-    setShowAddProjectForm(false);
-  };
-
-  const handleAddSupply = (supplyData) => {
-    const { assignedProjectId, ...rest } = supplyData;
-    const newId = Math.max(...sessionSupplies.map(s => s.id), 100) + 1;
-    setSessionSupplies(prev => [
-      ...prev,
       {
-        id: newId,
-        usedInProjectIds: assignedProjectId ? [assignedProjectId] : [],
-        ...rest,
+        ...data,
         isNew: true,
       },
     ]);
+
+    setShowAddProjectForm(false);
+  } catch (error) {
+    console.error("Error saving cloud project:", error);
+  }
+};
+
+ const handleAddSupply = async (supplyData) => {
+  const { assignedProjectId, ...rest } = supplyData;
+  try {
+    const { data } = await client.models.Supply.create({
+      name: rest.name,
+category: rest.category,
+subcategory: rest.subcategory,
+quantity: rest.quantity,
+location: rest.location,
+notes: rest.notes,
+imageUrl: rest.imageUrl,
+    });
+    const newId = data.id;
+      setSessionSupplies(prev => [
+    ...prev,
+    {
+      ...data,
+      isNew: true,
+    },
+  ]);
+} catch (error) {
+  console.error("Error saving cloud supply:", error);
+}
     if (assignedProjectId) {
       setSessionProjects(prev => prev.map(p =>
         p.id === assignedProjectId && !p.supplyIds.includes(newId)
