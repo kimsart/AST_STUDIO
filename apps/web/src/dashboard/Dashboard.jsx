@@ -118,7 +118,7 @@ async function hydrateProject(project) {
   };
 }
 
-export default function Dashboard({ defaultView = 'home' }) {
+export default function Dashboard({ defaultView = 'home', user }) {
   const navigate = useNavigate();
   const location = useLocation();
   const clientRef = useRef(null);
@@ -586,7 +586,7 @@ imageUrl,
             </div>
           </div>
           <div className="space-y-4">
-            <StudioChat />
+            <StudioChat user={user} />
           </div>
         </aside>
 
@@ -843,7 +843,7 @@ imageUrl,
             </div>
 
             <div className="scrollbar-right max-h-[calc(100vh-16rem)] space-y-4 overflow-y-auto pr-1">
-              <StudioChat />
+              <StudioChat user={user} />
             </div>
           </aside>
         </section>

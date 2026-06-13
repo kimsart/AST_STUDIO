@@ -28,6 +28,16 @@ const schema = a.schema({
       coverImageUrl: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
+
+  ChatMessage: a
+    .model({
+      body: a.string().required(),
+      senderEmail: a.string().required(),
+      senderDisplayName: a.string(),
+    })
+    .authorization((allow) => [
+      allow.authenticated().to(['read', 'create']),
+    ]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
