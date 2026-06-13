@@ -388,15 +388,15 @@ export default function ProjectsCard({
                           NEW
                         </span>
                       )}
-                      <div className="flex items-start gap-2 mb-2">
-                        <p className={`flex-1 text-sm font-semibold leading-snug ${project.isNew ? "pr-10" : ""} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
+                      <div className="flex min-w-0 items-start gap-2 mb-2">
+                        <p className={`min-w-0 flex-1 truncate text-sm font-semibold leading-snug ${project.isNew ? "pr-10" : ""} ${isSelected ? "text-ast_cyan" : "text-ast_body"}`}>
                           {project.title}
                         </p>
                         {project.images?.[0] && (
                           <img
                             src={project.images[0]}
                             alt=""
-                            className="ast-img-safe shrink-0 w-10 h-10 rounded-lg object-cover opacity-85"
+                            className="ast-img-safe h-10 w-10 shrink-0 rounded-lg object-cover opacity-85"
                           />
                         )}
                       </div>

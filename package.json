@@ -12,9 +12,19 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.23.0",
+    "@aws-amplify/backend-cli": "^1.8.3",
     "autoprefixer": "^10.5.0",
+    "aws-cdk-lib": "^2.244.0",
+    "constructs": "^10.6.0",
+    "esbuild": "^0.28.0",
     "postcss": "^8.5.14",
     "tailwindcss": "^3.4.17",
-    "turbo": "latest"
+    "tsx": "^4.22.4",
+    "turbo": "latest",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "aws-amplify": "^6.17.0"
   }
 }

@@ -8,6 +8,7 @@
     "lint": "echo 'no lint configured'"
   },
   "dependencies": {
+    "@aws-amplify/ui-react": "^6.15.4",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^7.15.1"

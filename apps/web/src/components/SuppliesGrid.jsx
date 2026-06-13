@@ -22,6 +22,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   const [selectedSupplyId, setSelectedSupplyId] = useState(null);
   const [isEditingSupply, setIsEditingSupply] = useState(false);
   const [editDraft, setEditDraft] = useState({});
+  const [isImageProcessing, setIsImageProcessing] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Reset status filter when a new supply arrives so it's never hidden by an active filter.
@@ -57,6 +58,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   };
 
   const handleStartEdit = () => {
+    setIsImageProcessing(false);
     setEditDraft({
       name:              selectedSupply.name        ?? "",
       category:          selectedSupply.category    ?? "",
@@ -75,6 +77,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   };
 
   const handleSaveEdit = () => {
+    if (isImageProcessing) return;
     const { customCategory, customSubcategory, assignToProjectId, ...rest } = editDraft;
     const finalCategory = rest.category === "Other" && customCategory?.trim()
       ? customCategory.trim()
@@ -142,6 +145,28 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                       onClick={() => setEditDraft(d => ({ ...d, image: null }))}
                       className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs hover:bg-ast_pink transition"
                     >×</button>
+                    <label className="mt-2 cursor-pointer block text-center text-[10px] text-ast_muted hover:text-ast_body transition">
+                      Change photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files[0];
+                          e.target.value = "";
+                          if (!file) return;
+                          setIsImageProcessing(true);
+                          try {
+                            const compressed = await compressImage(file);
+                            setEditDraft(d => ({ ...d, image: compressed }));
+                          } catch (err) {
+                            window.alert(err.message);
+                          } finally {
+                            setIsImageProcessing(false);
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
                 ) : (
                   <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition">
@@ -155,11 +180,14 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                         const file = e.target.files[0];
                         e.target.value = "";
                         if (!file) return;
+                        setIsImageProcessing(true);
                         try {
                           const compressed = await compressImage(file);
                           setEditDraft(d => ({ ...d, image: compressed }));
                         } catch (err) {
                           window.alert(err.message);
+                        } finally {
+                          setIsImageProcessing(false);
                         }
                       }}
                     />
@@ -314,8 +342,9 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
               >Cancel</button>
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition"
-              >Save Changes</button>
+                disabled={isImageProcessing}
+                className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+              >{isImageProcessing ? "Processing..." : "Save Changes"}</button>
             </div>
           </div>
         </>

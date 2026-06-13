@@ -63,7 +63,58 @@ async function hydrateSupply(supply) {
   const normalized = normalizeSupply(supply);
   return {
     ...normalized,
+    qty: normalized.qty ?? normalized.quantity ?? "",
     image: await resolveSupplyDisplayImage(normalized.imageUrl),
+  };
+}
+
+const isProjectDataImage = (value) =>
+  typeof value === "string" && value.startsWith("data:image");
+
+const isProjectDisplayImage = (value) =>
+  typeof value === "string" && (
+    value.startsWith("data:image") ||
+    value.startsWith("http://") ||
+    value.startsWith("https://")
+  );
+
+async function uploadProjectCoverImage(image) {
+  if (!isProjectDataImage(image)) return image || null;
+
+  const blob = await dataUrlToBlob(image);
+  const fileId = window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const result = await uploadData({
+    path: ({ identityId }) => `project-images/${identityId}/${fileId}.jpg`,
+    data: blob,
+    options: {
+      contentType: "image/jpeg",
+    },
+  }).result;
+
+  return result.path;
+}
+
+async function resolveProjectDisplayImage(coverImageUrl) {
+  if (!coverImageUrl) return null;
+  if (isProjectDisplayImage(coverImageUrl)) return coverImageUrl;
+
+  try {
+    const { url } = await getUrl({ path: coverImageUrl });
+    return url.toString();
+  } catch (error) {
+    console.warn("[AST Studio] Failed to resolve project cover image:", error);
+    return null;
+  }
+}
+
+async function hydrateProject(project) {
+  const displayImage = await resolveProjectDisplayImage(project.coverImageUrl);
+  return {
+    ...normalizeProject({
+      ...project,
+      images: displayImage ? [displayImage] : [],
+    }),
+    budget: project.budget ?? "",
   };
 }
 
@@ -109,13 +160,7 @@ useEffect(() => {
           coverImageUrlLength: project.coverImageUrl?.length ?? 0,
         }))
       );
-      setSessionProjects((data || []).map(project => ({
-        ...normalizeProject({
-          ...project,
-          images: project.coverImageUrl ? [project.coverImageUrl] : [],
-        }),
-        budget: project.budget ?? "",
-      })));
+      setSessionProjects(await Promise.all((data || []).map(hydrateProject)));
     } catch (error) {
       console.error('Error loading cloud projects:', error);
     }
@@ -140,12 +185,15 @@ useEffect(() => {
 
  const handleAddProject = async (projectData) => {
   try {
+    const coverImageUrl = await uploadProjectCoverImage(
+      projectData.images?.[0] ?? projectData.coverImageUrl
+    );
     const createInput = {
       title: projectData.title,
       description: projectData.description,
       status: projectData.status,
       notes: projectData.notes,
-      coverImageUrl: projectData.images?.[0] ?? projectData.coverImageUrl,
+      coverImageUrl,
     };
 
     console.log('[AST Studio] Add project first image:', {
@@ -165,14 +213,12 @@ useEffect(() => {
       hasCoverImageUrl: Boolean(data?.coverImageUrl),
       coverImageUrlLength: data?.coverImageUrl?.length ?? 0,
     });
+    const hydratedProject = await hydrateProject(data);
 
     setSessionProjects((prev) => [
       ...prev,
       {
-        ...normalizeProject({
-          ...data,
-          images: data.coverImageUrl ? [data.coverImageUrl] : [],
-        }),
+        ...hydratedProject,
         budget: projectData.budget ?? "",
         isNew: true,
       },
@@ -192,7 +238,7 @@ useEffect(() => {
       name: rest.name,
 category: rest.category,
 subcategory: rest.subcategory,
-quantity: rest.quantity,
+quantity: rest.qty,
 location: rest.location,
 notes: rest.notes,
 imageUrl,
@@ -219,7 +265,43 @@ imageUrl,
     setShowAddSupplyForm(false);
   };
 
-  const handleEditProject = (projectId, updatedData) => {
+  const handleEditProject = async (projectId, updatedData) => {
+    if (typeof projectId === "string") {
+      try {
+        const updateInput = {
+          id: projectId,
+          title: updatedData.title,
+          status: updatedData.status,
+          notes: updatedData.notes,
+        };
+
+        const firstImage = updatedData.images?.[0];
+        if (isProjectDataImage(firstImage)) {
+          updateInput.coverImageUrl = await uploadProjectCoverImage(firstImage);
+        } else if (!firstImage) {
+          updateInput.coverImageUrl = null;
+        }
+
+        const { data } = await client.models.Project.update(updateInput);
+        const hydratedProject = await hydrateProject(data);
+        setSessionProjects(prev => prev.map(p =>
+          p.id === projectId
+            ? {
+                ...p,
+                ...hydratedProject,
+                budget: updatedData.budget ?? p.budget,
+                supplyIds: p.supplyIds,
+                updatedAt: Date.now(),
+              }
+            : p
+        ));
+        return;
+      } catch (error) {
+        console.error("Error updating cloud project:", error);
+        return;
+      }
+    }
+
     setSessionProjects(prev => prev.map(p =>
       p.id === projectId
         ? { ...p, ...updatedData, id: p.id, supplyIds: p.supplyIds, updatedAt: Date.now() }
@@ -227,8 +309,17 @@ imageUrl,
     ));
   };
 
-  const handleDeleteProject = (projectId) => {
+  const handleDeleteProject = async (projectId) => {
     if (!window.confirm("Delete this project? This cannot be undone.")) return;
+    if (typeof projectId === "string") {
+      try {
+        await client.models.Project.delete({ id: projectId });
+      } catch (error) {
+        console.error("Error deleting cloud project:", error);
+        return;
+      }
+    }
+
     setSessionProjects(prev => prev.filter(p => p.id !== projectId));
     setSessionSupplies(prev => prev.map(s => ({
       ...s,
@@ -263,7 +354,45 @@ imageUrl,
     ));
   };
 
-  const handleEditSupply = (supplyId, updatedData) => {
+  const handleEditSupply = async (supplyId, updatedData) => {
+    if (typeof supplyId === "string") {
+      try {
+        const updateInput = {
+          id: supplyId,
+          name: updatedData.name,
+          category: updatedData.category,
+          subcategory: updatedData.subcategory,
+          quantity: updatedData.qty,
+          location: updatedData.location,
+          notes: updatedData.notes,
+        };
+
+        if (isSupplyDataImage(updatedData.image)) {
+          updateInput.imageUrl = await uploadSupplyImage(updatedData.image);
+        } else if (updatedData.image === null) {
+          updateInput.imageUrl = null;
+        }
+
+        const { data } = await client.models.Supply.update(updateInput);
+        const hydratedSupply = await hydrateSupply(data);
+        setSessionSupplies(prev => prev.map(s =>
+          s.id === supplyId
+            ? {
+                ...s,
+                ...hydratedSupply,
+                status: updatedData.status ?? s.status,
+                barcode: updatedData.barcode ?? s.barcode,
+                usedInProjectIds: s.usedInProjectIds,
+              }
+            : s
+        ));
+        return;
+      } catch (error) {
+        console.error("Error updating cloud supply:", error);
+        return;
+      }
+    }
+
     setSessionSupplies(prev => prev.map(s =>
       s.id === supplyId
         ? { ...s, ...updatedData, id: s.id, usedInProjectIds: s.usedInProjectIds }
@@ -271,8 +400,17 @@ imageUrl,
     ));
   };
 
-  const handleDeleteSupply = (supplyId) => {
+  const handleDeleteSupply = async (supplyId) => {
     if (!window.confirm("Delete this supply? This cannot be undone.")) return;
+    if (typeof supplyId === "string") {
+      try {
+        await client.models.Supply.delete({ id: supplyId });
+      } catch (error) {
+        console.error("Error deleting cloud supply:", error);
+        return;
+      }
+    }
+
     setSessionSupplies(prev => prev.filter(s => s.id !== supplyId));
     setSessionProjects(prev => prev.map(p => ({
       ...p,
