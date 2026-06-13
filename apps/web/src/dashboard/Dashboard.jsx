@@ -1,5 +1,6 @@
 import { signOut } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
+import { getUrl, uploadData } from 'aws-amplify/storage';
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader.jsx";
@@ -13,6 +14,58 @@ import AddSupplyFormInline from "../components/forms/AddSupplyFormInline.jsx";
 import InspirationWorkspace from "../components/InspirationWorkspace.jsx";
 import { getTodayInArtHistory, getQuoteOfTheDay, allEntries } from "../data/inspirationFeed/index.js";
 import { loadProjects, saveProjects, loadSupplies, saveSupplies, validateImportedData, normalizeProject, normalizeSupply, cleanImportedLinks } from "../utils/localStorage.js";
+
+const isSupplyDataImage = (value) =>
+  typeof value === "string" && value.startsWith("data:image");
+
+const isSupplyDisplayImage = (value) =>
+  typeof value === "string" && (
+    value.startsWith("data:image") ||
+    value.startsWith("http://") ||
+    value.startsWith("https://")
+  );
+
+async function dataUrlToBlob(dataUrl) {
+  const response = await fetch(dataUrl);
+  return response.blob();
+}
+
+async function uploadSupplyImage(image) {
+  if (!isSupplyDataImage(image)) return image || null;
+
+  const blob = await dataUrlToBlob(image);
+  const fileId = window.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const result = await uploadData({
+    path: ({ identityId }) => `supply-images/${identityId}/${fileId}.jpg`,
+    data: blob,
+    options: {
+      contentType: "image/jpeg",
+    },
+  }).result;
+
+  return result.path;
+}
+
+async function resolveSupplyDisplayImage(imageUrl) {
+  if (!imageUrl) return null;
+  if (isSupplyDisplayImage(imageUrl)) return imageUrl;
+
+  try {
+    const { url } = await getUrl({ path: imageUrl });
+    return url.toString();
+  } catch (error) {
+    console.warn("[AST Studio] Failed to resolve supply image:", error);
+    return null;
+  }
+}
+
+async function hydrateSupply(supply) {
+  const normalized = normalizeSupply(supply);
+  return {
+    ...normalized,
+    image: await resolveSupplyDisplayImage(normalized.imageUrl),
+  };
+}
 
 export default function Dashboard({ defaultView = 'home' }) {
   const navigate = useNavigate();
@@ -71,7 +124,7 @@ useEffect(() => {
   async function loadCloudSupplies() {
     try {
       const { data } = await client.models.Supply.list();
-      setSessionSupplies(data || []);
+      setSessionSupplies(await Promise.all((data || []).map(hydrateSupply)));
     } catch (error) {
       console.error('Error loading cloud supplies:', error);
     }
@@ -134,6 +187,7 @@ useEffect(() => {
  const handleAddSupply = async (supplyData) => {
   const { assignedProjectId, ...rest } = supplyData;
   try {
+    const imageUrl = await uploadSupplyImage(rest.image);
     const { data } = await client.models.Supply.create({
       name: rest.name,
 category: rest.category,
@@ -141,13 +195,14 @@ subcategory: rest.subcategory,
 quantity: rest.quantity,
 location: rest.location,
 notes: rest.notes,
-imageUrl: rest.imageUrl,
+imageUrl,
     });
     const newId = data.id;
+    const hydratedSupply = await hydrateSupply(data);
       setSessionSupplies(prev => [
     ...prev,
     {
-      ...data,
+      ...hydratedSupply,
       isNew: true,
     },
   ]);
