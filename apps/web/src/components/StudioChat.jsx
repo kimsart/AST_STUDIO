@@ -22,6 +22,11 @@ const getDisplayName = (user, email) =>
 const sortByCreatedAt = (messages) =>
   [...messages].sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0))
 
+const getChatMessageModel = (client) => client.models?.ChatMessage
+
+const getDataErrorMessage = (errors) =>
+  errors?.map((error) => error.message).filter(Boolean).join('; ') || ''
+
 export default function StudioChat({ user }) {
   const clientRef = useRef(null)
   if (clientRef.current === null) {
@@ -44,11 +49,24 @@ export default function StudioChat({ user }) {
     let isMounted = true
 
     async function loadMessages() {
+      const chatMessageModel = getChatMessageModel(client)
       setIsLoading(true)
       setErrorMessage('')
 
       try {
-        const { data } = await client.models.ChatMessage.list({ limit: 50 })
+        if (!chatMessageModel) {
+          console.error('ChatMessage model is not available in Amplify outputs.', {
+            availableModels: Object.keys(client.models || {}),
+          })
+          throw new Error('ChatMessage model is not available. Deploy the Amplify data schema and update amplify_outputs.json.')
+        }
+
+        const { data, errors } = await chatMessageModel.list({ limit: 50 })
+        if (errors?.length) {
+          console.error('ChatMessage.list returned errors:', errors)
+          throw new Error(getDataErrorMessage(errors) || 'ChatMessage.list failed.')
+        }
+
         if (isMounted) {
           setMessages(sortByCreatedAt(data || []))
         }
@@ -78,7 +96,17 @@ export default function StudioChat({ user }) {
     if (!body || isSending) return
 
     if (!senderEmail) {
+      console.error('Cannot send chat message because senderEmail is missing.', { user })
       setErrorMessage('Could not identify signed-in user.')
+      return
+    }
+
+    const chatMessageModel = getChatMessageModel(client)
+    if (!chatMessageModel) {
+      console.error('ChatMessage model is not available in Amplify outputs.', {
+        availableModels: Object.keys(client.models || {}),
+      })
+      setErrorMessage('Chat is not ready yet. Deploy the chat schema first.')
       return
     }
 
@@ -86,15 +114,37 @@ export default function StudioChat({ user }) {
     setErrorMessage('')
 
     try {
-      const { data } = await client.models.ChatMessage.create({
+      const createInput = {
         body,
         senderEmail,
-        senderDisplayName,
-      })
-
-      if (data) {
-        setMessages((current) => sortByCreatedAt([...current, data]))
       }
+      if (senderDisplayName) {
+        createInput.senderDisplayName = senderDisplayName
+      }
+
+      const { data, errors } = await chatMessageModel.create(createInput)
+      if (errors?.length) {
+        console.error('ChatMessage.create returned errors:', {
+          errors,
+          createInput: {
+            ...createInput,
+            body: `[message length ${body.length}]`,
+          },
+        })
+        throw new Error(getDataErrorMessage(errors) || 'ChatMessage.create failed.')
+      }
+
+      if (!data) {
+        console.error('ChatMessage.create returned no data.', {
+          createInput: {
+            ...createInput,
+            body: `[message length ${body.length}]`,
+          },
+        })
+        throw new Error('ChatMessage.create returned no data.')
+      }
+
+      setMessages((current) => sortByCreatedAt([...current, data]))
       setMessageText('')
     } catch (error) {
       console.error('Error sending chat message:', error)
@@ -105,7 +155,7 @@ export default function StudioChat({ user }) {
   }
 
   return (
-    <div className="bg-[#120724] border border-ast_blue/20 rounded-xl p-4 h-full flex flex-col">
+    <div className="bg-[#120724] border border-ast_blue/20 rounded-xl p-4 h-full min-w-0 overflow-hidden flex flex-col">
       <h2 className="text-sm font-bold text-ast_lavender/70 mb-4">STUDIO CHAT</h2>
 
       <div className="flex-1 space-y-3 mb-4 overflow-y-auto">
@@ -146,18 +196,18 @@ export default function StudioChat({ user }) {
         <p className="mb-2 text-xs text-pink-300">{errorMessage}</p>
       )}
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex w-full min-w-0 gap-2">
         <input
           type="text"
           value={messageText}
           onChange={(event) => setMessageText(event.target.value)}
           placeholder="Message..."
-          className="flex-1 bg-ast_deep/70 border border-ast_lavender/20 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-ast_turquoise"
+          className="min-w-0 flex-1 bg-ast_deep/70 border border-ast_lavender/20 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-ast_turquoise"
         />
         <button
           type="submit"
           disabled={isSending || !messageText.trim()}
-          className="bg-ast_turquoise/20 border border-ast_turquoise text-ast_turquoise px-3 py-2 rounded-lg hover:bg-ast_turquoise/30 transition text-xs font-medium disabled:cursor-not-allowed disabled:opacity-40"
+          className="shrink-0 bg-ast_turquoise/20 border border-ast_turquoise text-ast_turquoise px-3 py-2 rounded-lg hover:bg-ast_turquoise/30 transition text-xs font-medium disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isSending ? 'Sending' : 'Send'}
         </button>
