@@ -88,3 +88,14 @@
   mix-blend-mode: normal;
   background: transparent;
 }
+[data-amplify-authenticator] {
+  --amplify-components-authenticator-router-background-color: #120724;
+  --amplify-components-authenticator-router-border-color: #5B3FD3;
+  --amplify-components-button-primary-background-color: #FE5FA7;
+  --amplify-components-button-primary-hover-background-color: #FF2FB3;
+  --amplify-components-tabs-item-active-border-color: #2EC4B6;
+  --amplify-components-fieldcontrol-background-color: #050009;
+  --amplify-components-fieldcontrol-color: #F7F2FF;
+  --amplify-components-fieldcontrol-border-color: #5B3FD3;
+  --amplify-components-label-color: #DCC7FF;
+}
