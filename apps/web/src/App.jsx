@@ -30,44 +30,56 @@ function AuthLanding() {
     return <AuthenticatedApp />
   }
 
-  return (
-    <div className="min-h-screen bg-[#050009] text-[#F7F2FF] flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-5xl grid gap-8 md:grid-cols-[1fr_420px] items-center">
-        <section className="space-y-5">
-          <img
-            src="/assets/ast_logo_horizontal_cropped.png"
-            alt="Art Supply Tracker"
-            className="h-14 w-auto max-w-[280px]"
-          />
+return (
+  <div className="min-h-screen bg-[#050009] text-[#F7F2FF] flex items-center justify-center px-4 py-10">
+    <div className="w-full max-w-5xl grid gap-8 md:grid-cols-[1fr_420px] items-center">
+      <section>
+        <p className="text-[#F4F27A] font-semibold tracking-wide">
+          🎨 Calling All Artists
+        </p>
 
-          <p className="text-[#F4F27A] font-semibold tracking-wide">
-            🎨 Calling All Artists
-          </p>
+        <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+          Join the Art Supply Tracker Artist Beta
+        </h1>
 
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-            Join the Art Supply Tracker Artist Beta
-          </h1>
+        <p className="text-lg text-[#DCC7FF] max-w-xl">
+          A studio assistant built by an artist, for artists. Track supplies,
+          projects, notes, and creative workflows so you can spend less time
+          searching and more time creating.
+        </p>
 
-          <p className="text-lg text-[#DCC7FF] max-w-xl">
-            A studio assistant built by an artist, for artists. Organize supplies,
-            projects, notes, and creative workflows so you can spend less time
-            searching and more time creating.
-          </p>
+        <p className="text-sm text-[#DCC7FF]">
+          After creating your account, please check your spam folder if you
+          don&apos;t receive your confirmation email within a few minutes.
+        </p>
+      </section>
 
-          <p className="text-sm text-[#DCC7FF]">
-            After creating your account, please check your spam or junk folder if
-            you don’t receive your confirmation email within a few minutes.
-          </p>
-        </section>
+      <div className="rounded-2xl border border-[#5B3FD3]/50 bg-[#120724]/80 px-4 py-3 text-center shadow-lg">
+  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#DCC7FF]">
+    Artist Opportunities
+  </p>
+
+  <a
+    href="https://artdeadline.com"
+    target="_blank"
+    rel="noreferrer"
+    className="inline-flex justify-center"
+  >
+    <img
+      src="/assets/listed-with-ADC2.jpg"
+      alt="Listed with ArtDeadline.Com"
+      className="max-h-20 w-auto"
+    />
+  </a>
+</div>
 
         <div className="w-full">
-  <Authenticator />
-</div>
+          <Authenticator />
+        </div>
       </div>
     </div>
-  )
+)
 }
-
 export default function App() {
   return (
     <Authenticator.Provider>
