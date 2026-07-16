@@ -21,6 +21,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
   });
   const [error, setError] = useState("");
   const [duplicateState, setDuplicateState] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,8 +54,21 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     images: formData.images,
   });
 
+  const submit = async (payload) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await onSubmit(payload);
+    } catch (err) {
+      setError(err?.message || "Could not save project. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     const trimmedTitle = formData.title.trim();
     if (!trimmedTitle) {
       setError("Project title is required");
@@ -70,15 +84,15 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
       });
       return;
     }
-    onSubmit(buildPayload());
+    submit(buildPayload());
   };
 
   const handleChooseUpdate = () => {
     if (onSelectExisting) onSelectExisting(duplicateState.existingProject.id);
   };
 
-  const handleChooseDraft  = () => onSubmit(buildPayload(duplicateState.draftTitle));
-  const handleChooseSeparate = () => onSubmit(buildPayload());
+  const handleChooseDraft  = () => submit(buildPayload(duplicateState.draftTitle));
+  const handleChooseSeparate = () => submit(buildPayload());
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -102,21 +116,26 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
               </div>
 
               <div className="space-y-2">
-                <button onClick={handleChooseUpdate} className="w-full rounded-lg border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2.5 text-left transition hover:bg-ast_turquoise/20">
+                <button onClick={handleChooseUpdate} disabled={isSubmitting} className="w-full rounded-lg border border-ast_turquoise/40 bg-ast_turquoise/10 px-4 py-2.5 text-left transition hover:bg-ast_turquoise/20 disabled:cursor-not-allowed disabled:opacity-50">
                   <span className="text-sm font-semibold text-ast_turquoise">Update existing project</span>
                   <span className="mt-0.5 block text-xs text-ast_muted">Select the existing project and close this form</span>
                 </button>
-                <button onClick={handleChooseDraft} className="w-full rounded-lg border border-ast_lavender/40 bg-ast_lavender/10 px-4 py-2.5 text-left transition hover:bg-ast_lavender/20">
-                  <span className="text-sm font-semibold text-ast_lavender">Create draft / version</span>
+                <button onClick={handleChooseDraft} disabled={isSubmitting} className="w-full rounded-lg border border-ast_lavender/40 bg-ast_lavender/10 px-4 py-2.5 text-left transition hover:bg-ast_lavender/20 disabled:cursor-not-allowed disabled:opacity-50">
+                  <span className="text-sm font-semibold text-ast_lavender">{isSubmitting ? "Creating…" : "Create draft / version"}</span>
                   <span className="mt-0.5 block text-xs text-ast_muted">New card titled &ldquo;{duplicateState.draftTitle}&rdquo;</span>
                 </button>
-                <button onClick={handleChooseSeparate} className="w-full rounded-lg border border-ast_pink/40 bg-ast_pink/10 px-4 py-2.5 text-left transition hover:bg-ast_pink/20">
-                  <span className="text-sm font-semibold text-ast_pink">Create separate project anyway</span>
+                <button onClick={handleChooseSeparate} disabled={isSubmitting} className="w-full rounded-lg border border-ast_pink/40 bg-ast_pink/10 px-4 py-2.5 text-left transition hover:bg-ast_pink/20 disabled:cursor-not-allowed disabled:opacity-50">
+                  <span className="text-sm font-semibold text-ast_pink">{isSubmitting ? "Creating…" : "Create separate project anyway"}</span>
                   <span className="mt-0.5 block text-xs text-ast_muted">This is a different project with the same title</span>
                 </button>
-                <button onClick={onCancel} className="w-full rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2.5 text-sm text-ast_yellow transition hover:bg-ast_yellow/10">
+                <button onClick={onCancel} disabled={isSubmitting} className="w-full rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2.5 text-sm text-ast_yellow transition hover:bg-ast_yellow/10 disabled:cursor-not-allowed disabled:opacity-50">
                   Cancel
                 </button>
+                {error && (
+                  <div className="rounded-lg border border-ast_pink/50 bg-ast_pink/10 px-3 py-2 text-sm text-ast_pink">
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
           </>
@@ -232,15 +251,17 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+                  disabled={isSubmitting}
+                  className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 font-semibold text-white shadow-astTurquoise hover:shadow-lg transition"
+                  disabled={isSubmitting}
+                  className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 font-semibold text-white shadow-astTurquoise hover:shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Create Project
+                  {isSubmitting ? "Creating…" : "Create Project"}
                 </button>
               </div>
             </form>

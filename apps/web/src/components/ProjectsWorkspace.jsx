@@ -7,6 +7,7 @@ const NEEDS_SORTING = "__needs_sorting__";
 export default function ProjectsWorkspace({
   sessionProjects,
   sessionSupplies,
+  isLoading = false,
   selectedProjectId,
   onSelectProject,
   onAddProject,
@@ -223,17 +224,21 @@ export default function ProjectsWorkspace({
               )}
             </p>
           </div>
-          <ProjectsCard
-            embedded
-            selectedProjectId={selectedProjectId}
-            onSelectProject={onSelectProject}
-            sessionProjects={filteredProjects}
-            sessionSupplies={sessionSupplies}
-            onAssignSupply={onAssignSupply}
-            onUnassignSupply={onUnassignSupply}
-            onEditProject={onEditProject}
-            onDeleteProject={onDeleteProject}
-          />
+          {isLoading ? (
+            <p className="py-8 text-sm text-ast_body/40 text-center">Loading projects…</p>
+          ) : (
+            <ProjectsCard
+              embedded
+              selectedProjectId={selectedProjectId}
+              onSelectProject={onSelectProject}
+              sessionProjects={filteredProjects}
+              sessionSupplies={sessionSupplies}
+              onAssignSupply={onAssignSupply}
+              onUnassignSupply={onUnassignSupply}
+              onEditProject={onEditProject}
+              onDeleteProject={onDeleteProject}
+            />
+          )}
         </div>
       )}
 

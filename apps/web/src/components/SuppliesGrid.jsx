@@ -23,6 +23,8 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   const [isEditingSupply, setIsEditingSupply] = useState(false);
   const [editDraft, setEditDraft] = useState({});
   const [isImageProcessing, setIsImageProcessing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editError, setEditError] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
   // Reset status filter when a new supply arrives so it's never hidden by an active filter.
@@ -59,6 +61,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
 
   const handleStartEdit = () => {
     setIsImageProcessing(false);
+    setEditError("");
     setEditDraft({
       name:              selectedSupply.name        ?? "",
       category:          selectedSupply.category    ?? "",
@@ -76,8 +79,12 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
     setIsEditingSupply(true);
   };
 
-  const handleSaveEdit = () => {
-    if (isImageProcessing) return;
+  const handleSaveEdit = async () => {
+    if (isImageProcessing || isSaving) return;
+    if (!editDraft.name?.trim()) {
+      setEditError("Supply name is required");
+      return;
+    }
     const { customCategory, customSubcategory, assignToProjectId, ...rest } = editDraft;
     const finalCategory = rest.category === "Other" && customCategory?.trim()
       ? customCategory.trim()
@@ -86,20 +93,28 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
       ? (customSubcategory?.trim() || "")
       : rest.subcategory;
 
-    onEditSupply(selectedSupplyId, { ...rest, category: finalCategory, subcategory: finalSubcategory });
+    setIsSaving(true);
+    setEditError("");
+    try {
+      await onEditSupply(selectedSupplyId, { ...rest, category: finalCategory, subcategory: finalSubcategory });
 
-    if (assignToProjectId && onAssignSupply) {
-      const projectIdNum = Number(assignToProjectId);
-      const alreadyAssigned = (selectedSupply.usedInProjectIds || []).includes(projectIdNum);
-      if (!alreadyAssigned) {
-        onAssignSupply(projectIdNum, selectedSupplyId);
+      if (assignToProjectId && onAssignSupply) {
+        const alreadyAssigned = (selectedSupply.usedInProjectIds || []).includes(assignToProjectId);
+        if (!alreadyAssigned) {
+          onAssignSupply(assignToProjectId, selectedSupplyId);
+        }
       }
-    }
 
-    setIsEditingSupply(false);
+      setIsEditingSupply(false);
+    } catch (err) {
+      setEditError(err?.message || "Could not save changes. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancelEdit = () => {
+    setEditError("");
     setIsEditingSupply(false);
   };
 
@@ -335,16 +350,23 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
               </select>
             </div>
 
+            {editError && (
+              <div className="rounded-lg border border-ast_pink/50 bg-ast_pink/10 px-3 py-2 text-sm text-ast_pink">
+                {editError}
+              </div>
+            )}
+
             <div className="flex gap-3 mt-2">
               <button
                 onClick={handleCancelEdit}
-                className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+                disabled={isSaving}
+                className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition disabled:cursor-not-allowed disabled:opacity-50"
               >Cancel</button>
               <button
                 onClick={handleSaveEdit}
-                disabled={isImageProcessing}
+                disabled={isImageProcessing || isSaving}
                 className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
-              >{isImageProcessing ? "Processing..." : "Save Changes"}</button>
+              >{isImageProcessing ? "Processing..." : isSaving ? "Saving…" : "Save Changes"}</button>
             </div>
           </div>
         </>

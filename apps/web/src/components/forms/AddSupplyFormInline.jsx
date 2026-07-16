@@ -18,6 +18,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
     image: null,
   });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categoryOptions = buildCategoryOptions(sessionSupplies);
   const activeCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === formData.category);
@@ -55,8 +56,9 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     if (!formData.name.trim()) {
       setError("Supply name is required");
       return;
@@ -75,20 +77,27 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
       ? formData.customSubcategory.trim()
       : formData.subcategory;
 
-    onSubmit({
-      name: formData.name.trim(),
-      category: finalCategory,
-      subcategory: finalSubcategory,
-      qty: qtyRaw,
-      status: formData.status,
-      location: formData.location.trim(),
-      notes: formData.notes.trim(),
-      condition: "Good",
-      color: "bg-ast_purple",
-      assignedProjectId: formData.assignedProjectId ? Number(formData.assignedProjectId) : null,
-      barcode: formData.barcode.trim(),
-      image: formData.image,
-    });
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await onSubmit({
+        name: formData.name.trim(),
+        category: finalCategory,
+        subcategory: finalSubcategory,
+        qty: qtyRaw,
+        status: formData.status,
+        location: formData.location.trim(),
+        notes: formData.notes.trim(),
+        condition: "Good",
+        color: "bg-ast_purple",
+        assignedProjectId: formData.assignedProjectId || null,
+        barcode: formData.barcode.trim(),
+        image: formData.image,
+      });
+    } catch (err) {
+      setError(err?.message || "Could not save supply. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -296,15 +305,17 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+              disabled={isSubmitting}
+              className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition"
+              disabled={isSubmitting}
+              className="flex-1 rounded-lg bg-gradient-to-r from-ast_pink to-ast_purple px-4 py-2 font-semibold text-white shadow-astPink hover:shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Add Supply
+              {isSubmitting ? "Saving…" : "Add Supply"}
             </button>
           </div>
         </form>

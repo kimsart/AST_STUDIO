@@ -148,7 +148,11 @@ const [leftOpen, setLeftOpen] = useState(false);
 const [rightOpen, setRightOpen] = useState(false);
 const [sessionProjects, setSessionProjects] = useState([]);
 const [sessionSupplies, setSessionSupplies] = useState([]);
+const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+const [isLoadingSupplies, setIsLoadingSupplies] = useState(true);
 useEffect(() => {
+  let isMounted = true;
+
   async function loadCloudProjects() {
     try {
       const { data } = await client.models.Project.list();
@@ -160,23 +164,33 @@ useEffect(() => {
           coverImageUrlLength: project.coverImageUrl?.length ?? 0,
         }))
       );
-      setSessionProjects(await Promise.all((data || []).map(hydrateProject)));
+      const hydrated = await Promise.all((data || []).map(hydrateProject));
+      if (isMounted) setSessionProjects(hydrated);
     } catch (error) {
       console.error('Error loading cloud projects:', error);
+    } finally {
+      if (isMounted) setIsLoadingProjects(false);
     }
   }
 
   async function loadCloudSupplies() {
     try {
       const { data } = await client.models.Supply.list();
-      setSessionSupplies(await Promise.all((data || []).map(hydrateSupply)));
+      const hydrated = await Promise.all((data || []).map(hydrateSupply));
+      if (isMounted) setSessionSupplies(hydrated);
     } catch (error) {
       console.error('Error loading cloud supplies:', error);
+    } finally {
+      if (isMounted) setIsLoadingSupplies(false);
     }
   }
 
   loadCloudProjects();
   loadCloudSupplies();
+
+  return () => {
+    isMounted = false;
+  };
 }, []);
 // useEffect(() => { saveProjects(sessionProjects); }, [sessionProjects]);
 // useEffect(() => { saveSupplies(sessionSupplies); }, [sessionSupplies]);
@@ -227,6 +241,7 @@ useEffect(() => {
     setShowAddProjectForm(false);
   } catch (error) {
     console.error("Error saving cloud project:", error);
+    throw error;
   }
 };
 
@@ -245,16 +260,14 @@ imageUrl,
     });
     const newId = data.id;
     const hydratedSupply = await hydrateSupply(data);
-      setSessionSupplies(prev => [
-    ...prev,
-    {
-      ...hydratedSupply,
-      isNew: true,
-    },
-  ]);
-} catch (error) {
-  console.error("Error saving cloud supply:", error);
-}
+    setSessionSupplies(prev => [
+      ...prev,
+      {
+        ...hydratedSupply,
+        isNew: true,
+      },
+    ]);
+
     if (assignedProjectId) {
       setSessionProjects(prev => prev.map(p =>
         p.id === assignedProjectId && !p.supplyIds.includes(newId)
@@ -263,6 +276,10 @@ imageUrl,
       ));
     }
     setShowAddSupplyForm(false);
+  } catch (error) {
+    console.error("Error saving cloud supply:", error);
+    throw error;
+  }
   };
 
   const handleEditProject = async (projectId, updatedData) => {
@@ -298,7 +315,7 @@ imageUrl,
         return;
       } catch (error) {
         console.error("Error updating cloud project:", error);
-        return;
+        throw error;
       }
     }
 
@@ -389,7 +406,7 @@ imageUrl,
         return;
       } catch (error) {
         console.error("Error updating cloud supply:", error);
-        return;
+        throw error;
       }
     }
 
@@ -513,7 +530,11 @@ imageUrl,
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
-              {sessionProjects.length === 0 ? (
+              {isLoadingProjects ? (
+                <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
+                  <p className="text-xs text-ast_body/40">Loading projects…</p>
+                </div>
+              ) : sessionProjects.length === 0 ? (
                 <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
                   <p className="text-xs text-ast_body/40 mb-3">No projects yet</p>
                   <button onClick={() => { setShowAddProjectForm(true); setLeftOpen(false); }} className="w-full rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition">+ Create Project</button>
@@ -656,7 +677,11 @@ imageUrl,
               {/* Project list */}
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-ast_turquoise mb-2">Recent Projects</p>
-                {sessionProjects.length === 0 ? (
+                {isLoadingProjects ? (
+                  <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
+                    <p className="text-xs text-ast_body/40">Loading projects…</p>
+                  </div>
+                ) : sessionProjects.length === 0 ? (
                   <div className="rounded-xl border border-ast_turquoise/15 bg-[#120724] px-4 py-5 text-center">
                     <p className="text-xs text-ast_body/40 mb-3">No projects yet</p>
                     <button
@@ -784,6 +809,7 @@ imageUrl,
               <ProjectsWorkspace
                 sessionProjects={sessionProjects}
                 sessionSupplies={sessionSupplies}
+                isLoading={isLoadingProjects}
                 selectedProjectId={selectedProjectId}
                 onSelectProject={setSelectedProjectId}
                 onAddProject={() => setShowAddProjectForm(true)}
@@ -801,6 +827,7 @@ imageUrl,
               <SuppliesWorkspace
                 sessionSupplies={sessionSupplies}
                 sessionProjects={sessionProjects}
+                isLoading={isLoadingSupplies}
                 onEditSupply={handleEditSupply}
                 onDeleteSupply={handleDeleteSupply}
                 onAssignSupply={handleAssignSupply}
@@ -872,6 +899,7 @@ imageUrl,
             <ProjectsWorkspace
               sessionProjects={sessionProjects}
               sessionSupplies={sessionSupplies}
+              isLoading={isLoadingProjects}
               selectedProjectId={selectedProjectId}
               onSelectProject={setSelectedProjectId}
               onAddProject={() => setShowAddProjectForm(true)}
@@ -887,6 +915,7 @@ imageUrl,
             <SuppliesWorkspace
               sessionSupplies={sessionSupplies}
               sessionProjects={sessionProjects}
+              isLoading={isLoadingSupplies}
               onEditSupply={handleEditSupply}
               onDeleteSupply={handleDeleteSupply}
               onAssignSupply={handleAssignSupply}

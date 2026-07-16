@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { SUPPLY_CATEGORIES } from "../data/supplyCategories.js";
 import SuppliesGrid from "./SuppliesGrid.jsx";
 
-export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, onEditSupply, onDeleteSupply, onAssignSupply, onOpenAddSupply, onImport, onExport }) {
+export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, isLoading = false, onEditSupply, onDeleteSupply, onAssignSupply, onOpenAddSupply, onImport, onExport }) {
   const [supplyNavView, setSupplyNavView] = useState("categories");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
@@ -216,7 +216,9 @@ export default function SuppliesWorkspace({ sessionSupplies, sessionProjects, on
       {/* Supply list view */}
       {supplyNavView === "list" && (
         <div className="space-y-3">
-          {filteredSupplies.length === 0 ? (
+          {isLoading ? (
+            <p className="py-8 text-sm text-ast_body/40 text-center">Loading supplies…</p>
+          ) : filteredSupplies.length === 0 ? (
             <div className="rounded-2xl border border-[#9F6BFF]/20 bg-[#9F6BFF]/5 px-6 py-10 text-center">
               <p className="text-sm font-medium text-[#9F6BFF]/60 mb-1">
                 {selectedSubcategory ? selectedSubcategory : currentCategoryDef?.label}

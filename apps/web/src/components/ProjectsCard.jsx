@@ -70,6 +70,8 @@ export default function ProjectsCard({
   const [pendingSupplyId, setPendingSupplyId] = useState("");
   const [isEditingProject, setIsEditingProject] = useState(false);
   const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "", images: [] });
+  const [isSavingProject, setIsSavingProject] = useState(false);
+  const [editError, setEditError] = useState("");
 
   const selectedProject = sessionProjects.find((p) => p.id === selectedProjectId);
 
@@ -90,12 +92,13 @@ export default function ProjectsCard({
 
   const handleAssign = () => {
     if (!pendingSupplyId || !selectedProject) return;
-    onAssignSupply(selectedProject.id, Number(pendingSupplyId));
+    onAssignSupply(selectedProject.id, pendingSupplyId);
     setPendingSupplyId("");
   };
 
   const handleStartEdit = (e) => {
     e.stopPropagation();
+    setEditError("");
     setEditDraft({
       title: selectedProject.title ?? "",
       status: selectedProject.status || "planned",
@@ -106,14 +109,28 @@ export default function ProjectsCard({
     setIsEditingProject(true);
   };
 
-  const handleSaveEdit = (e) => {
+  const handleSaveEdit = async (e) => {
     e.stopPropagation();
-    onEditProject(selectedProject.id, editDraft);
-    setIsEditingProject(false);
+    if (isSavingProject) return;
+    if (!editDraft.title?.trim()) {
+      setEditError("Project title is required");
+      return;
+    }
+    setIsSavingProject(true);
+    setEditError("");
+    try {
+      await onEditProject(selectedProject.id, editDraft);
+      setIsEditingProject(false);
+    } catch (err) {
+      setEditError(err?.message || "Could not save changes. Please try again.");
+    } finally {
+      setIsSavingProject(false);
+    }
   };
 
   const handleCancelEdit = (e) => {
     e.stopPropagation();
+    setEditError("");
     setIsEditingProject(false);
   };
 
@@ -226,15 +243,23 @@ export default function ProjectsCard({
                 </label>
               )}
             </div>
+            {editError && (
+              <div className="rounded-lg border border-ast_pink/50 bg-ast_pink/10 px-3 py-2 text-sm text-ast_pink">
+                {editError}
+              </div>
+            )}
+
             <div className="flex gap-3 mt-2">
               <button
                 onClick={handleCancelEdit}
-                className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition"
+                disabled={isSavingProject}
+                className="flex-1 rounded-lg border border-ast_yellow/30 bg-transparent px-4 py-2 text-ast_yellow hover:bg-ast_yellow/10 transition disabled:cursor-not-allowed disabled:opacity-50"
               >Cancel</button>
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 font-semibold text-white shadow-astTurquoise hover:shadow-lg transition"
-              >Save Changes</button>
+                disabled={isSavingProject}
+                className="flex-1 rounded-lg bg-gradient-to-r from-ast_turquoise to-ast_blue px-4 py-2 font-semibold text-white shadow-astTurquoise hover:shadow-lg transition disabled:cursor-not-allowed disabled:opacity-50"
+              >{isSavingProject ? "Saving…" : "Save Changes"}</button>
             </div>
           </div>
         </>
