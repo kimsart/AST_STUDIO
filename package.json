@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "test:inventory": "tsx --test apps/web/src/domain/inventory/*.test.ts",
+    "test:project": "tsx --test apps/web/src/domain/projects/*.test.ts"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.23.0",

@@ -132,10 +132,18 @@ type Location @model {
 interface Supply {
   id: string
   name: string
-  vendorId?: string
-  locationId?: string
-  quantity: number
-  lowStockThreshold?: number
+  category?: string
+  subcategory?: string
+  itemType?: string
+  unit?: string
+  barcode?: string
+  tags: string[]
+  quantityValue?: number
+  quantity?: number // legacy compatibility
+  location?: string
+  notes?: string
+  imageKey?: string
+  imageUrl?: string // legacy compatibility
   createdAt: string
   updatedAt: string
 }
@@ -146,10 +154,18 @@ interface Supply {
 type Supply @model {
   id: ID!
   name: String!
-  vendorId: ID
-  locationId: ID
-  quantity: Int!
-  lowStockThreshold: Int
+  category: String
+  subcategory: String
+  itemType: String
+  unit: String
+  barcode: String
+  tags: [String]
+  quantityValue: Float
+  quantity: Int
+  location: String
+  notes: String
+  imageKey: String
+  imageUrl: String
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -157,13 +173,21 @@ type Supply @model {
 
 **Field Details:**
 - `id`: Unique identifier (required)
-- `name`: Supply name (required)
-- `vendorId`: Reference to vendor (optional)
-- `locationId`: Reference to storage location (optional)
-- `quantity`: Current stock quantity (required)
-- `lowStockThreshold`: Alert threshold for low stock (optional)
+- `name`: Artist-defined inventory item name (required)
+- `category`, `subcategory`, `itemType`, `unit`, `barcode`: Open user-authored strings (optional)
+- `tags`: Owner-contained user-authored string collection (optional; normalized to an empty array by the service)
+- `quantityValue`: Fractional-capable inventory quantity (optional, authoritative when present)
+- `quantity`: Legacy integer quantity retained temporarily (optional)
+- `location`, `notes`: User-authored inventory details (optional)
+- `imageKey`: Amplify Storage key (optional)
+- `imageUrl`: Legacy image value retained temporarily (optional)
 - `createdAt`: Creation timestamp (required)
 - `updatedAt`: Last update timestamp (required)
+
+`Supply` is a migration-compatible model name for general inventory. It is not
+limited to painting supplies and can represent materials, tools, equipment,
+consumables, and other artist-owned items. No user-authored terminology field
+uses an enum or canonical catalog.
 
 ### Project Entity
 
@@ -171,8 +195,12 @@ type Supply @model {
 ```typescript
 interface Project {
   id: string
-  name: string
+  title: string
   description?: string
+  status?: string
+  notes?: string
+  coverImageUrl?: string
+  imageKeys: string[]
   createdAt: string
   updatedAt: string
 }
@@ -182,8 +210,12 @@ interface Project {
 ```graphql
 type Project @model {
   id: ID!
-  name: String!
+  title: String!
   description: String
+  status: String
+  notes: String
+  coverImageUrl: String
+  imageKeys: [String]
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
 }
@@ -191,10 +223,17 @@ type Project @model {
 
 **Field Details:**
 - `id`: Unique identifier (required)
-- `name`: Project name (required)
+- `title`: Project title (required)
 - `description`: Project description (optional)
+- `status`, `notes`: User-authored project details (optional)
+- `coverImageUrl`: Backward-compatible first/cover image path (optional)
+- `imageKeys`: Ordered additional gallery image paths after the cover (optional; normalized to an empty array when absent)
 - `createdAt`: Creation timestamp (required)
 - `updatedAt`: Last update timestamp (required)
+
+Legacy projects require no migration because an absent `imageKeys` field is
+equivalent to an empty additional gallery. `coverImageUrl` is not renamed or
+removed.
 
 ### Artwork Entity
 

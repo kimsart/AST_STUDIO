@@ -12,9 +12,15 @@ const schema = a.schema({
       name: a.string().required(),
       category: a.string(),
       subcategory: a.string(),
+      itemType: a.string(),
+      unit: a.string(),
+      barcode: a.string(),
+      tags: a.string().array(),
+      quantityValue: a.float(),
       quantity: a.integer(),
       location: a.string(),
       notes: a.string(),
+      imageKey: a.string(),
       imageUrl: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
@@ -26,6 +32,7 @@ const schema = a.schema({
       status: a.string(),
       notes: a.string(),
       coverImageUrl: a.string(),
+      imageKeys: a.string().array(),
     })
     .authorization((allow) => [allow.owner()]),
 
