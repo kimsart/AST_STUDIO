@@ -5,6 +5,7 @@ import type {
   SupplyPage,
   SupplyUpdateInput,
 } from "./types.ts";
+import type { ProjectService } from "../projects/projectService.ts";
 import {
   InventoryNotFoundError,
   InventoryPersistenceError,
@@ -88,6 +89,11 @@ export interface SupplyDataClient {
   };
 }
 
+interface ProjectRelationshipService {
+  list(): Promise<{ items: Array<{ id: string; supplyIds: string[] }> }>;
+  update(input: { id: string; supplyIds: string[] | null }): Promise<unknown>;
+}
+
 function hasGraphQLErrors(result: AmplifyResult<unknown>): boolean {
   return Boolean(result.errors?.length);
 }
@@ -124,7 +130,10 @@ export function mapSupplyRecord(record: RawSupplyRecord): Supply {
 }
 
 export class SupplyService {
-  constructor(private readonly client: SupplyDataClient) {}
+  constructor(
+    private readonly client: SupplyDataClient,
+    private readonly projectService?: ProjectRelationshipService,
+  ) {}
 
   async list(options?: SupplyListOptions): Promise<SupplyPage> {
     try {
@@ -230,6 +239,18 @@ export class SupplyService {
       const result = await this.client.models.Supply.delete({ id: validated.value.id });
       if (hasGraphQLErrors(result)) throw toPersistenceError("delete", result.errors ?? []);
       if (!result.data) throw new InventoryNotFoundError(validated.value.id);
+
+      if (this.projectService) {
+        const projects = await this.projectService.list();
+        await Promise.all(
+          projects.items
+            .filter((project) => project.supplyIds.includes(validated.value.id))
+            .map((project) => this.projectService!.update({
+              id: project.id,
+              supplyIds: project.supplyIds.filter((supplyId) => supplyId !== validated.value.id),
+            })),
+        );
+      }
     } catch (error) {
       if (error instanceof InventoryNotFoundError || error instanceof InventoryPersistenceError) throw error;
       throw new InventoryPersistenceError("Supply delete failed.", "delete", [], { cause: error });
