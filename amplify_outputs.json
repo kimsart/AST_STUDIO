@@ -66,6 +66,42 @@
               "isRequired": false,
               "attributes": []
             },
+            "itemType": {
+              "name": "itemType",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "unit": {
+              "name": "unit",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "barcode": {
+              "name": "barcode",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "tags": {
+              "name": "tags",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true
+            },
+            "quantityValue": {
+              "name": "quantityValue",
+              "isArray": false,
+              "type": "Float",
+              "isRequired": false,
+              "attributes": []
+            },
             "quantity": {
               "name": "quantity",
               "isArray": false,
@@ -82,6 +118,13 @@
             },
             "notes": {
               "name": "notes",
+              "isArray": false,
+              "type": "String",
+              "isRequired": false,
+              "attributes": []
+            },
+            "imageKey": {
+              "name": "imageKey",
               "isArray": false,
               "type": "String",
               "isRequired": false,
@@ -188,6 +231,14 @@
               "type": "String",
               "isRequired": false,
               "attributes": []
+            },
+            "imageKeys": {
+              "name": "imageKeys",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true
             },
             "createdAt": {
               "name": "createdAt",

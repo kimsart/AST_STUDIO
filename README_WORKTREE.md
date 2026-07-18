@@ -1,31 +1,34 @@
-# Worktree README
+# Worktree README — Integration Branch
 
-Owner: Claude
+Current branch: feature/pre-ai-integration
 
-Mission:
-- Forms
-- UX
-- Components
-- Async behavior
+Purpose: combine the validated Sol backend and Claude frontend for integration and testing.
 
-Forbidden:
+## Sol-owned concerns
+- Amplify
 - Schema
-- Amplify
-- package.json
-Branch ownership
-
-feature/pre-ai-sol
-- Backend
-- Amplify
 - Data models
-- Routing architecture
+- Services
+- Authorization
+- Storage
+- Backend validation
+- Backend tests
 - Shared infrastructure
 
-feature/pre-ai-claude
+## Claude-owned concerns
 - React components
 - Forms
 - UX
-- Error handling
+- Loading/error states
 - Async behavior
+- Image galleries
+- Frontend validation
+- Mobile polish
 
-Do not modify files owned by another branch, even if you identify improvements. Document them instead.
+## Cross-boundary rule
+
+Do not redesign or silently alter another agent's domain; document issues before making cross-domain changes.
+
+## Integration exception
+
+Changes touching both domains are allowed only when necessary to connect the already-approved backend and frontend contracts.
