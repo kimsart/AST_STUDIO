@@ -240,6 +240,14 @@
               "attributes": [],
               "isArrayNullable": true
             },
+            "supplyIds": {
+              "name": "supplyIds",
+              "isArray": true,
+              "type": "String",
+              "isRequired": false,
+              "attributes": [],
+              "isArrayNullable": true
+            },
             "createdAt": {
               "name": "createdAt",
               "isArray": false,

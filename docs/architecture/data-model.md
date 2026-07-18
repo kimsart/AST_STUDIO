@@ -1328,7 +1328,10 @@ type SafetyAudit @model {
 - `createdAt`: Creation timestamp (required)
 
 ## Relationships
-Describe how entities connect (one‑to‑many, many‑to‑many, etc.).
+- `Project` stores an authoritative `supplyIds` array for supply assignments.
+- This is a lightweight one-to-many relationship from a project to supplies without introducing a join model.
+- The backend treats the array as the single source of truth and normalizes missing or legacy values to an empty array.
+- Supply-to-project lookups are derived by scanning projects for a matching supply ID.
 
 ## Data Integrity Rules
 Define rules that ensure consistency and prevent invalid states.

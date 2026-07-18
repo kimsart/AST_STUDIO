@@ -33,6 +33,7 @@ const schema = a.schema({
       notes: a.string(),
       coverImageUrl: a.string(),
       imageKeys: a.string().array(),
+      supplyIds: a.string().array(),
     })
     .authorization((allow) => [allow.owner()]),
 

@@ -7,7 +7,8 @@ export type ProjectValidationField =
   | "status"
   | "notes"
   | "coverImageUrl"
-  | "imageKeys";
+  | "imageKeys"
+  | "supplyIds";
 
 export interface ProjectValidationIssue {
   field: ProjectValidationField;
@@ -54,6 +55,31 @@ function images(
   });
 }
 
+function supplyIds(
+  value: readonly string[] | null | undefined,
+  issues: ProjectValidationIssue[],
+): string[] | null | undefined {
+  if (value == null) return value as null | undefined;
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+  for (const rawId of value) {
+    const id = typeof rawId === "string" ? rawId.trim() : "";
+    if (!id) {
+      issues.push({ field: "supplyIds", code: "empty_path", message: "supplyIds cannot contain an empty value." });
+      continue;
+    }
+    if (id.length > 128) {
+      issues.push({ field: "supplyIds", code: "too_long", message: "A supply id is too long." });
+      continue;
+    }
+    if (!seen.has(id)) {
+      seen.add(id);
+      normalized.push(id);
+    }
+  }
+  return normalized;
+}
+
 export function validateProjectCreateInput(input: ProjectCreateInput): ProjectValidationResult<ProjectCreateInput> {
   const issues: ProjectValidationIssue[] = [];
   const value: ProjectCreateInput = {
@@ -63,6 +89,7 @@ export function validateProjectCreateInput(input: ProjectCreateInput): ProjectVa
     notes: optional(input.notes, "notes", 10_000, issues) ?? undefined,
     coverImageUrl: optional(input.coverImageUrl, "coverImageUrl", 1_024, issues) ?? undefined,
     imageKeys: images(input.imageKeys, issues) ?? undefined,
+    supplyIds: supplyIds(input.supplyIds, issues) ?? undefined,
   };
   return issues.length ? { ok: false, issues } : { ok: true, value };
 }
@@ -76,6 +103,7 @@ export function validateProjectUpdateInput(input: ProjectUpdateInput): ProjectVa
   if ("notes" in input) value.notes = optional(input.notes, "notes", 10_000, issues) ?? null;
   if ("coverImageUrl" in input) value.coverImageUrl = optional(input.coverImageUrl, "coverImageUrl", 1_024, issues) ?? null;
   if ("imageKeys" in input) value.imageKeys = images(input.imageKeys, issues) ?? null;
+  if ("supplyIds" in input) value.supplyIds = supplyIds(input.supplyIds, issues) ?? null;
   return issues.length ? { ok: false, issues } : { ok: true, value };
 }
 

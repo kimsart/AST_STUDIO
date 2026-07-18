@@ -8,6 +8,7 @@ const base: RawProjectRecord = {
   id: "project-1",
   title: "Ceramic installation",
   coverImageUrl: "project-images/identity/cover.jpg",
+  supplyIds: [],
   createdAt: "2026-07-01T00:00:00.000Z",
   updatedAt: "2026-07-02T00:00:00.000Z",
 };
@@ -82,6 +83,47 @@ test("update excludes caller-supplied owner", async () => {
   const { client, calls } = mock();
   await new ProjectService(client).update({ id: "project-1", notes: "updated", owner: "caller-selected-owner" } as never);
   assert.equal(Object.prototype.hasOwnProperty.call(calls.update[0] as object, "owner"), false);
+});
+
+test("assignSupply appends a supply id without duplicating an existing assignment", async () => {
+  const { client, calls } = mock({
+    get: { data: { ...base, supplyIds: ["supply-1"] } },
+    update: { data: { ...base, supplyIds: ["supply-1", "supply-2"] } },
+  });
+  const project = await new ProjectService(client).assignSupply("project-1", "supply-2");
+  assert.deepEqual(calls.update[0], { id: "project-1", supplyIds: ["supply-1", "supply-2"] });
+  assert.deepEqual(project.supplyIds, ["supply-1", "supply-2"]);
+});
+
+test("duplicate assignment is a no-op and unassign removes the supply id", async () => {
+  const { client, calls } = mock({
+    get: { data: { ...base, supplyIds: ["supply-1"] } },
+    update: { data: { ...base, supplyIds: [] } },
+  });
+  const duplicate = await new ProjectService(client).assignSupply("project-1", "supply-1");
+  assert.equal(calls.update.length, 0);
+  assert.deepEqual(duplicate.supplyIds, ["supply-1"]);
+
+  const unassigned = await new ProjectService(client).unassignSupply("project-1", "supply-1");
+  assert.deepEqual(calls.update[0], { id: "project-1", supplyIds: [] });
+  assert.deepEqual(unassigned.supplyIds, []);
+});
+
+test("listSupplyIds and listProjectIdsUsingSupply use the authoritative project-side array", async () => {
+  const { client, calls } = mock({
+    get: { data: { ...base, id: "project-1", supplyIds: ["supply-1", "supply-2"] } },
+    list: {
+      data: [
+        { ...base, id: "project-1", supplyIds: ["supply-1", "supply-2"] },
+        { ...base, id: "project-2", supplyIds: ["supply-2"] },
+        { ...base, id: "project-3" },
+      ],
+    },
+  });
+  const service = new ProjectService(client);
+  assert.deepEqual(await service.listSupplyIds("project-1"), ["supply-1", "supply-2"]);
+  assert.deepEqual(await service.listProjectIdsUsingSupply("supply-2"), ["project-1", "project-2"]);
+  assert.equal(calls.list.length, 1);
 });
 
 test("GraphQL errors are surfaced even when no exception is thrown", async () => {

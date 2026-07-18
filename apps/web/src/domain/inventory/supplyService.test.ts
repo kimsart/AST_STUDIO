@@ -205,10 +205,19 @@ test("update persists and round-trips newly supported fields", async () => {
   verify.equal(Object.prototype.hasOwnProperty.call(calls.update[0] as object, "owner"), false);
 });
 
-test("delete sends the validated identifier", async () => {
+test("delete sends the validated identifier and prunes stale project references", async () => {
   const { client, calls } = createMockClient();
-  await new SupplyService(client).delete("  supply-1  ");
+  const updates: Array<{ id: string; supplyIds: string[] | null }> = [];
+  const projectService = {
+    list: async () => ({ items: [{ id: "project-1", supplyIds: ["supply-1", "supply-2"] }, { id: "project-2", supplyIds: ["supply-3"] }] }),
+    update: async (input: { id: string; supplyIds: string[] | null }) => {
+      updates.push(input);
+      return input;
+    },
+  };
+  await new SupplyService(client, projectService).delete("  supply-1  ");
   verify.deepEqual(calls.delete[0], { id: "supply-1" });
+  verify.deepEqual(updates, [{ id: "project-1", supplyIds: ["supply-2"] }]);
 });
 
 test("validation fails before an Amplify mutation", async () => {

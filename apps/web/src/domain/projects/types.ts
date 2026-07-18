@@ -6,6 +6,8 @@ export interface ProjectCreateInput {
   coverImageUrl?: string | null;
   /** Ordered gallery Storage paths after the cover image. */
   imageKeys?: readonly string[];
+  /** Authoritative supply assignment state stored on the project. */
+  supplyIds?: readonly string[];
 }
 
 export interface ProjectUpdateInput {
@@ -17,6 +19,8 @@ export interface ProjectUpdateInput {
   coverImageUrl?: string | null;
   /** Use [] to clear the additional gallery. */
   imageKeys?: readonly string[] | null;
+  /** Use [] to clear supply assignments or null to leave them unchanged. */
+  supplyIds?: readonly string[] | null;
 }
 
 export interface Project {
@@ -27,6 +31,7 @@ export interface Project {
   notes?: string | null;
   coverImageUrl?: string | null;
   imageKeys: string[];
+  supplyIds: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -21,6 +21,7 @@ export interface RawProjectRecord {
   notes?: string | null;
   coverImageUrl?: string | null;
   imageKeys?: readonly (string | null)[] | null;
+  supplyIds?: readonly (string | null)[] | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +39,7 @@ interface ProjectCreatePayload {
   notes?: string;
   coverImageUrl?: string | null;
   imageKeys?: string[];
+  supplyIds?: string[];
 }
 
 interface ProjectUpdatePayload {
@@ -48,6 +50,7 @@ interface ProjectUpdatePayload {
   notes?: string | null;
   coverImageUrl?: string | null;
   imageKeys?: string[] | null;
+  supplyIds?: string[] | null;
 }
 
 export interface ProjectDataClient {
@@ -73,6 +76,20 @@ function persistenceError(
   );
 }
 
+function normalizeSupplyIds(value: readonly (string | null)[] | null | undefined): string[] {
+  if (!Array.isArray(value)) return [];
+  const normalized: string[] = [];
+  const seen = new Set<string>();
+  for (const entry of value) {
+    if (typeof entry !== "string") continue;
+    const trimmed = entry.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    normalized.push(trimmed);
+  }
+  return normalized;
+}
+
 export function mapProjectRecord(record: RawProjectRecord): Project {
   return {
     id: record.id,
@@ -82,6 +99,7 @@ export function mapProjectRecord(record: RawProjectRecord): Project {
     notes: record.notes,
     coverImageUrl: record.coverImageUrl,
     imageKeys: (record.imageKeys ?? []).filter((key): key is string => typeof key === "string"),
+    supplyIds: normalizeSupplyIds(record.supplyIds),
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
   };
@@ -126,6 +144,9 @@ export class ProjectService {
       coverImageUrl: validated.value.coverImageUrl,
       imageKeys: validated.value.imageKeys ? [...validated.value.imageKeys] : undefined,
     };
+    if (typeof validated.value.supplyIds !== "undefined") {
+      payload.supplyIds = validated.value.supplyIds ? [...validated.value.supplyIds] : [];
+    }
     try {
       const result = await this.client.models.Project.create(payload);
       if (result.errors?.length) throw persistenceError("create", result.errors);
@@ -149,6 +170,9 @@ export class ProjectService {
     if ("imageKeys" in validated.value) {
       payload.imageKeys = validated.value.imageKeys ? [...validated.value.imageKeys] : null;
     }
+    if ("supplyIds" in validated.value) {
+      payload.supplyIds = validated.value.supplyIds == null ? null : [...validated.value.supplyIds];
+    }
     try {
       const result = await this.client.models.Project.update(payload);
       if (result.errors?.length) throw persistenceError("update", result.errors);
@@ -171,6 +195,44 @@ export class ProjectService {
       if (error instanceof ProjectNotFoundError || error instanceof ProjectPersistenceError) throw error;
       throw new ProjectPersistenceError("Project delete failed.", "delete", [], { cause: error });
     }
+  }
+
+  async assignSupply(projectId: string, supplyId: string): Promise<Project> {
+    const normalizedProjectId = projectId.trim();
+    const normalizedSupplyId = supplyId.trim();
+    if (!normalizedProjectId) throw new ProjectValidationError([{ field: "id", code: "required", message: "id is required." }]);
+    if (!normalizedSupplyId) throw new ProjectValidationError([{ field: "supplyIds", code: "empty_path", message: "supplyId cannot be empty." }]);
+
+    const currentProject = await this.get(normalizedProjectId);
+    const currentSupplyIds = currentProject.supplyIds;
+    if (currentSupplyIds.includes(normalizedSupplyId)) return currentProject;
+    return this.update({ id: normalizedProjectId, supplyIds: [...currentSupplyIds, normalizedSupplyId] });
+  }
+
+  async unassignSupply(projectId: string, supplyId: string): Promise<Project> {
+    const normalizedProjectId = projectId.trim();
+    const normalizedSupplyId = supplyId.trim();
+    if (!normalizedProjectId) throw new ProjectValidationError([{ field: "id", code: "required", message: "id is required." }]);
+    if (!normalizedSupplyId) throw new ProjectValidationError([{ field: "supplyIds", code: "empty_path", message: "supplyId cannot be empty." }]);
+
+    const currentProject = await this.get(normalizedProjectId);
+    const nextSupplyIds = currentProject.supplyIds.filter((id) => id !== normalizedSupplyId);
+    if (nextSupplyIds.length === currentProject.supplyIds.length) return currentProject;
+    return this.update({ id: normalizedProjectId, supplyIds: nextSupplyIds });
+  }
+
+  async listSupplyIds(projectId: string): Promise<string[]> {
+    const normalizedProjectId = projectId.trim();
+    if (!normalizedProjectId) throw new ProjectValidationError([{ field: "id", code: "required", message: "id is required." }]);
+    const project = await this.get(normalizedProjectId);
+    return [...project.supplyIds];
+  }
+
+  async listProjectIdsUsingSupply(supplyId: string): Promise<string[]> {
+    const normalizedSupplyId = supplyId.trim();
+    if (!normalizedSupplyId) throw new ProjectValidationError([{ field: "supplyIds", code: "empty_path", message: "supplyId cannot be empty." }]);
+    const page = await this.list();
+    return page.items.filter((project) => project.supplyIds.includes(normalizedSupplyId)).map((project) => project.id);
   }
 }
 
