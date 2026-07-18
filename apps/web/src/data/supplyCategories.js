@@ -53,3 +53,24 @@ export function buildCategoryOptions(sessionSupplies = []) {
   const base = SUPPLY_CATEGORIES.filter(c => c.value !== "Other");
   return [...base, ...customEntries, { label: "Other", value: "Other", subcategories: [] }];
 }
+
+/**
+ * Returns the subcategory option list for a given category: preset
+ * subcategories (if any) plus any custom subcategory a user has previously
+ * typed for that same category, sorted. Works for both preset categories
+ * (e.g. "Paint") and user-created custom categories (e.g. "Ceramics") —
+ * a custom category is not second-class and can accumulate its own reusable
+ * subcategory list the same way preset categories do.
+ */
+export function buildSubcategoryOptions(category, sessionSupplies = []) {
+  if (!category || category === "Other") return [];
+  const preset = SUPPLY_CATEGORIES.find(c => c.value === category)?.subcategories ?? [];
+  const knownValues = new Set(preset);
+  const customSet = new Set();
+  for (const s of sessionSupplies) {
+    if (s?.category === category && s.subcategory && !knownValues.has(s.subcategory)) {
+      customSet.add(s.subcategory);
+    }
+  }
+  return [...preset, ...[...customSet].sort()];
+}

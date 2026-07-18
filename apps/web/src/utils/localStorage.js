@@ -1,21 +1,29 @@
 import { mockProjects, mockSupplies } from '../data/mockData.js';
+import { normalizeSupplyIds } from './projectSupplyLinks.js';
 
+// Malformed/missing/legacy input never throws here — it normalizes to safe
+// defaults instead, so a bad entry (e.g. a null in an imported array) can't
+// crash the app with "Cannot read properties of null".
 export function normalizeProject(p) {
+  const base = (p && typeof p === "object") ? p : {};
   // Migrate old single imageDataUrl field to images array
-  let images = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
-  if (images.length === 0 && p.imageDataUrl) images = [p.imageDataUrl];
+  let images = Array.isArray(base.images) ? base.images.filter(Boolean) : [];
+  if (images.length === 0 && base.imageDataUrl) images = [base.imageDataUrl];
   return {
-    ...p,
-    supplyIds: Array.isArray(p.supplyIds) ? p.supplyIds : [],
+    ...base,
+    supplyIds: normalizeSupplyIds(base.supplyIds),
     images,
   };
 }
 
 export function normalizeSupply(s) {
+  const base = (s && typeof s === "object") ? s : {};
   return {
-    ...s,
-    usedInProjectIds: Array.isArray(s.usedInProjectIds) ? s.usedInProjectIds : [],
-    subcategory: typeof s.subcategory === "string" ? s.subcategory : "",
+    ...base,
+    // usedInProjectIds is UI-derived (see utils/projectSupplyLinks.js) — kept
+    // here only so any legacy/imported value doesn't leak through untouched.
+    usedInProjectIds: Array.isArray(base.usedInProjectIds) ? base.usedInProjectIds : [],
+    subcategory: typeof base.subcategory === "string" ? base.subcategory : "",
   };
 }
 
@@ -24,7 +32,9 @@ export function validateImportedData(data) {
     data !== null &&
     typeof data === 'object' &&
     Array.isArray(data.projects) &&
-    Array.isArray(data.supplies)
+    Array.isArray(data.supplies) &&
+    data.projects.every((p) => p !== null && typeof p === 'object') &&
+    data.supplies.every((s) => s !== null && typeof s === 'object')
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { compressImage } from "../../utils/imageUtils.js";
+import { parseFlexibleNumber } from "../../utils/numericInput.js";
 
 function getNextDraftTitle(baseTitle, projects) {
   for (let i = 1; i <= 9; i++) {
@@ -50,7 +51,7 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     title: titleOverride ?? formData.title.trim(),
     status: formData.status,
     notes: formData.notes.trim(),
-    budget: formData.budget ? parseInt(formData.budget) : 0,
+    budget: parseFlexibleNumber(formData.budget) ?? 0,
     images: formData.images,
   });
 
@@ -72,6 +73,10 @@ export default function AddProjectFormInline({ onSubmit, onCancel, sessionProjec
     const trimmedTitle = formData.title.trim();
     if (!trimmedTitle) {
       setError("Project title is required");
+      return;
+    }
+    if (Number.isNaN(parseFlexibleNumber(formData.budget))) {
+      setError("Enter a valid budget, like 150 or 150.50");
       return;
     }
     const existingProject = sessionProjects.find(

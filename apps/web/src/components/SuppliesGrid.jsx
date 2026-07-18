@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { SUPPLY_CATEGORIES, buildCategoryOptions } from "../data/supplyCategories.js";
+import { buildCategoryOptions, buildSubcategoryOptions } from "../data/supplyCategories.js";
 import { compressImage } from "../utils/imageUtils.js";
+import { parseFlexibleNumber } from "../utils/numericInput.js";
 
 const GRID_COLS = 3;
 
@@ -49,8 +50,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
   const selectedSupply = filteredItems.find(s => s.id === selectedSupplyId) ?? null;
 
   const categoryOptions = buildCategoryOptions(allSupplies ?? sessionSupplies);
-  const editCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === editDraft.category);
-  const editSubcategories = editCategoryDef ? editCategoryDef.subcategories : [];
+  const editSubcategories = buildSubcategoryOptions(editDraft.category, allSupplies ?? sessionSupplies);
   const editIsOther = editDraft.category === "Other";
   const editIsCustomSubcategory = editDraft.subcategory === "__other__";
 
@@ -85,6 +85,15 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
       setEditError("Supply name is required");
       return;
     }
+    const parsedQty = parseFlexibleNumber(editDraft.qty);
+    if (Number.isNaN(parsedQty)) {
+      setEditError("Enter a valid quantity, like 2, 1.5, or 1/2");
+      return;
+    }
+    if (parsedQty !== null && parsedQty < 0) {
+      setEditError("Quantity cannot be negative");
+      return;
+    }
     const { customCategory, customSubcategory, assignToProjectId, ...rest } = editDraft;
     const finalCategory = rest.category === "Other" && customCategory?.trim()
       ? customCategory.trim()
@@ -96,12 +105,12 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
     setIsSaving(true);
     setEditError("");
     try {
-      await onEditSupply(selectedSupplyId, { ...rest, category: finalCategory, subcategory: finalSubcategory });
+      await onEditSupply(selectedSupplyId, { ...rest, qty: parsedQty, category: finalCategory, subcategory: finalSubcategory });
 
       if (assignToProjectId && onAssignSupply) {
         const alreadyAssigned = (selectedSupply.usedInProjectIds || []).includes(assignToProjectId);
         if (!alreadyAssigned) {
-          onAssignSupply(assignToProjectId, selectedSupplyId);
+          await onAssignSupply(assignToProjectId, selectedSupplyId);
         }
       }
 
@@ -218,8 +227,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                   value={editDraft.category}
                   onChange={e => {
                     const newCat = e.target.value;
-                    const catDef = SUPPLY_CATEGORIES.find(c => c.value === newCat);
-                    const validSubs = catDef ? catDef.subcategories : [];
+                    const validSubs = buildSubcategoryOptions(newCat, allSupplies ?? sessionSupplies);
                     setEditDraft(d => ({
                       ...d,
                       category: newCat,
@@ -237,8 +245,9 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
               <div>
                 <label className="block text-sm font-medium text-ast_lavender mb-2">Quantity</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="e.g., 2 or 1/2"
                   className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   value={editDraft.qty}
                   onChange={e => setEditDraft(d => ({ ...d, qty: e.target.value }))}
@@ -286,7 +295,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                   onChange={e => setEditDraft(d => ({ ...d, customCategory: e.target.value }))}
                 />
               </div>
-            ) : editSubcategories.length > 0 ? (
+            ) : (
               <div>
                 <label className="block text-sm font-medium text-ast_lavender mb-2">Subcategory</label>
                 <select
@@ -310,7 +319,7 @@ export default function SuppliesGrid({ sessionSupplies = [], allSupplies, sessio
                   />
                 )}
               </div>
-            ) : null}
+            )}
 
             {/* Barcode */}
             <div>

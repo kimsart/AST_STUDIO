@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { compressImage } from "../utils/imageUtils.js";
+import { parseFlexibleNumber } from "../utils/numericInput.js";
 
 const GRID_COLS = 3;
 
@@ -72,11 +73,17 @@ export default function ProjectsCard({
   const [editDraft, setEditDraft] = useState({ title: "", status: "planned", notes: "", budget: "", images: [] });
   const [isSavingProject, setIsSavingProject] = useState(false);
   const [editError, setEditError] = useState("");
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [assignError, setAssignError] = useState("");
+  const [unassigningSupplyId, setUnassigningSupplyId] = useState(null);
+  const [unassignError, setUnassignError] = useState("");
 
   const selectedProject = sessionProjects.find((p) => p.id === selectedProjectId);
 
   useEffect(() => {
     setIsEditingProject(false);
+    setAssignError("");
+    setUnassignError("");
   }, [selectedProjectId]);
 
   const selectedSupplyIds = Array.isArray(selectedProject?.supplyIds)
@@ -90,10 +97,31 @@ export default function ProjectsCard({
     ? sessionSupplies.filter(s => !selectedSupplyIds.includes(s.id))
     : [];
 
-  const handleAssign = () => {
-    if (!pendingSupplyId || !selectedProject) return;
-    onAssignSupply(selectedProject.id, pendingSupplyId);
-    setPendingSupplyId("");
+  const handleAssign = async () => {
+    if (!pendingSupplyId || !selectedProject || isAssigning) return;
+    setIsAssigning(true);
+    setAssignError("");
+    try {
+      await onAssignSupply(selectedProject.id, pendingSupplyId);
+      setPendingSupplyId("");
+    } catch (err) {
+      setAssignError(err?.message || "Could not assign supply. Please try again.");
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
+  const handleUnassign = async (supplyId) => {
+    if (!selectedProject || unassigningSupplyId) return;
+    setUnassigningSupplyId(supplyId);
+    setUnassignError("");
+    try {
+      await onUnassignSupply(selectedProject.id, supplyId);
+    } catch (err) {
+      setUnassignError(err?.message || "Could not remove supply. Please try again.");
+    } finally {
+      setUnassigningSupplyId(null);
+    }
   };
 
   const handleStartEdit = (e) => {
@@ -116,10 +144,16 @@ export default function ProjectsCard({
       setEditError("Project title is required");
       return;
     }
+    const parsedBudget = parseFlexibleNumber(editDraft.budget);
+    if (Number.isNaN(parsedBudget)) {
+      setEditError("Enter a valid budget, like 150 or 150.50");
+      return;
+    }
+
     setIsSavingProject(true);
     setEditError("");
     try {
-      await onEditProject(selectedProject.id, editDraft);
+      await onEditProject(selectedProject.id, { ...editDraft, budget: parsedBudget ?? 0 });
       setIsEditingProject(false);
     } catch (err) {
       setEditError(err?.message || "Could not save changes. Please try again.");
@@ -336,13 +370,17 @@ export default function ProjectsCard({
                   <li key={s.id} className="flex items-center justify-between text-sm text-ast_body/75">
                     <span>· {s.name}</span>
                     <button
-                      onClick={() => onUnassignSupply(selectedProject.id, s.id)}
-                      className="shrink-0 ml-2 text-ast_faint hover:text-ast_pink transition"
+                      onClick={() => handleUnassign(s.id)}
+                      disabled={unassigningSupplyId === s.id}
+                      className="shrink-0 ml-2 text-ast_faint hover:text-ast_pink transition disabled:cursor-not-allowed disabled:opacity-40"
                       title="Remove"
-                    >×</button>
+                    >{unassigningSupplyId === s.id ? "…" : "×"}</button>
                   </li>
                 ))}
               </ul>
+            )}
+            {unassignError && (
+              <p className="mb-2 text-xs text-ast_pink">{unassignError}</p>
             )}
             {unassignedSupplies.length === 0 ? (
               <p className="text-xs text-ast_body/50">All supplies assigned</p>
@@ -360,10 +398,13 @@ export default function ProjectsCard({
                 </select>
                 <button
                   onClick={handleAssign}
-                  disabled={!pendingSupplyId}
+                  disabled={!pendingSupplyId || isAssigning}
                   className="shrink-0 rounded-lg bg-ast_turquoise/20 px-4 py-2 text-sm text-ast_turquoise hover:bg-ast_turquoise/40 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                >Assign</button>
+                >{isAssigning ? "Assigning…" : "Assign"}</button>
               </div>
+            )}
+            {assignError && (
+              <p className="mt-2 text-xs text-ast_pink">{assignError}</p>
             )}
           </div>
 

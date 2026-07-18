@@ -1,9 +1,12 @@
 import { signOut } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/data';
 import { getUrl, uploadData } from 'aws-amplify/storage';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createAmplifyProjectService } from "../domain/projects/amplifyProjectService.ts";
+import { createAmplifySupplyService } from "../domain/inventory/amplifySupplyService.ts";
+import { resolveQuantityValue } from "../domain/inventory/validation.ts";
+import { withDerivedUsedInProjectIds } from "../utils/projectSupplyLinks.js";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -47,12 +50,12 @@ async function uploadSupplyImage(image) {
   return result.path;
 }
 
-async function resolveSupplyDisplayImage(imageUrl) {
-  if (!imageUrl) return null;
-  if (isSupplyDisplayImage(imageUrl)) return imageUrl;
+async function resolveSupplyDisplayImage(storagePathOrUrl) {
+  if (!storagePathOrUrl) return null;
+  if (isSupplyDisplayImage(storagePathOrUrl)) return storagePathOrUrl;
 
   try {
-    const { url } = await getUrl({ path: imageUrl });
+    const { url } = await getUrl({ path: storagePathOrUrl });
     return url.toString();
   } catch (error) {
     console.warn("[AST Studio] Failed to resolve supply image:", error);
@@ -60,12 +63,18 @@ async function resolveSupplyDisplayImage(imageUrl) {
   }
 }
 
+// imageKey is the current field (written via SupplyService); imageUrl is the
+// legacy field older records may still only have — checked as a fallback so
+// existing images never disappear. quantityValue/quantity follow the same
+// current-field-first, legacy-fallback pattern via Sol's resolveQuantityValue.
 async function hydrateSupply(supply) {
   const normalized = normalizeSupply(supply);
+  const imageSource = normalized.imageKey ?? normalized.imageUrl ?? null;
   return {
     ...normalized,
-    qty: normalized.qty ?? normalized.quantity ?? "",
-    image: await resolveSupplyDisplayImage(normalized.imageUrl),
+    qty: resolveQuantityValue(normalized.quantityValue, normalized.quantity) ?? "",
+    tags: Array.isArray(normalized.tags) ? normalized.tags : [],
+    image: await resolveSupplyDisplayImage(imageSource),
   };
 }
 
@@ -160,6 +169,11 @@ export default function Dashboard({ defaultView = 'home', user }) {
     projectServiceRef.current = createAmplifyProjectService();
   }
   const projectService = projectServiceRef.current;
+  const supplyServiceRef = useRef(null);
+  if (supplyServiceRef.current === null) {
+    supplyServiceRef.current = createAmplifySupplyService();
+  }
+  const supplyService = supplyServiceRef.current;
   const handleSignOut = async () => {
   try {
     await signOut();
@@ -170,10 +184,16 @@ export default function Dashboard({ defaultView = 'home', user }) {
 };
   const fileInputRef = useRef(null);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  // A fresh object each time a navigation carries a target project (e.g. the
+  // sidebar "Recent Projects" shortcut), even for repeat clicks on the same
+  // project — ProjectsWorkspace uses reference identity to know a shortcut
+  // (not an ordinary in-list click) just happened.
+  const [focusRequest, setFocusRequest] = useState(null);
 
   useEffect(() => {
     if (location.state?.selectedProjectId != null) {
       setSelectedProjectId(location.state.selectedProjectId);
+      setFocusRequest({ id: location.state.selectedProjectId, key: location.key });
     }
   }, [location.key]);
  const [showAddProjectForm, setShowAddProjectForm] = useState(false);
@@ -184,6 +204,13 @@ const [sessionProjects, setSessionProjects] = useState([]);
 const [sessionSupplies, setSessionSupplies] = useState([]);
 const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 const [isLoadingSupplies, setIsLoadingSupplies] = useState(true);
+// Single source of truth for the supply<->project relationship is
+// Project.supplyIds; usedInProjectIds is always recomputed from it here so
+// there is never a second, independently-drifting copy of the same fact.
+const suppliesWithLinks = useMemo(
+  () => withDerivedUsedInProjectIds(sessionSupplies, sessionProjects),
+  [sessionSupplies, sessionProjects]
+);
 useEffect(() => {
   let isMounted = true;
 
@@ -260,18 +287,21 @@ useEffect(() => {
  const handleAddSupply = async (supplyData) => {
   const { assignedProjectId, ...rest } = supplyData;
   try {
-    const imageUrl = await uploadSupplyImage(rest.image);
-    const { data } = await client.models.Supply.create({
+    const imageKey = await uploadSupplyImage(rest.image);
+    const created = await supplyService.create({
       name: rest.name,
-category: rest.category,
-subcategory: rest.subcategory,
-quantity: rest.qty,
-location: rest.location,
-notes: rest.notes,
-imageUrl,
+      category: rest.category,
+      subcategory: rest.subcategory,
+      itemType: rest.itemType,
+      unit: rest.unit,
+      tags: rest.tags,
+      barcode: rest.barcode,
+      quantityValue: rest.qty,
+      location: rest.location,
+      notes: rest.notes,
+      imageKey,
     });
-    const newId = data.id;
-    const hydratedSupply = await hydrateSupply(data);
+    const hydratedSupply = await hydrateSupply(created);
     setSessionSupplies(prev => [
       ...prev,
       {
@@ -281,11 +311,7 @@ imageUrl,
     ]);
 
     if (assignedProjectId) {
-      setSessionProjects(prev => prev.map(p =>
-        p.id === assignedProjectId && !p.supplyIds.includes(newId)
-          ? { ...p, supplyIds: [...p.supplyIds, newId] }
-          : p
-      ));
+      await handleAssignSupply(assignedProjectId, created.id);
     }
     setShowAddSupplyForm(false);
   } catch (error) {
@@ -327,7 +353,6 @@ imageUrl,
                 ...p,
                 ...hydratedProject,
                 budget: updatedData.budget ?? p.budget,
-                supplyIds: p.supplyIds,
                 updatedAt: Date.now(),
               }
             : p
@@ -358,37 +383,41 @@ imageUrl,
     }
 
     setSessionProjects(prev => prev.filter(p => p.id !== projectId));
-    setSessionSupplies(prev => prev.map(s => ({
-      ...s,
-      usedInProjectIds: s.usedInProjectIds.filter(id => id !== projectId),
-    })));
+    // No Supply-side cleanup needed: the assignment id lives only on
+    // Project.supplyIds, and Supply.usedInProjectIds is derived from
+    // sessionProjects (see suppliesWithLinks), so it recomputes automatically.
     if (selectedProjectId === projectId) setSelectedProjectId(null);
   };
 
-  const handleAssignSupply = (projectId, supplyId) => {
-    setSessionProjects(prev => prev.map(p =>
-      p.id === projectId && !p.supplyIds.includes(supplyId)
-        ? { ...p, supplyIds: [...p.supplyIds, supplyId] }
-        : p
-    ));
-    setSessionSupplies(prev => prev.map(s =>
-      s.id === supplyId && !s.usedInProjectIds.includes(projectId)
-        ? { ...s, usedInProjectIds: [...s.usedInProjectIds, projectId] }
-        : s
-    ));
+  // Persists through ProjectService.assignSupply, which is itself a no-op
+  // (returns the current project unchanged) if the supply is already
+  // assigned — duplicate assignment is harmless by construction, not by
+  // anything checked here. Nothing is shown as assigned until the backend
+  // confirms it: there is no optimistic update to roll back on failure.
+  const handleAssignSupply = async (projectId, supplyId) => {
+    try {
+      const updated = await projectService.assignSupply(projectId, supplyId);
+      const hydratedProject = await hydrateProject(updated);
+      setSessionProjects(prev => prev.map(p =>
+        p.id === projectId ? { ...p, ...hydratedProject, budget: p.budget, updatedAt: Date.now() } : p
+      ));
+    } catch (error) {
+      console.error("Error assigning supply to project:", error);
+      throw error;
+    }
   };
 
-  const handleUnassignSupply = (projectId, supplyId) => {
-    setSessionProjects(prev => prev.map(p =>
-      p.id === projectId
-        ? { ...p, supplyIds: p.supplyIds.filter(id => id !== supplyId) }
-        : p
-    ));
-    setSessionSupplies(prev => prev.map(s =>
-      s.id === supplyId
-        ? { ...s, usedInProjectIds: s.usedInProjectIds.filter(id => id !== projectId) }
-        : s
-    ));
+  const handleUnassignSupply = async (projectId, supplyId) => {
+    try {
+      const updated = await projectService.unassignSupply(projectId, supplyId);
+      const hydratedProject = await hydrateProject(updated);
+      setSessionProjects(prev => prev.map(p =>
+        p.id === projectId ? { ...p, ...hydratedProject, budget: p.budget, updatedAt: Date.now() } : p
+      ));
+    } catch (error) {
+      console.error("Error unassigning supply from project:", error);
+      throw error;
+    }
   };
 
   const handleEditSupply = async (supplyId, updatedData) => {
@@ -399,19 +428,27 @@ imageUrl,
           name: updatedData.name,
           category: updatedData.category,
           subcategory: updatedData.subcategory,
-          quantity: updatedData.qty,
+          barcode: updatedData.barcode,
           location: updatedData.location,
           notes: updatedData.notes,
         };
+        // Only included when the caller actually provided them — the current
+        // UI never edits itemType/unit/tags/qty directly, and an explicitly
+        // undefined key would still count as "present" to the update
+        // payload, clearing a field the artist never touched.
+        if (typeof updatedData.itemType !== "undefined") updateInput.itemType = updatedData.itemType;
+        if (typeof updatedData.unit !== "undefined") updateInput.unit = updatedData.unit;
+        if (typeof updatedData.tags !== "undefined") updateInput.tags = updatedData.tags;
+        if (typeof updatedData.qty !== "undefined") updateInput.quantityValue = updatedData.qty;
 
         if (isSupplyDataImage(updatedData.image)) {
-          updateInput.imageUrl = await uploadSupplyImage(updatedData.image);
+          updateInput.imageKey = await uploadSupplyImage(updatedData.image);
         } else if (updatedData.image === null) {
-          updateInput.imageUrl = null;
+          updateInput.imageKey = null;
         }
 
-        const { data } = await client.models.Supply.update(updateInput);
-        const hydratedSupply = await hydrateSupply(data);
+        const updated = await supplyService.update(updateInput);
+        const hydratedSupply = await hydrateSupply(updated);
         setSessionSupplies(prev => prev.map(s =>
           s.id === supplyId
             ? {
@@ -419,7 +456,6 @@ imageUrl,
                 ...hydratedSupply,
                 status: updatedData.status ?? s.status,
                 barcode: updatedData.barcode ?? s.barcode,
-                usedInProjectIds: s.usedInProjectIds,
               }
             : s
         ));
@@ -432,16 +468,23 @@ imageUrl,
 
     setSessionSupplies(prev => prev.map(s =>
       s.id === supplyId
-        ? { ...s, ...updatedData, id: s.id, usedInProjectIds: s.usedInProjectIds }
+        ? { ...s, ...updatedData, id: s.id }
         : s
     ));
   };
 
+  // Routes through SupplyService (not a raw Amplify call) because
+  // SupplyService.delete() also prunes this supply's id from every
+  // affected Project's supplyIds server-side. The local supplyIds strip
+  // below mirrors that same cleanup client-side, purely so the UI reflects
+  // it immediately — Supply.usedInProjectIds is derived from sessionProjects,
+  // so this single update is enough; no separate Supply-side cleanup or
+  // page refresh is needed.
   const handleDeleteSupply = async (supplyId) => {
     if (!window.confirm("Delete this supply? This cannot be undone.")) return;
     if (typeof supplyId === "string") {
       try {
-        await client.models.Supply.delete({ id: supplyId });
+        await supplyService.delete(supplyId);
       } catch (error) {
         console.error("Error deleting cloud supply:", error);
         return;
@@ -451,7 +494,7 @@ imageUrl,
     setSessionSupplies(prev => prev.filter(s => s.id !== supplyId));
     setSessionProjects(prev => prev.map(p => ({
       ...p,
-      supplyIds: p.supplyIds.filter(id => id !== supplyId),
+      supplyIds: (p.supplyIds ?? []).filter(id => id !== supplyId),
     })));
   };
 
@@ -828,10 +871,11 @@ imageUrl,
             {defaultView === 'projects' && (
               <ProjectsWorkspace
                 sessionProjects={sessionProjects}
-                sessionSupplies={sessionSupplies}
+                sessionSupplies={suppliesWithLinks}
                 isLoading={isLoadingProjects}
                 selectedProjectId={selectedProjectId}
                 onSelectProject={setSelectedProjectId}
+                focusRequest={focusRequest}
                 onAddProject={() => setShowAddProjectForm(true)}
                 onEditProject={handleEditProject}
                 onDeleteProject={handleDeleteProject}
@@ -845,7 +889,7 @@ imageUrl,
             {/* SUPPLIES VIEW */}
             {defaultView === 'supplies' && (
               <SuppliesWorkspace
-                sessionSupplies={sessionSupplies}
+                sessionSupplies={suppliesWithLinks}
                 sessionProjects={sessionProjects}
                 isLoading={isLoadingSupplies}
                 onEditSupply={handleEditSupply}
@@ -918,10 +962,11 @@ imageUrl,
           {defaultView === 'projects' && (
             <ProjectsWorkspace
               sessionProjects={sessionProjects}
-              sessionSupplies={sessionSupplies}
+              sessionSupplies={suppliesWithLinks}
               isLoading={isLoadingProjects}
               selectedProjectId={selectedProjectId}
               onSelectProject={setSelectedProjectId}
+              focusRequest={focusRequest}
               onAddProject={() => setShowAddProjectForm(true)}
               onEditProject={handleEditProject}
               onDeleteProject={handleDeleteProject}
@@ -933,7 +978,7 @@ imageUrl,
           )}
           {defaultView === 'supplies' && (
             <SuppliesWorkspace
-              sessionSupplies={sessionSupplies}
+              sessionSupplies={suppliesWithLinks}
               sessionProjects={sessionProjects}
               isLoading={isLoadingSupplies}
               onEditSupply={handleEditSupply}

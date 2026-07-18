@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { compressImage } from "../../utils/imageUtils.js";
-import { SUPPLY_CATEGORIES, buildCategoryOptions } from "../../data/supplyCategories.js";
+import { buildCategoryOptions, buildSubcategoryOptions } from "../../data/supplyCategories.js";
+import { parseFlexibleNumber } from "../../utils/numericInput.js";
 
 export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProjects = [], sessionSupplies = [] }) {
   const [formData, setFormData] = useState({
@@ -21,8 +22,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categoryOptions = buildCategoryOptions(sessionSupplies);
-  const activeCategoryDef = SUPPLY_CATEGORIES.find(c => c.value === formData.category);
-  const availableSubcategories = activeCategoryDef ? activeCategoryDef.subcategories : [];
+  const availableSubcategories = buildSubcategoryOptions(formData.category, sessionSupplies);
   const isOther = formData.category === "Other";
   const isCustomSubcategory = formData.subcategory === "__other__";
 
@@ -41,8 +41,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "category") {
-      const catDef = SUPPLY_CATEGORIES.find(c => c.value === value);
-      const validSubs = catDef ? catDef.subcategories : [];
+      const validSubs = buildSubcategoryOptions(value, sessionSupplies);
       setFormData(prev => ({
         ...prev,
         category: value,
@@ -63,7 +62,11 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
       setError("Supply name is required");
       return;
     }
-    const qtyRaw = formData.qty === "" ? null : parseInt(formData.qty, 10);
+    const qtyRaw = parseFlexibleNumber(formData.qty);
+    if (Number.isNaN(qtyRaw)) {
+      setError("Enter a valid quantity, like 2, 1.5, or 1/2");
+      return;
+    }
     if (qtyRaw !== null && qtyRaw < 0) {
       setError("Quantity cannot be negative");
       return;
@@ -176,7 +179,7 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                       className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                     />
                   </div>
-                ) : availableSubcategories.length > 0 ? (
+                ) : (
                   <div>
                     <label className="block text-sm font-medium text-ast_lavender mb-2">Subcategory</label>
                     <select
@@ -202,20 +205,18 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                       />
                     )}
                   </div>
-                ) : (
-                  <div />
                 )}
 
                 {/* Quantity */}
                 <div>
                   <label className="block text-sm font-medium text-ast_lavender mb-2">Quantity</label>
                   <input
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     name="qty"
                     value={formData.qty}
                     onChange={handleChange}
-                    placeholder="e.g., 2"
-                    min="0"
+                    placeholder="e.g., 2, 1.5, or 1/2"
                     className="w-full rounded-lg border border-ast_pink/30 bg-ast_bg_dark/70 px-3 py-2 text-white placeholder-white/40 focus:border-ast_pink focus:outline-none focus:ring-2 focus:ring-ast_pink/30 transition"
                   />
                 </div>

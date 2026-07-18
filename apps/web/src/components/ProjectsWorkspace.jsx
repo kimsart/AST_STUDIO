@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PROJECT_STATUSES, CANONICAL_STATUS_VALUES } from "../data/projectContainers.js";
 import ProjectsCard from "./ProjectsCard.jsx";
 
@@ -10,6 +10,7 @@ export default function ProjectsWorkspace({
   isLoading = false,
   selectedProjectId,
   onSelectProject,
+  focusRequest,
   onAddProject,
   onEditProject,
   onDeleteProject,
@@ -20,6 +21,21 @@ export default function ProjectsWorkspace({
 }) {
   const [projectNavView, setProjectNavView] = useState("overview");
   const [selectedStatus, setSelectedStatus] = useState(null);
+
+  // A shortcut (e.g. the sidebar "Recent Projects" thumbnails) sets a fresh
+  // focusRequest object each time it's used — including repeat clicks on the
+  // same project — so this always jumps to the List view, clears any status
+  // filter that would hide the target project, and opens its detail panel.
+  // Deliberately keyed on focusRequest (not selectedProjectId), which also
+  // changes from ordinary in-list clicks and must not reset the user's
+  // current filter/view while they're just browsing.
+  useEffect(() => {
+    if (focusRequest?.id == null) return;
+    onSelectProject(focusRequest.id);
+    setSelectedStatus(null);
+    setProjectNavView("list");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest]);
 
   const getStatusCount = (statusValue) =>
     sessionProjects.filter(p => p.status === statusValue).length;
