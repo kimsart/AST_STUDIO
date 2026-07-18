@@ -2,6 +2,7 @@ import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../../../../amplify/data/resource";
 
 import { SupplyService, type SupplyDataClient } from "./supplyService.ts";
+import { createAmplifyProjectService } from "../projects/amplifyProjectService.ts";
 
 /** Production composition root. Unit tests inject a structural client instead. */
 export function createAmplifySupplyService(): SupplyService {
@@ -17,5 +18,8 @@ export function createAmplifySupplyService(): SupplyService {
       },
     },
   };
-  return new SupplyService(supplyClient);
+  // Reuses the existing Project composition root so Supply deletion can prune
+  // stale supplyIds from affected Projects — see SupplyService.delete().
+  const projectService = createAmplifyProjectService();
+  return new SupplyService(supplyClient, projectService);
 }
