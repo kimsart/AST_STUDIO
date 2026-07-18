@@ -3,6 +3,7 @@ import { generateClient } from 'aws-amplify/data';
 import { getUrl, uploadData } from 'aws-amplify/storage';
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { createAmplifyProjectService } from "../domain/projects/amplifyProjectService.ts";
 import DashboardHeader from "../components/DashboardHeader.jsx";
 import ProjectsWorkspace from "../components/ProjectsWorkspace.jsx";
 import SuppliesCard from "../components/SuppliesCard.jsx";
@@ -78,7 +79,10 @@ const isProjectDisplayImage = (value) =>
     value.startsWith("https://")
   );
 
-async function uploadProjectCoverImage(image) {
+// Uploads a single gallery slot if it's a freshly-picked data: URL; passes an
+// already-uploaded Storage path/URL through unchanged so existing images are
+// never re-uploaded or orphaned.
+async function uploadProjectImage(image) {
   if (!isProjectDataImage(image)) return image || null;
 
   const blob = await dataUrlToBlob(image);
@@ -94,25 +98,50 @@ async function uploadProjectCoverImage(image) {
   return result.path;
 }
 
-async function resolveProjectDisplayImage(coverImageUrl) {
-  if (!coverImageUrl) return null;
-  if (isProjectDisplayImage(coverImageUrl)) return coverImageUrl;
+// Uploads any new data: URLs in an ordered image list, leaving already-hosted
+// paths/URLs untouched, and returns the resulting Storage-path list in order.
+async function uploadProjectImages(images) {
+  return Promise.all((images ?? []).map(uploadProjectImage));
+}
+
+async function resolveProjectDisplayImage(storagePath) {
+  if (!storagePath) return null;
+  if (isProjectDisplayImage(storagePath)) return storagePath;
 
   try {
-    const { url } = await getUrl({ path: coverImageUrl });
+    const { url } = await getUrl({ path: storagePath });
     return url.toString();
   } catch (error) {
-    console.warn("[AST Studio] Failed to resolve project cover image:", error);
+    console.warn("[AST Studio] Failed to resolve project image:", error);
     return null;
   }
 }
 
+// Rebuilds one ordered images[] (display URLs, for rendering) plus a
+// parallel imagePaths[] (Storage paths, for persistence) from
+// coverImageUrl + imageKeys. Cover is always index 0 when present. Entries
+// that fail to resolve are dropped from both arrays in lockstep so the
+// pairing stays intact. Legacy cover-only records (imageKeys empty/absent)
+// naturally hydrate to a single-image gallery.
 async function hydrateProject(project) {
-  const displayImage = await resolveProjectDisplayImage(project.coverImageUrl);
+  const storagePaths = [project.coverImageUrl, ...(project.imageKeys ?? [])].filter(Boolean);
+  const displayUrls = await Promise.all(storagePaths.map(resolveProjectDisplayImage));
+
+  const images = [];
+  const imagePaths = [];
+  storagePaths.forEach((path, i) => {
+    const displayUrl = displayUrls[i];
+    if (displayUrl) {
+      images.push(displayUrl);
+      imagePaths.push(path);
+    }
+  });
+
   return {
     ...normalizeProject({
       ...project,
-      images: displayImage ? [displayImage] : [],
+      images,
+      imagePaths,
     }),
     budget: project.budget ?? "",
   };
@@ -126,6 +155,11 @@ export default function Dashboard({ defaultView = 'home', user }) {
     clientRef.current = generateClient();
   }
   const client = clientRef.current;
+  const projectServiceRef = useRef(null);
+  if (projectServiceRef.current === null) {
+    projectServiceRef.current = createAmplifyProjectService();
+  }
+  const projectService = projectServiceRef.current;
   const handleSignOut = async () => {
   try {
     await signOut();
@@ -155,16 +189,8 @@ useEffect(() => {
 
   async function loadCloudProjects() {
     try {
-      const { data } = await client.models.Project.list();
-      console.log('[AST Studio] Project.list coverImageUrl values:',
-        (data || []).map(project => ({
-          id: project.id,
-          title: project.title,
-          hasCoverImageUrl: Boolean(project.coverImageUrl),
-          coverImageUrlLength: project.coverImageUrl?.length ?? 0,
-        }))
-      );
-      const hydrated = await Promise.all((data || []).map(hydrateProject));
+      const { items } = await projectService.list();
+      const hydrated = await Promise.all(items.map(hydrateProject));
       if (isMounted) setSessionProjects(hydrated);
     } catch (error) {
       console.error('Error loading cloud projects:', error);
@@ -199,35 +225,21 @@ useEffect(() => {
 
  const handleAddProject = async (projectData) => {
   try {
-    const coverImageUrl = await uploadProjectCoverImage(
-      projectData.images?.[0] ?? projectData.coverImageUrl
+    const uploadedPaths = await uploadProjectImages(
+      Array.isArray(projectData.images) ? projectData.images : []
     );
-    const createInput = {
+    const [coverImageUrl = null, ...imageKeys] = uploadedPaths;
+
+    const created = await projectService.create({
       title: projectData.title,
       description: projectData.description,
       status: projectData.status,
       notes: projectData.notes,
       coverImageUrl,
-    };
-
-    console.log('[AST Studio] Add project first image:', {
-      hasImage: Boolean(projectData.images?.[0]),
-      imageLength: projectData.images?.[0]?.length ?? 0,
-    });
-    console.log('[AST Studio] Project.create input:', {
-      ...createInput,
-      coverImageUrl: createInput.coverImageUrl
-        ? `[image string length ${createInput.coverImageUrl.length}]`
-        : createInput.coverImageUrl,
+      imageKeys,
     });
 
-    const { data } = await client.models.Project.create(createInput);
-
-    console.log('[AST Studio] Project.create returned coverImageUrl:', {
-      hasCoverImageUrl: Boolean(data?.coverImageUrl),
-      coverImageUrlLength: data?.coverImageUrl?.length ?? 0,
-    });
-    const hydratedProject = await hydrateProject(data);
+    const hydratedProject = await hydrateProject(created);
 
     setSessionProjects((prev) => [
       ...prev,
@@ -285,22 +297,30 @@ imageUrl,
   const handleEditProject = async (projectId, updatedData) => {
     if (typeof projectId === "string") {
       try {
-        const updateInput = {
+        // Map each still-present display URL back to its original Storage
+        // path so unchanged images are neither re-uploaded nor lost; only
+        // entries that are fresh data: URLs need a new upload.
+        const existingProject = sessionProjects.find(p => p.id === projectId);
+        const pathByDisplayUrl = new Map(
+          (existingProject?.images ?? []).map((displayUrl, i) => [displayUrl, existingProject.imagePaths?.[i]])
+        );
+
+        const rawImages = Array.isArray(updatedData.images) ? updatedData.images : [];
+        const resolvedPaths = await Promise.all(rawImages.map(async (image) => {
+          if (isProjectDataImage(image)) return uploadProjectImage(image);
+          return pathByDisplayUrl.get(image) ?? image;
+        }));
+        const [coverImageUrl = null, ...imageKeys] = resolvedPaths;
+
+        const updated = await projectService.update({
           id: projectId,
           title: updatedData.title,
           status: updatedData.status,
           notes: updatedData.notes,
-        };
-
-        const firstImage = updatedData.images?.[0];
-        if (isProjectDataImage(firstImage)) {
-          updateInput.coverImageUrl = await uploadProjectCoverImage(firstImage);
-        } else if (!firstImage) {
-          updateInput.coverImageUrl = null;
-        }
-
-        const { data } = await client.models.Project.update(updateInput);
-        const hydratedProject = await hydrateProject(data);
+          coverImageUrl,
+          imageKeys,
+        });
+        const hydratedProject = await hydrateProject(updated);
         setSessionProjects(prev => prev.map(p =>
           p.id === projectId
             ? {
@@ -330,7 +350,7 @@ imageUrl,
     if (!window.confirm("Delete this project? This cannot be undone.")) return;
     if (typeof projectId === "string") {
       try {
-        await client.models.Project.delete({ id: projectId });
+        await projectService.delete(projectId);
       } catch (error) {
         console.error("Error deleting cloud project:", error);
         return;
