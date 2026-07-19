@@ -7,6 +7,8 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+  StudioSessionStatus: a.enum(['ACTIVE', 'PAUSED', 'ENDED']),
+
   Supply: a
     .model({
       name: a.string().required(),
@@ -34,6 +36,31 @@ const schema = a.schema({
       coverImageUrl: a.string(),
       imageKeys: a.string().array(),
       supplyIds: a.string().array(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  StudioSession: a
+    .model({
+      title: a.string(),
+      description: a.string(),
+      projectId: a.string(),
+      status: a.ref('StudioSessionStatus').required(),
+      currentFocusLabel: a.string(),
+      currentFocusProjectId: a.string(),
+      focusStartedAt: a.datetime(),
+      startedAt: a.datetime().required(),
+      // Updated only by explicit AST actions or user-confirmed session controls.
+      lastActivityAt: a.datetime(),
+      endedAt: a.datetime(),
+      // The future creation service must initialize all counters to 0 and
+      // needsTimeReview to false.
+      totalActiveSeconds: a.integer(),
+      totalPausedSeconds: a.integer(),
+      unconfirmedSeconds: a.integer(),
+      needsTimeReview: a.boolean(),
+      // IANA time zone identifier, for example "America/Los_Angeles".
+      timezone: a.string(),
+      summary: a.string(),
     })
     .authorization((allow) => [allow.owner()]),
 
