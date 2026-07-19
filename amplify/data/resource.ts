@@ -8,6 +8,15 @@ and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
   StudioSessionStatus: a.enum(['ACTIVE', 'PAUSED', 'ENDED']),
+  StudioActivityEventType: a.enum([
+    'SESSION_STARTED',
+    'SESSION_PAUSED',
+    'SESSION_RESUMED',
+    'SESSION_ENDED',
+    'FOCUS_CHANGED',
+    'SESSION_MARKED_FOR_REVIEW',
+    'TIME_CORRECTED',
+  ]),
 
   Supply: a
     .model({
@@ -62,6 +71,23 @@ const schema = a.schema({
       timezone: a.string(),
       summary: a.string(),
     })
+    .authorization((allow) => [allow.owner()]),
+
+  StudioActivityEvent: a
+    .model({
+      sessionId: a.string().required(),
+      eventType: a.ref('StudioActivityEventType').required(),
+      eventAt: a.datetime().required(),
+      focusLabel: a.string(),
+      focusProjectId: a.string(),
+      elapsedSeconds: a.integer(),
+      note: a.string(),
+      // IANA time zone identifier, for example "America/Los_Angeles".
+      timezone: a.string(),
+    })
+    .secondaryIndexes((index) => [
+      index('sessionId').sortKeys(['eventAt']),
+    ])
     .authorization((allow) => [allow.owner()]),
 
   ChatMessage: a
