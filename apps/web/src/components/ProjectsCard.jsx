@@ -271,10 +271,35 @@ export default function ProjectsCard({
                 </div>
               )}
               {editDraft.images.length < 30 && (
-                <label className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 px-3 py-2 text-sm text-ast_muted hover:border-ast_turquoise/60 hover:text-ast_body transition">
-                  {editDraft.images.length === 0 ? "Add photos" : "Add more"}
-                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleEditImagesChange} />
-                </label>
+                // One "Add Photo" control offering two explicit choices. Both
+                // reuse handleEditImagesChange unchanged, so a camera capture
+                // appends to the gallery the same way a chosen file does.
+                <div role="group" aria-label="Add Photo" className="inline-flex flex-col gap-1 rounded-lg border border-ast_turquoise/30 bg-ast_bg_dark/70 p-1">
+                  <label className="flex cursor-pointer items-center gap-2 rounded px-3 py-2 text-sm text-ast_muted hover:bg-ast_turquoise/10 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_turquoise/60">
+                    <span aria-hidden="true">📷</span>
+                    Take Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="sr-only"
+                      aria-label="Take a photo with your camera"
+                      onChange={handleEditImagesChange}
+                    />
+                  </label>
+                  <label className="flex cursor-pointer items-center gap-2 rounded px-3 py-2 text-sm text-ast_muted hover:bg-ast_turquoise/10 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_turquoise/60">
+                    <span aria-hidden="true">📁</span>
+                    Choose From Photos
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="sr-only"
+                      aria-label="Choose photos from your device"
+                      onChange={handleEditImagesChange}
+                    />
+                  </label>
+                </div>
               )}
             </div>
             {editError && (

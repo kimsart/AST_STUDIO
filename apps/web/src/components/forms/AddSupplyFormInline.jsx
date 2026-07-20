@@ -142,50 +142,52 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                       >×</button>
                       <div className="mt-1 flex justify-center gap-2">
                         <label className="cursor-pointer rounded text-[9px] text-ast_muted underline underline-offset-2 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
-                          Retake
+                          Take Photo
                           <input
                             type="file"
                             accept="image/*"
                             capture="environment"
                             className="sr-only"
-                            aria-label="Retake photo with camera"
+                            aria-label="Take a photo with your camera"
                             onChange={handleImageChange}
                           />
                         </label>
                         <label className="cursor-pointer rounded text-[9px] text-ast_muted underline underline-offset-2 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
-                          Replace
+                          Choose From Photos
                           <input
                             type="file"
                             accept="image/*"
                             className="sr-only"
-                            aria-label="Replace photo from device"
+                            aria-label="Choose a photo from your device"
                             onChange={handleImageChange}
                           />
                         </label>
                       </div>
                     </div>
                   ) : (
-                    <div className="flex gap-2">
-                      <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
-                        <span className="text-lg leading-none" aria-hidden="true">📁</span>
-                        <span className="text-[9px] mt-1">Add photo</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="sr-only"
-                          aria-label="Upload a photo from your device"
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                      <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
-                        <span className="text-lg leading-none" aria-hidden="true">📷</span>
-                        <span className="text-[9px] mt-1">Take Photo</span>
+                    // One "Add Photo" control offering two explicit choices,
+                    // rather than two separate always-visible tiles.
+                    <div role="group" aria-label="Add Photo" className="flex w-36 flex-col gap-1 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 p-1">
+                      <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] text-ast_muted hover:bg-ast_pink/10 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                        <span aria-hidden="true">📷</span>
+                        Take Photo
                         <input
                           type="file"
                           accept="image/*"
                           capture="environment"
                           className="sr-only"
                           aria-label="Take a photo with your camera"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                      <label className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] text-ast_muted hover:bg-ast_pink/10 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                        <span aria-hidden="true">📁</span>
+                        Choose From Photos
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          aria-label="Choose a photo from your device"
                           onChange={handleImageChange}
                         />
                       </label>
