@@ -45,7 +45,35 @@ const schema = a.schema({
       coverImageUrl: a.string(),
       imageKeys: a.string().array(),
       supplyIds: a.string().array(),
+      journalEntries: a.hasMany('JournalEntry', 'projectId'),
+      seeds: a.hasMany('Seed', 'projectId'),
     })
+    .authorization((allow) => [allow.owner()]),
+
+  JournalEntry: a
+    .model({
+      body: a.string().required(),
+      title: a.string(),
+      category: a.string(),
+      tags: a.string().array(),
+      authoredAt: a.datetime(),
+      projectId: a.id(),
+      project: a.belongsTo('Project', 'projectId'),
+    })
+    .secondaryIndexes((index) => [index('projectId')])
+    .authorization((allow) => [allow.owner()]),
+
+  Seed: a
+    .model({
+      content: a.string().required(),
+      title: a.string(),
+      category: a.string(),
+      tags: a.string().array(),
+      status: a.string(),
+      projectId: a.id(),
+      project: a.belongsTo('Project', 'projectId'),
+    })
+    .secondaryIndexes((index) => [index('projectId')])
     .authorization((allow) => [allow.owner()]),
 
   StudioSession: a
