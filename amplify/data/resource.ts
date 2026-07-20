@@ -7,6 +7,17 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
+  StudioSessionStatus: a.enum(['ACTIVE', 'PAUSED', 'ENDED']),
+  StudioActivityEventType: a.enum([
+    'SESSION_STARTED',
+    'SESSION_PAUSED',
+    'SESSION_RESUMED',
+    'SESSION_ENDED',
+    'FOCUS_CHANGED',
+    'SESSION_MARKED_FOR_REVIEW',
+    'TIME_CORRECTED',
+  ]),
+
   Supply: a
     .model({
       name: a.string().required(),
@@ -34,7 +45,77 @@ const schema = a.schema({
       coverImageUrl: a.string(),
       imageKeys: a.string().array(),
       supplyIds: a.string().array(),
+      journalEntries: a.hasMany('JournalEntry', 'projectId'),
+      seeds: a.hasMany('Seed', 'projectId'),
     })
+    .authorization((allow) => [allow.owner()]),
+
+  JournalEntry: a
+    .model({
+      body: a.string().required(),
+      title: a.string(),
+      category: a.string(),
+      tags: a.string().array(),
+      authoredAt: a.datetime(),
+      projectId: a.id(),
+      project: a.belongsTo('Project', 'projectId'),
+    })
+    .secondaryIndexes((index) => [index('projectId')])
+    .authorization((allow) => [allow.owner()]),
+
+  Seed: a
+    .model({
+      content: a.string().required(),
+      title: a.string(),
+      category: a.string(),
+      tags: a.string().array(),
+      status: a.string(),
+      projectId: a.id(),
+      project: a.belongsTo('Project', 'projectId'),
+    })
+    .secondaryIndexes((index) => [index('projectId')])
+    .authorization((allow) => [allow.owner()]),
+
+  StudioSession: a
+    .model({
+      title: a.string(),
+      description: a.string(),
+      projectId: a.string(),
+      status: a.ref('StudioSessionStatus').required(),
+      currentFocusLabel: a.string(),
+      currentFocusProjectId: a.string(),
+      focusStartedAt: a.datetime(),
+      startedAt: a.datetime().required(),
+      // Updated only by explicit AST actions or user-confirmed session controls.
+      lastActivityAt: a.datetime(),
+      endedAt: a.datetime(),
+      // The future creation service must initialize all counters to 0 and
+      // needsTimeReview to false.
+      totalActiveSeconds: a.integer(),
+      totalPausedSeconds: a.integer(),
+      unconfirmedSeconds: a.integer(),
+      needsTimeReview: a.boolean(),
+      // IANA time zone identifier, for example "America/Los_Angeles".
+      timezone: a.string(),
+      summary: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  StudioActivityEvent: a
+    .model({
+      sessionId: a.string().required(),
+      eventType: a.ref('StudioActivityEventType').required(),
+      eventAt: a.datetime().required(),
+      focusLabel: a.string(),
+      focusProjectId: a.string(),
+      elapsedSeconds: a.integer(),
+      note: a.string(),
+      // IANA time zone identifier, for example "America/Los_Angeles".
+      timezone: a.string(),
+    })
+    .secondaryIndexes((index) => [
+      index('sessionId').sortKeys(['eventAt']),
+    ])
     .authorization((allow) => [allow.owner()]),
 
   ChatMessage: a
