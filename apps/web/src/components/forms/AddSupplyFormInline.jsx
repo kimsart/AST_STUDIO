@@ -137,15 +137,59 @@ export default function AddSupplyFormInline({ onSubmit, onCancel, sessionProject
                       <button
                         type="button"
                         onClick={() => setFormData(p => ({ ...p, image: null }))}
+                        aria-label="Remove photo"
                         className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white text-xs hover:bg-ast_pink transition"
                       >×</button>
+                      <div className="mt-1 flex justify-center gap-2">
+                        <label className="cursor-pointer rounded text-[9px] text-ast_muted underline underline-offset-2 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                          Retake
+                          <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            className="sr-only"
+                            aria-label="Retake photo with camera"
+                            onChange={handleImageChange}
+                          />
+                        </label>
+                        <label className="cursor-pointer rounded text-[9px] text-ast_muted underline underline-offset-2 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                          Replace
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            aria-label="Replace photo from device"
+                            onChange={handleImageChange}
+                          />
+                        </label>
+                      </div>
                     </div>
                   ) : (
-                    <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition">
-                      <span className="text-lg leading-none">📷</span>
-                      <span className="text-[9px] mt-1">Add photo</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                    </label>
+                    <div className="flex gap-2">
+                      <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                        <span className="text-lg leading-none" aria-hidden="true">📁</span>
+                        <span className="text-[9px] mt-1">Add photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          aria-label="Upload a photo from your device"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                      <label className="cursor-pointer flex flex-col items-center justify-center w-16 h-16 rounded-xl border border-ast_pink/30 bg-ast_bg_dark/70 text-ast_muted hover:border-ast_pink/60 hover:text-ast_body transition focus-within:ring-2 focus-within:ring-ast_pink/60">
+                        <span className="text-lg leading-none" aria-hidden="true">📷</span>
+                        <span className="text-[9px] mt-1">Take Photo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          className="sr-only"
+                          aria-label="Take a photo with your camera"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    </div>
                   )}
                 </div>
               </div>
